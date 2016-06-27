@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Built-By: aruny
+Class-Path: configuration/ lib/rowset.jar lib/sqljdbc4.jar lib/ojdbc14.jar lib/ifxjdbc.jar lib/db2jcc4.jar lib/openforcast-0.5.0.jar
+ lib/jdmf-0.1.jar lib/profiler-core-6.1.6-SNAPSHOT.jar lib/simmetrics-core-3.0.0.jar lib/guava-18.0.jar lib/commons-codec-1.10.jar
+  lib/java-string-similarity-0.13.jar lib/opencsv-3.5.jar lib/commons-
+ lang3-3.3.2.jar lib/itextpdf-5.4.0.jar lib/saxon-6.5.3.jar lib/postgr
+ esql-9.2-1002-jdbc4.jar lib/mysql-connector-java-5.1.24.jar lib/ucana
+ ccess-3.0.4.jar lib/hsqldb-2.3.1.jar lib/jackcess-2.1.3.jar lib/commo
+ ns-lang-2.6.jar lib/commons-logging-1.1.3.jar lib/derby-10.12.1.1.jar
+  lib/lucene-core-2.2.0.jar lib/jxl-2.6.12.jar lib/log4j-1.2.14.jar li
+ b/jeval-0.9.4.jar lib/commons-math-2.1.jar lib/jcommon-1.0.23.jar lib
+ /jfreechart-1.0.19.jar lib/quartz-2.2.1.jar lib/c3p0-0.9.1.1.jar lib/
+ slf4j-api-1.6.6.jar lib/jcalendar-1.4.jar lib/hadoop-core-1.2.1.jar l
+ ib/commons-cli-1.2.jar lib/xmlenc-0.52.jar lib/jersey-core-1.8.jar li
+ b/jersey-json-1.8.jar lib/jettison-1.1.jar lib/stax-api-1.0.1.jar lib
+ /jaxb-impl-2.2.3-1.jar lib/jaxb-api-2.2.2.jar lib/stax-api-1.0-2.jar 
+ lib/activation-1.1.jar lib/jackson-core-asl-1.7.1.jar lib/jackson-jax
+ rs-1.7.1.jar lib/jackson-xc-1.7.1.jar lib/jersey-server-1.8.jar lib/a
+ sm-3.1.jar lib/commons-io-2.1.jar lib/commons-httpclient-3.0.1.jar li
+ b/junit-3.8.1.jar lib/commons-configuration-1.6.jar lib/commons-colle
+ ctions-3.2.1.jar lib/commons-digester-1.8.jar lib/commons-beanutils-1
+ .7.0.jar lib/commons-beanutils-core-1.8.0.jar lib/commons-net-1.4.1.j
+ ar lib/jetty-6.1.26.jar lib/servlet-api-2.5-20081211.jar lib/jetty-ut
+ il-6.1.26.jar lib/jasper-runtime-5.5.12.jar lib/jasper-compiler-5.5.1
+ 2.jar lib/jsp-api-2.1-6.1.14.jar lib/servlet-api-2.5-6.1.14.jar lib/j
+ sp-2.1-6.1.14.jar lib/ant-1.6.5.jar lib/commons-el-1.0.jar lib/jets3t
+ -0.6.1.jar lib/oro-2.0.8.jar lib/core-3.1.1.jar lib/jackson-mapper-as
+ l-1.8.8.jar
+Created-By: Apache Maven 3.0.5
+Build-Jdk: 1.8.0_45
+Main-Class: org.arrah.gui.swing.Profiler
+

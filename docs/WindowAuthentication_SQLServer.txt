@@ -1,0 +1,15 @@
+To enable Single Sign On (SSO) for SQL Server 2008:
+
+1.) http://msdn.microsoft.com/en-us/library/ms378428.aspx
+
+2.) Install Microsoft JDBC Driver 4.0 for SQL Server (or the latest version applicable)
+ 
+3.) Copy sqljdbc_auth.dll (Installation directory\Microsoft JDBC Driver 4.0 for SQL Server\sqljdbc_4.0\enu\auth\x86\) to jdk bin (say, C:\Program Files\Java\jdk1.7.0_06\bin)
+
+4.) If you are on 64 bit use (Installation directory\Microsoft JDBC Driver 4.0 fo SQL Server\sqljdbc_4.0\enu\auth\x64\)
+
+5.) Login as admin (user -sa) and create the login for windows user and ensure that Windows authentication is enabled.
+
+6.) Refer - http://www.hosting.com/support/windows-vps/mixedmode
+
+7.) Database Connection String - jdbc:sqlserver://localhost;databaseName=dbname;integratedSecurity=true;

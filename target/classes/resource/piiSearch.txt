@@ -1,0 +1,13 @@
+/* This is file to configure PII column names */
+/* Words are separated by comma(,) */
+/* Search is case insensitive */
+/* Do not change the keys */
+
+
+
+CreditCard="Creditcard,CC,Credit_card"
+DoB="DateOfBirth,DoB,BirthDay"
+Email="Electronic Mail,MailID,email"
+PhoneNumber="Cell,Cell Number,Landline,phone"
+SocialSecurity="SSN,Social,SocialSecurity"
+IP="ipv4,ipv6,inet,hostname,ipaddress,host,inetaddress"

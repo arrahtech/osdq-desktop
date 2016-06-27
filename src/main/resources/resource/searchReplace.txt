@@ -1,0 +1,13 @@
+/* This is file to configure search Replace action */
+/* Java String '\' should be replaced by \\ */
+/* Add your own regex that will used for search and replace */
+/* This file is case sensitive */
+
+
+Road="Rd."
+road="Rd."
+Apartment="Apt."
+apartment="Apt."
+United States of America="USA"
+Bob="Robert"
+Bangalore="Bangaluru"
