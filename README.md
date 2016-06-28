@@ -1,4 +1,4 @@
-Profiler V6.1.8-SNAPSHOT
+OSDQ Desktop V6.1.8-SNAPSHOT
 
 [![Build Status](https://drone.io/github.com/arrahtec/profiler/status.png)](https://drone.io/github.com/arrahtec/profiler/latest)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dm/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dw/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)
 
@@ -44,23 +44,14 @@ Getting Started
 
 >Using pre-compiled distribution - you can directly download the pre-compiled binaries from sourceforge
 
-[![Download Open Source Data Quality and Profiling](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/dataquality/files/latest/download)
+[![Download Open Source Data Quality](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/dataquality/files/latest/download)
 
 1. Unzip the download release file
 2. Go to bin directory
 3. run `runprofiler.[sh][bat]`
 
 
->Building and Running
 
-1. git clone git@github.com:arrahtec/profiler.git
-2. cd profiler
-3. mvn package
-4. cd profiler-ui/target
-5. unzip the ProfilerV<version>.zip
-6. cd ProfilerV<version>
-7. cd bin
-8. runprofiler.[sh|bat]
 
 
 
