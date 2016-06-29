@@ -49,7 +49,6 @@ Getting Started
 1. Unzip the download release file
 2. Go to bin directory
 3. run `runprofiler.[sh][bat]`
-4. 
 
 
 If you are a developer or you want to build the project yourself, you first need to build and install [osdq-core](https://github.com/arrahtec/osdq-core) into local maven repository of your machine.
