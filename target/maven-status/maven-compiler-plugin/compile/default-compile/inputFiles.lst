@@ -16,6 +16,7 @@
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/ConsoleFrame.java
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/FileAnalyticsListener.java
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/SearchOptionDialog.java
+/Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/framework/xml/DTDGenerator.java
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/MaskingPanel.java
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/SqlTablePanel.java
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/BoxPlotPanel.java
@@ -72,6 +73,7 @@
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/RightView.java
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/ToolListener.java
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/CompareFileDialog.java
+/Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/framework/xml/XmlWriter.java
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/UtilFunctionPanel.java
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/ImageUtil.java
 /Users/aruny/workspace/osdq-desktop/src/main/java/org/arrah/gui/swing/TSPlotPanel.java
