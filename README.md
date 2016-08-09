@@ -51,6 +51,16 @@ Getting Started
 3. run `runprofiler.[sh][bat]`
 
 
+If you are a developer or you want to build the project yourself, you first need to build and install [osdq-core](https://github.com/arrahtec/osdq-core) into local maven repository of your machine.
+
+1. git clone https://github.com/arrahtec/osdq-desktop project
+2. mvn install
+3. git clone this project
+4. mvn package
+
+This will build the final zip under target folder of osdq-desktop project.
+
+
 
 
 
