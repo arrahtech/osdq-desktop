@@ -106,7 +106,7 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 		String[] dbtype = {"Oracle JDBC Client","Oracle Windows Bridge","Mysql JDBC Client","Mysql Windows Bridge",
 							"SQLServer JDBC Client","SQLServer Windows Bridge","Access JDBC Client",
 							"Access Windows Bridge","Postgres JDBC Client","DB2 JDBC Client",
-							"Hive JDBC Client","Hive2 JDBC Client","Informix JDBC Client","Splice Derby Client","Others (JDBC Bridge)","Others (Windows Bridge)"}; 
+							"Hive JDBC Client","Hive2 JDBC Client","Informix JDBC Client","Splice Derby Client","Teiid JDBC client","Others (JDBC Bridge)","Others (Windows Bridge)"}; 
 		String[] cname = {"New Connection"};
 		jc = new JComboBox<String>(dbtype);
 		jc.addActionListener(this);
@@ -479,8 +479,21 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 	        		dsn.setText("//hostname/db");
 	        		disableResInput();
 	        		break;
-
 	        	case 14 :
+	        		_dbparam.put("Database_Type", "TEIID");
+	        		driver.setText("org.teiid.jdbc.TeiidDriver");
+	        		protocol.setText("");
+	        		driver.setEditable(false);
+	        		protocol.setEditable(false);
+	        		jdbc_cs.setEditable(true);
+	        		dsn.setText("Enter VDB Name");
+	        		jdbc_cs.setText("jdbc:teiid:<vdb-name>@mm[s]://<host>:<port>;[prop-name=prop-value;]*");
+	        		info.setText("Enter JDBC connect string if using JDBC driver.\n" +
+	        				"Make sure JDBC driver is in CLASSPATH");
+	        		disableResInput();
+	        		break;
+
+	        	case 15 :
 	        		_dbparam.put("Database_Type", "Others");
 	        		driver.setText("jdbc.DbNameDriver");
 	        		protocol.setText("jdbc:dbname");
@@ -655,10 +668,10 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 		
 	@Override
 	public void focusGained(FocusEvent e) {
-                if( "cname".equals(sel_id) ) {
-                    infoStatus = "Enter Database Connection Name";
-                    info.setText(infoStatus);
-                }
+        if( "cname".equals(sel_id) ) {
+            infoStatus = "Enter Database Connection Name";
+            info.setText(infoStatus);
+        }
 		if ("dsn".equals(sel_id)) {
 			switch (dbIndex) {
 			case 0:
@@ -675,6 +688,10 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 				break;
 			case 12:
 				infoStatus = "Enter Hostname and DataBase Name. \nFormat should be //hostname[:port]/dbname::INFORMIXSERVER=name[;property=value]" ;
+				break;
+			case 14:
+				infoStatus = "Enter JDBC Connect string. \nFormat should be" +
+						"jdbc:teiid:<vdb-name>@mm[s]://<host>:<port>;[prop-name=prop-value;]*";
 				break;
 			case 1: case 3: case 5: case 7:
 				infoStatus = "Enter System DSN of your window. \n" +
@@ -695,7 +712,7 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 		}
 		if ("driver".equals(sel_id)) {
 			switch (dbIndex) {
-			case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:case 8:case 9: case 10: case 11:case 12:case 13:
+			case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:case 8:case 9: case 10: case 11:case 12:case 13:case 14:
 				infoStatus = "Default Database Driver is shown.";
 				 break;
 			default:
@@ -708,6 +725,8 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 			case 0: case 1: case 2: case 3: case 4: case 5:case 6: case 7:case 8:case 9: case 10: case 11:case 12:case 13:
 				infoStatus = "Default Connection Protocol is shown.";
 				 break;
+			case 14:
+				infoStatus = "Enter JDBC Connect String";
 			default:
 				infoStatus = "Please enter the Protocol.";
 			}	

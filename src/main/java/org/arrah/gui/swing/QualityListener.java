@@ -529,7 +529,7 @@ public class QualityListener implements ActionListener {
 				Rdbms_conn.getDBType());
 		String query = qb.get_tableAll_query();
 		if (!"".equals(selTP.getQueryString()))
-			query += " AND (" + selTP.getQueryString() + ")";
+			query += " WHERE" + selTP.getQueryString();
 		ReportTableModel rtm = null;
 
 		try {
@@ -570,7 +570,7 @@ public class QualityListener implements ActionListener {
 				Rdbms_conn.getDBType());
 		String query = qb.get_tableAll_query();
 		if (!"".equals(selTP.getQueryString()))
-			query += " AND (" + selTP.getQueryString() + ")";
+			query += " WHERE " + selTP.getQueryString();
 		ReportTableModel rtm = null;
 
 		try {
