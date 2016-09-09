@@ -21,6 +21,7 @@ package org.arrah.gui.swing;
  */
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -31,6 +32,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 
 import org.arrah.framework.dataquality.DeDuplicateRTM;
@@ -93,7 +95,9 @@ public class NewTableDialog implements ActionListener {
 				6, 6,        //initX, initY                                        
 				6, 6);       //xPad, yPad          
 		
-
+		JScrollPane pane = new JScrollPane(p);
+		pane.setPreferredSize(new Dimension(650, 400));
+		
 		JPanel bp = new JPanel();
 		String buttonL = "Create";
 		
@@ -115,7 +119,7 @@ public class NewTableDialog implements ActionListener {
 		cn_b.addActionListener(this);
 		bp.add(cn_b);
 		
-		dp.add(p, BorderLayout.CENTER);
+		dp.add(pane, BorderLayout.CENTER);
 		dp.add(bp, BorderLayout.PAGE_END);
 		
 		jd = new JDialog ();
