@@ -63,7 +63,7 @@ public class CompareRecordDialog implements ActionListener {
 		_lTab = leftTable;
 		_rTab = rightTable;
 		_type = type;
-		if (_lTab == null  ){
+		if (_lTab == null || _lTab.getModel() == null ){
 			ConsoleFrame.addText("\n Input data is empty");
 			return;
 		}
@@ -134,10 +134,8 @@ public class CompareRecordDialog implements ActionListener {
 		_checkB = new JCheckBox[colCount];
 		_simIndex = new JFormattedTextField[colCount];
 		
-		String[] algoList = new String[]{"Levenshtein","JaroWinkler","Jaro","CosineSimilarity","BlockDistance","ChapmanLengthDeviation",
-				"ChapmanMeanLength","ChapmanOrderedNameCompoundSimilarity","DiceSimilarity","EuclideanDistance",
-				"JaccardSimilarity","MatchingCoefficient","MongeElkan","NeedlemanWunch","OverlapCoefficient",
-				"QGramsDistance","SmithWaterman","SmithWatermanGotohWindowedAffine","Soundex","TagLink","TagLinkToken"};
+		String[] algoList = new String[]{"Levenshtein","JaroWinkler","Jaro",
+				"NeedlemanWunch","SmithWaterman","SmithWatermanGotoh"};
 		
 		for (int i =0; i < colCount; i++ ){
 			_rColC[i] = new JComboBox<String>();
