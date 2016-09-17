@@ -439,7 +439,7 @@ public class JobScheduler extends javax.swing.JFrame {
         labHinc.setPreferredSize(new java.awt.Dimension(25, 13));
 
         labHdec.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labHinc.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("image/down.png")));
+        labHdec.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("image/down.png")));
         labHdec.setToolTipText("Click here to decrease the hours");
         labHdec.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0))));
         labHdec.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -448,7 +448,7 @@ public class JobScheduler extends javax.swing.JFrame {
         labHdec.setPreferredSize(new java.awt.Dimension(25, 13));
 
         labMdec.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labHinc.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("image/down.png")));
+        labMdec.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("image/down.png")));
         labMdec.setToolTipText("Click here to decrease the minutes");
         labMdec.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0))));
         labMdec.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -457,7 +457,7 @@ public class JobScheduler extends javax.swing.JFrame {
         labMdec.setPreferredSize(new java.awt.Dimension(25, 13));
 
         labMinc.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labHinc.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("image/up.png")));
+        labMinc.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("image/up.png")));
         labMinc.setToolTipText("Click here to increase the minutes");
         labMinc.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0))));
         labMinc.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -475,7 +475,7 @@ public class JobScheduler extends javax.swing.JFrame {
         txtMinutes.setPreferredSize(new java.awt.Dimension(35, 26));
 
         labSdec.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labHinc.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("image/down.png")));
+        labSdec.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("image/down.png")));
         labSdec.setToolTipText("Click here to increase the seconds");
         labSdec.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0))));
         labSdec.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -484,7 +484,7 @@ public class JobScheduler extends javax.swing.JFrame {
         labSdec.setPreferredSize(new java.awt.Dimension(25, 13));
 
         labSinc.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labHinc.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("image/up.png")));
+        labSinc.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("image/up.png")));
         labSinc.setToolTipText("Click here to increase the seconds");
         labSinc.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0))));
         labSinc.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
