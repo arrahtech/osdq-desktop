@@ -27,10 +27,17 @@
 			<directory>src/main/resources</directory>
 			<includes>
 				<include>configFile.txt</include>
-				<include>resource/*</include>
+        <include>ArrahDemo.accdb</include>
 			</includes>
 			<outputDirectory>configuration</outputDirectory>
 		</fileSet>
+    <fileSet>
+      <directory>src/main/resources</directory>
+      <includes>
+        <include>resource/*</include>
+      </includes>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
     <fileSet>
       <directory>${project.basedir}/docs</directory>
       <includes>
