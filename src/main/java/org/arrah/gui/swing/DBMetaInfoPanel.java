@@ -28,6 +28,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 
 import org.arrah.framework.analytics.MetadataMatcher;
 import org.arrah.framework.ndtable.ReportTableModel;
@@ -58,6 +59,7 @@ public class DBMetaInfoPanel implements ActionListener {
 		f_title = "DB Meta Information";
 	}
 
+	// for changing cursor
 	public DBMetaInfoPanel(JComponent src) {
 		src_ = src;
 		isFrame = false;
@@ -82,7 +84,7 @@ public class DBMetaInfoPanel implements ActionListener {
 										.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 
 			s = ((JMenuItem) actionevent.getSource()).getText();
-
+			
 			if (s.equals("Data Dictionary")) {
 				File pdfFile = FileSelectionUtil.promptForFilename("Data Dictionary PDF File");
 				if (pdfFile == null) {
@@ -178,52 +180,87 @@ public class DBMetaInfoPanel implements ActionListener {
 				isFrame = true;
 				summary_info = true;
 			} else if (s.equals("Catalog Info")) {
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				f_title = "Catalog Information";
 				rtm__ = new DBMetaInfo().getCatalogInfo();
 				rt__ = new ReportTable(rtm__);
 
 				isFrame = true;
 				summary_info = true;
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("Standard SQL Type Info")) {
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				f_title = "Standard SQL Type Information";
 				rtm__ = new DBMetaInfo().getStandardSQLInfo();
 				rt__ = new ReportTable(rtm__);
 
 				isFrame = true;
 				summary_info = true;
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("User Defined Type Info")) {
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				f_title = "User Defined Type Information";
 				rtm__ = new DBMetaInfo().getUserSQLInfo();
 				rt__ = new ReportTable(rtm__);
 
 				isFrame = true;
 				summary_info = true;
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("Schema Info")) {
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				f_title = "Schema Information";
 				rtm__ = new DBMetaInfo().getSchemaInfo();
 				rt__ = new ReportTable(rtm__);
 
 				isFrame = true;
 				summary_info = true;
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("Procedure Info")) {
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				f_title = "Procedure Information";
 				rtm__ = new DBMetaInfo().getProcedureInfo();
 				rt__ = new ReportTable(rtm__);
 
 				summary_info = true;
 				isFrame = true;
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("Index Info")) {
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				f_title = "Index Information";
 				vp = new TableMetaInfoPanel(1);
 				variableQ = true;
 				isFrame = true;
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("Parameter Info")) {
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				f_title = "Parameter Information";
 				rtm__ = new DBMetaInfo().getParameterInfo();
 				rt__ = new ReportTable(rtm__);
 
 				isFrame = true;
 				summary_info = true;
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 
 			} else if (s.equals("Table Model Info")) {
 				f_title = "Table Model Information";
@@ -240,11 +277,19 @@ public class DBMetaInfoPanel implements ActionListener {
 				hashtable2 = dbMetaInfo.getRelatedTable();
 
 			} else if (s.equals("DB MetaData Info")) {
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				f_title = "DB MetaData Information";
 				vp = new TableMetaInfoPanel(2);
 				variableQ = true;
 				isFrame = true;
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("Table MetaData Info")) {
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				f_title = "Table MetaData Information";
 				s31 = JOptionPane.showInputDialog(null,
 						"Enter MetaData Table Pattern:", "Table Input Dialog",
@@ -257,13 +302,22 @@ public class DBMetaInfoPanel implements ActionListener {
 
 				summary_info = true;
 				isFrame = true;
-
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("All Tables Info")) {
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				f_title = "All Table Privilege Information";
 				vp = new TableMetaInfoPanel(3);
 				variableQ = true;
 				isFrame = true;
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("Table Info")) {
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				f_title = " Table Privilege Information";
 				s31 = JOptionPane.showInputDialog(null, "Enter Table Pattern:",
 						"Table Input Dialog", -1);
@@ -275,46 +329,66 @@ public class DBMetaInfoPanel implements ActionListener {
 
 				summary_info = true;
 				isFrame = true;
-
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("Column Info")) {
 				f_title = "Column Privilege Information";
+				
 				s31 = JOptionPane.showInputDialog(null, "Enter Table Pattern:",
 						"Table Input Dialog", -1);
 				if (s31 == null || s31.compareTo("") == 0)
 					return;
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				rtm__ = new DBMetaInfo().getColumnPrivilege(s31);
 				rt__ = new ReportTable(rtm__);
 
 				summary_info = true;
 				isFrame = true;
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("Data Info")) {
 				f_title = "Data Summary Information";
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				vp = new TableMetaInfoPanel(4);
 				variableQ = true;
 				isFrame = true;
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 			} else if (s.equals("Table Name")) {
 				f_title = "Table Name Information";
 				s31 = JOptionPane.showInputDialog(null, "Enter Table Name:",
 						"Table Input Dialog", -1);
 				if (s31 == null || s31.compareTo("") == 0)
 					return;
-				
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 0);
-				
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 				return;
 
 			} else if (s.equals("Column Name")) {
 				f_title = "Table Name Information";
+				
 				s31 = JOptionPane.showInputDialog(null, "Enter Column Name:",
 						"Column Input Dialog", -1);
 				if (s31 == null || s31.compareTo("") == 0)
 					return;
 				
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 1);
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 				
 				return;
 
@@ -324,11 +398,14 @@ public class DBMetaInfoPanel implements ActionListener {
 						"Native Datatype Input Dialog", -1);
 				if (s31 == null || s31.compareTo("") == 0)
 					return;
-				
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 2);
-				
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 				return;
 
 			} else if (s.equals("SQL Datatype")) {
@@ -337,10 +414,14 @@ public class DBMetaInfoPanel implements ActionListener {
 						"Java SQL Datatype Input Dialog", -1);
 				if (s31 == null || s31.compareTo("") == 0)
 					return;
-				
+				//within try catch
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 3);
+				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 				
 				return;
 
@@ -383,6 +464,7 @@ public class DBMetaInfoPanel implements ActionListener {
 			JOptionPane.showMessageDialog(null, exception.getMessage(),
 					"Error Message", 0);
 		} finally {
+			
 			if (src_ != null)
 				src_.getTopLevelAncestor()
 						.setCursor(

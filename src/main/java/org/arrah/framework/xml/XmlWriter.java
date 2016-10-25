@@ -214,6 +214,10 @@ public class XmlWriter {
                 Element rule_Desc = doc.createElement("rule_Description");
                 rule_Desc.setTextContent(hashRule.get("rule_Description"));
                 rule.appendChild(rule_Desc);
+                
+                Element query_Text = doc.createElement("query_Text");
+                query_Text.setTextContent(hashRule.get("query_Text"));
+                rule.appendChild(query_Text);
 
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
@@ -275,6 +279,10 @@ public class XmlWriter {
                 Element rule_Desc = doc.createElement("rule_Description");
                 rule_Desc.setTextContent(hashRule.get("rule_Description"));
                 rule.appendChild(rule_Desc);
+                
+                Element query_Text = doc.createElement("query_Text");
+                query_Text.setTextContent(hashRule.get("query_Text"));
+                rule.appendChild(query_Text);
                 
                 root.appendChild(rule);
                 doc.normalize();
@@ -355,6 +363,7 @@ public class XmlWriter {
                         eElement.getElementsByTagName("condition_Names").item(0).setTextContent(hashRule.get("condition_Names"));
                         eElement.getElementsByTagName("join_Name").item(0).setTextContent(hashRule.get("join_Name"));
                         eElement.getElementsByTagName("rule_Description").item(0).setTextContent(hashRule.get("rule_Description"));
+                        eElement.getElementsByTagName("query_Text").item(0).setTextContent(hashRule.get("query_Text"));
                     }
                 }
             }

@@ -900,7 +900,11 @@ public class QualityListener implements ActionListener {
 				formatType, defChar));
 		mrowI = qc.getrowIndex();
 		matchI = qc.getColMatchIndex();
-
+		
+		if (rt == null)  {// if null it will give null pointer exception
+			ConsoleFrame.addText("\n No record returned");
+			return;
+		}
 		rt.table.moveColumn(matchI + 1, 1);
 
 		JPanel sP = new JPanel(new BorderLayout());
