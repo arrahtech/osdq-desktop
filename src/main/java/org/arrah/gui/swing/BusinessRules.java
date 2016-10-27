@@ -7,23 +7,16 @@ import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.arrah.framework.rdbms.QueryBuilder;
 import org.arrah.framework.rdbms.Rdbms_NewConn;
-import org.arrah.framework.rdbms.Rdbms_conn;
 import org.arrah.framework.xml.FilePaths;
 import org.arrah.framework.xml.XmlReader;
 import org.arrah.framework.xml.XmlWriter;
@@ -126,11 +119,13 @@ public class BusinessRules extends javax.swing.JFrame {
 
                         txtDescription.setText(hashRule.get("rule_Description"));
                         txtTables.setText(hashRule.get("table_Names"));
+                        nRuleCheck.setSelected(false);
 
                     } else {
-                        txtRule.setText("");
+                        txtRule.setText("New Rule Name");
                         txtRule.setEditable(true);
                         clearData();
+                        nRuleCheck.setSelected(true);
                     }
                 }
             }
@@ -189,6 +184,18 @@ public class BusinessRules extends javax.swing.JFrame {
                 }
             }
         });
+        
+        nRuleCheck.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                	jcbRule.setSelectedIndex(0);
+                	txtRule.setText("New Rule Name");
+                } else {
+                	btnCreate.setEnabled(false);
+                }
+            }
+        });
 
 
     }
@@ -219,7 +226,6 @@ public class BusinessRules extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        bgRuletype = new javax.swing.ButtonGroup();
         jspQuery = new javax.swing.JScrollPane();
         txtQuery = new javax.swing.JTextArea();
 
@@ -389,6 +395,9 @@ public class BusinessRules extends javax.swing.JFrame {
         lblBusinessRule.setMaximumSize(new java.awt.Dimension(107, 25));
         lblBusinessRule.setMinimumSize(new java.awt.Dimension(107, 25));
         lblBusinessRule.setPreferredSize(new java.awt.Dimension(107, 25));
+        
+        nRuleCheck = new javax.swing.JCheckBox("New Rule");
+        nRuleCheck.setPreferredSize(new java.awt.Dimension(150, 50));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -410,6 +419,7 @@ public class BusinessRules extends javax.swing.JFrame {
                             .addComponent(jcbTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             )
                             .addGap(10, 10, 10)))
+                             .addComponent(nRuleCheck, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnValidate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jcbColumn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)       
             		)
@@ -432,7 +442,10 @@ public class BusinessRules extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(lblBusinessRule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
-                .addComponent(jcbRule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(nRuleCheck, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jcbRule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE) )
+                
                 .addComponent(jcbConnection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE) //added
                 .addComponent(txtRule, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jspDescription, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -519,6 +532,15 @@ public class BusinessRules extends javax.swing.JFrame {
     
     private void btnValidateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
     	try {
+    		
+    	if (jcbConnection.getSelectedIndex() == 0 ) {
+    		JOptionPane.showMessageDialog(null, "Please select a connection");
+    		return;
+    	}
+    	if (txtQuery.getText() == null || txtQuery.getText().trim().equalsIgnoreCase("")) {
+    		JOptionPane.showMessageDialog(null, "Please Enter Query to Validate");
+    		return;
+    	}
     	hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", jcbConnection.getSelectedItem().toString());
     	Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashTable);
         dbmsConn.openConn();
@@ -558,9 +580,6 @@ public class BusinessRules extends javax.swing.JFrame {
                     hashRule.put("rule_Description", txtDescription.getText().trim());
                 }
                 
-               System.out.println("Query:"+hashRule.get("query_Text"));
-                
-                
                 xmlWriter = new XmlWriter();
                 xmlWriter.modifyRule(hashRule);
                 JOptionPane.showMessageDialog(null, "Business Rule \"" + txtRule.getText() + "\" successfully modified!!!");
@@ -573,7 +592,6 @@ public class BusinessRules extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup bgRuletype;
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnClose;
     private javax.swing.JButton btnCreate;
@@ -598,6 +616,10 @@ public class BusinessRules extends javax.swing.JFrame {
     private javax.swing.JTextArea txtTables;
     private javax.swing.JTextField txtValue;
     private javax.swing.JTextArea  txtDescription;
+    
+    private javax.swing.JCheckBox  nRuleCheck;
+    
+    
     // End of variables declaration//GEN-END:variables
 
 
