@@ -2,7 +2,6 @@ package org.arrah.gui.swing;
 
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -49,16 +48,9 @@ public class BusinessRules extends javax.swing.JFrame {
 
         Insets scnMax = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration());
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize((int) screenSize.getWidth(), (int) screenSize.getHeight() - scnMax.bottom);
+        setSize((int) screenSize.getWidth() - 200, (int) screenSize.getHeight() - scnMax.bottom - 100);
 
         setLayout(null);
-
-        lblBusinessRule.setLocation(new Point(10, 0));
-        getContentPane().add(lblBusinessRule);
-
-       // jspQuery.setLocation(new Point(10, 25));
-        //jspQuery.setSize(new Dimension( (int) getWidth() - 40, 35));
-        jspQuery.setSize(new Dimension( (int) getWidth() - 100, 100));
         getContentPane().add(jspQuery);
 
         setLocationRelativeTo(null);
@@ -67,7 +59,7 @@ public class BusinessRules extends javax.swing.JFrame {
 
     public void loadBusinessRules() {
         jcbRule.removeAllItems();
-        jcbRule.addItem("Select Rule Name");
+        jcbRule.addItem("Select Existing Rule");
         xmlReader = new XmlReader();
 
         String temp[] = xmlReader.getRulesName(new File(FilePaths.getFilePathRules()), "rule", "rule_Name");
@@ -190,9 +182,11 @@ public class BusinessRules extends javax.swing.JFrame {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                 	jcbRule.setSelectedIndex(0);
+                	jcbRule.setEnabled(false);
                 	txtRule.setText("New Rule Name");
                 } else {
                 	btnCreate.setEnabled(false);
+                	jcbRule.setEnabled(true);
                 }
             }
         });
@@ -250,13 +244,11 @@ public class BusinessRules extends javax.swing.JFrame {
 
         btnModify = new javax.swing.JButton();
         btnValidate = new javax.swing.JButton();
-       
-        lblBusinessRule = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Business Rule Builder Dialog");
 
-        jspQuery.setPreferredSize(new java.awt.Dimension(226, 35));
+        jspQuery.setPreferredSize(new java.awt.Dimension(226, 100));
  
         txtQuery.setEditable(true); // can write query and edit
         txtQuery.setColumns(20);
@@ -269,7 +261,7 @@ public class BusinessRules extends javax.swing.JFrame {
 
 
         jcbRule.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        jcbRule.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Select Rule Name" }));
+        jcbRule.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Select Existing Rule" }));
         jcbRule.setMaximumSize(new java.awt.Dimension(240, 25));
         jcbRule.setMinimumSize(new java.awt.Dimension(240, 25));
         jcbRule.setPreferredSize(new java.awt.Dimension(240, 25));
@@ -388,76 +380,83 @@ public class BusinessRules extends javax.swing.JFrame {
                 btnValidateActionPerformed(evt);
             }
         });
-
-
-        lblBusinessRule.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
-        lblBusinessRule.setText("Business Rule");
-        lblBusinessRule.setMaximumSize(new java.awt.Dimension(107, 25));
-        lblBusinessRule.setMinimumSize(new java.awt.Dimension(107, 25));
-        lblBusinessRule.setPreferredSize(new java.awt.Dimension(107, 25));
         
         nRuleCheck = new javax.swing.JCheckBox("New Rule");
-        nRuleCheck.setPreferredSize(new java.awt.Dimension(150, 50));
+        nRuleCheck.setPreferredSize(new java.awt.Dimension(100, 50));
+        
+        ruleDescL = new javax.swing.JLabel("Rule Description:");
+        queryL = new javax.swing.JLabel("Query for Business Rule:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
+        
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jspQuery, javax.swing.GroupLayout.DEFAULT_SIZE, 992, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblBusinessRule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jcbRule, 0, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jcbConnection, 0, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE) //added
-                            .addComponent(txtRule, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                     .addGroup(layout.createSequentialGroup()
+                    	.addComponent(nRuleCheck, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    	.addComponent(txtRule, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    			
+                      .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    		.addComponent(queryL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    		.addComponent(jspQuery, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    		.addComponent(jcbRule, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ruleDescL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jspDescription, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jcbTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            )
-                            .addGap(10, 10, 10)))
-                             .addComponent(nRuleCheck, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnValidate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jcbColumn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)       
-            		)
-                 .addGroup(layout.createSequentialGroup()
-                    .addComponent(btnCreate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(btnModify, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnValidate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                      
+            	))
+               .addGroup(layout.createSequentialGroup()
+            		    .addGap(5, 5, 5)
+            		    .addComponent(jcbConnection, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE) //added
+            			.addGap(5, 5, 5)
+            		    .addComponent(jcbTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(5, 5, 5)
+                        .addComponent(jcbColumn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE) 
+                 )
+              .addGroup(layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                   .addComponent(btnCreate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                   .addComponent(btnModify, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                   .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                   .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                   .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
    
-            		);
+           );
         layout.setVerticalGroup(
-            //layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         	layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblBusinessRule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(nRuleCheck, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jcbRule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE) )
-                
-                .addComponent(jcbConnection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE) //added
-                .addComponent(txtRule, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+	                .addComponent(nRuleCheck, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                .addComponent(txtRule, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+	                
+                .addComponent(jcbRule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                	.addComponent(jcbConnection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE) //added
+	                .addComponent(jcbTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                .addComponent(jcbColumn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+	             )
+                .addGap(10, 10, 10)
+	            .addComponent(ruleDescL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jspDescription, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(jspQuery, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(btnValidate, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(jcbTable, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap() 
-                .addComponent(jcbColumn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                 
+	            .addGap(25, 25, 25)
+                .addComponent(queryL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jspQuery, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap()
+                .addGap(5, 5, 5)
+                .addComponent(btnValidate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+	            .addGap(50, 50, 50)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCreate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -608,9 +607,6 @@ public class BusinessRules extends javax.swing.JFrame {
     private javax.swing.JScrollPane jspDescription;
     private javax.swing.JScrollPane jspQuery;
 
-    private javax.swing.JLabel lblBusinessRule;
-
-
     private javax.swing.JTextArea txtQuery;
     private javax.swing.JTextField txtRule;
     private javax.swing.JTextArea txtTables;
@@ -618,6 +614,7 @@ public class BusinessRules extends javax.swing.JFrame {
     private javax.swing.JTextArea  txtDescription;
     
     private javax.swing.JCheckBox  nRuleCheck;
+    private javax.swing.JLabel ruleDescL,queryL;
     
     
     // End of variables declaration//GEN-END:variables
