@@ -100,6 +100,12 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>2.2.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>c3p0</groupId>
+                    <artifactId>c3p0</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.opencsv</groupId>
@@ -133,6 +139,7 @@
             <scope>test</scope>
         </dependency>
         <!-- hive2 start-->
+        <!--  
         <dependency>
           <groupId>org.apache.hadoop</groupId>
           <artifactId>hadoop-common</artifactId>
@@ -323,7 +330,7 @@
           <artifactId>libthrift</artifactId>
           <version>0.9.0</version>
         </dependency>
-        <!-- 
+       
         <dependency>
           <groupId>org.apache.hive</groupId>
           <artifactId>hive-jdbc</artifactId>
@@ -347,38 +354,42 @@
         -->
         <!-- hive2 end -->
         <!-- hive1 start -->
-        <!--
+
         <dependency>
           <groupId>org.apache.hive</groupId>
           <artifactId>hive-jdbc</artifactId>
           <version>0.10.0</version>
+          <scope>system</scope>
+          <systemPath>${project.basedir}/lib/hivejar/hive-jdbc-0.10.0.jar</systemPath>
         </dependency>
         <dependency>
           <groupId>org.apache.hive</groupId>
           <artifactId>hive-exec</artifactId>
           <version>0.10.0</version>
+          <scope>system</scope>
+          <systemPath>${project.basedir}/lib/hivejar/hive-exec-0.10.0.jar</systemPath>
         </dependency>
         <dependency>
           <groupId>org.apache.hive</groupId>
           <artifactId>hive-service</artifactId>
           <version>0.10.0</version>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.hive</groupId>
-          <artifactId>hive-common</artifactId>
-          <version>0.10.0</version>
+          <scope>system</scope>
+          <systemPath>${project.basedir}/lib/hivejar/hive-service-0.10.0.jar</systemPath>
         </dependency>
         <dependency>
           <groupId>org.apache.hive</groupId>
           <artifactId>hive-metastore</artifactId>
           <version>0.10.0</version>
+          <scope>system</scope>
+          <systemPath>${project.basedir}/lib/hivejar/hive-metastore-0.10.0.jar</systemPath>
         </dependency>
         <dependency>
           <groupId>org.apache.thrift</groupId>
           <artifactId>libfb303</artifactId>
           <version>0.9.3</version>
+          <scope>system</scope>
+          <systemPath>${project.basedir}/lib/hivejar/libfb303-0.9.3.jar</systemPath>
         </dependency>
-        -->
         <!-- hive1 end -->
         <dependency>
           <groupId>com.java</groupId>
