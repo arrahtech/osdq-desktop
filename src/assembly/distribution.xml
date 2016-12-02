@@ -7,13 +7,27 @@
 		<format>zip</format>
 	</formats>
 	<fileSets>
-		<fileSet>
-			<directory>${project.build.directory}/dependency</directory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-			<outputDirectory>lib</outputDirectory>
-		</fileSet>
+    <fileSet>
+      <directory>${project.basedir}/lib/hivejar</directory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+      <outputDirectory>lib/hivejar</outputDirectory>
+    </fileSet>
+        <fileSet>
+      <directory>${project.basedir}/lib/hive2jar</directory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+      <outputDirectory>lib/hive2jar</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/dependency</directory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
 		<fileSet>
 			<directory>${project.build.directory}</directory>
 			<includes>
