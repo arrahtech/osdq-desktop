@@ -16,6 +16,7 @@ package org.arrah.gui.swing;
  *
  */
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -28,9 +29,11 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import org.arrah.framework.analytics.MetadataMatcher;
+import org.arrah.framework.ndtable.RTMUtil;
 import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.profile.DBMetaInfo;
 import org.arrah.framework.profile.TableMetaInfo;
@@ -358,7 +361,7 @@ public class DBMetaInfoPanel implements ActionListener {
 				isFrame = true;
 				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
 						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
-			} else if (s.equals("Table Name")) {
+			} else if (s.equals("Table Name") || s.equals("Table Contains")) {
 				f_title = "Table Name Information";
 				s31 = JOptionPane.showInputDialog(null, "Enter Table Name:",
 						"Table Input Dialog", -1);
@@ -368,13 +371,41 @@ public class DBMetaInfoPanel implements ActionListener {
 				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
 						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
+				
+				if (s.equals("Table Name")) {
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 0);
 				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
 						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 				return;
+				} else {
+					Vector<Integer> matchI = RTMUtil.matchCondition(rtm__,0,4,"%"+s31+"%");
+					if (matchI == null || matchI.isEmpty() ) {
+			            JOptionPane.showMessageDialog(null,
+			                    "No Matching Record Found", "No Record Found",
+			                    JOptionPane.INFORMATION_MESSAGE);
+			            
+			            ((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+								.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+			            return;
+			        }
+					ReportTableModel newRTM = RTMUtil.showFilteredRTM(rtm__ , matchI);
+					rt__ = new ReportTable(newRTM);
+					JPanel jp_p = new JPanel(new BorderLayout());
+			        jp_p.add(rt__, BorderLayout.CENTER);
+			        // Show the table now
+			        JFrame dg = new JFrame("Similar Records Frame");
+			        dg.setLocation(250, 100);
+			        dg.getContentPane().add(jp_p);
+			        dg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			        dg.pack();
+			        QualityListener.bringToFront(dg);
+			        ((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+							.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+					return;
+				}
 
-			} else if (s.equals("Column Name")) {
+			} else if (s.equals("Column Name") || s.equals("Column Contains")) {
 				f_title = "Table Name Information";
 				
 				s31 = JOptionPane.showInputDialog(null, "Enter Column Name:",
@@ -385,14 +416,41 @@ public class DBMetaInfoPanel implements ActionListener {
 				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
 						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
+				
+				if(s.equals("Column Name")) {
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 1);
 				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
 						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
-				
-				return;
+					return;
+				} else {
+					Vector<Integer> matchI = RTMUtil.matchCondition(rtm__,1,4,"%"+s31+"%");
+					if (matchI == null || matchI.isEmpty() ) {
+			            JOptionPane.showMessageDialog(null,
+			                    "No Matching Record Found", "No Record Found",
+			                    JOptionPane.INFORMATION_MESSAGE);
+			            
+			            ((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+								.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+			            return;
+			        }
+					ReportTableModel newRTM = RTMUtil.showFilteredRTM(rtm__ , matchI);
+					rt__ = new ReportTable(newRTM);
+					JPanel jp_p = new JPanel(new BorderLayout());
+			        jp_p.add(rt__, BorderLayout.CENTER);
+			        // Show the table now
+			        JFrame dg = new JFrame("Similar Records Frame");
+			        dg.setLocation(250, 100);
+			        dg.getContentPane().add(jp_p);
+			        dg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			        dg.pack();
+			        QualityListener.bringToFront(dg);
+			        ((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+							.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+					return;
+				}
 
-			} else if (s.equals("Native Datatype")) {
+			} else if (s.equals("Native Datatype") || s.equals("Native Contains")) {
 				f_title = "Table Name Information";
 				s31 = JOptionPane.showInputDialog(null, "Enter Native (DataBase) Datatype:",
 						"Native Datatype Input Dialog", -1);
@@ -402,13 +460,42 @@ public class DBMetaInfoPanel implements ActionListener {
 				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
 						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
+				
+				if(s.equals("Native Datatype")) {
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 2);
 				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
 						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 				return;
+				} else {
+					Vector<Integer> matchI = RTMUtil.matchCondition(rtm__,2,4,"%"+s31+"%");
+					if (matchI == null || matchI.isEmpty() ) {
+			            JOptionPane.showMessageDialog(null,
+			                    "No Matching Record Found", "No Record Found",
+			                    JOptionPane.INFORMATION_MESSAGE);
+			            
+			            ((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+								.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+			            return;
+			        }
+					ReportTableModel newRTM = RTMUtil.showFilteredRTM(rtm__ , matchI);
+					rt__ = new ReportTable(newRTM);
+					JPanel jp_p = new JPanel(new BorderLayout());
+			        jp_p.add(rt__, BorderLayout.CENTER);
+			        // Show the table now
+			        JFrame dg = new JFrame("Similar Records Frame");
+			        dg.setLocation(250, 100);
+			        dg.getContentPane().add(jp_p);
+			        dg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			        dg.pack();
+			        QualityListener.bringToFront(dg);
+			        ((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+							.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+					return;
+					
+				}
 
-			} else if (s.equals("SQL Datatype")) {
+			} else if (s.equals("SQL Datatype") || s.equals("SQL Contains") ) {
 				f_title = "Table Name Information";
 				s31 = JOptionPane.showInputDialog(null, "Enter SQL (java.sql) Datatype:",
 						"Java SQL Datatype Input Dialog", -1);
@@ -418,12 +505,40 @@ public class DBMetaInfoPanel implements ActionListener {
 				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
 						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
+				
+				if (s.equals("SQL Datatype")) {
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 3);
 				((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
 						.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
-				
 				return;
+				} else {
+					Vector<Integer> matchI = RTMUtil.matchCondition(rtm__,3,4,"%"+s31+"%");
+					if (matchI == null || matchI.isEmpty() ) {
+			            JOptionPane.showMessageDialog(null,
+			                    "No Matching Record Found", "No Record Found",
+			                    JOptionPane.INFORMATION_MESSAGE);
+			            
+			            ((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+								.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+			            return;
+			        }
+					ReportTableModel newRTM = RTMUtil.showFilteredRTM(rtm__ , matchI);
+					rt__ = new ReportTable(newRTM);
+					JPanel jp_p = new JPanel(new BorderLayout());
+			        jp_p.add(rt__, BorderLayout.CENTER);
+			        // Show the table now
+			        JFrame dg = new JFrame("Similar Records Frame");
+			        dg.setLocation(250, 100);
+			        dg.getContentPane().add(jp_p);
+			        dg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			        dg.pack();
+			        QualityListener.bringToFront(dg);
+			        ((JComponent)((JPopupMenu)((JPopupMenu)((JMenuItem) actionevent.getSource()).getParent()).getInvoker().getParent()).getInvoker().getParent()).getParent().setCursor(java.awt.Cursor
+							.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+					return;
+					
+				}
 
 			} else {
 				return;
