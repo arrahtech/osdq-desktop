@@ -24,6 +24,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -55,7 +56,7 @@ public class CompareFileDialog implements ActionListener {
 	private Vector<String> _lCols, _rCols;
 	private Vector<Integer> _leftMap, _rightMap;
 	private ReportTableModel rtmLnoMatch = null, rtmRnoMatch = null;
-	private ReportTable rtmLnoMatchTable = null;
+	private ReportTable rtmLnoMatchTable = null, rtmRnoMatchTable = null;
 	private boolean indexadded = false;
 
 	public CompareFileDialog() { // Default Constructor
@@ -90,7 +91,8 @@ public class CompareFileDialog implements ActionListener {
 	rtmLnoMatchTable = new ReportTable(rtmLnoMatch);
 	tabPane.add("Primary No Match",rtmLnoMatchTable);
 	rtmRnoMatch = rtmdiff.rightNoMatchRTM();
-	tabPane.add("Secondary No Match",new ReportTable(rtmRnoMatch));
+	rtmRnoMatchTable = new ReportTable(rtmRnoMatch);
+	tabPane.add("Secondary No Match",rtmRnoMatchTable);
 	
 	// Make existing report to go
 	d_recHead.setVisible(false);
@@ -101,12 +103,18 @@ public class CompareFileDialog implements ActionListener {
 	
 	// Add menu here
 	JMenuBar menubar = new JMenuBar();
-	JMenu menui = new JMenu("Show Differece");
+	JMenu menui = new JMenu("Show Cell Difference");
 	
 	JMenuItem menuitem = new JMenuItem("Primary Table");
     menuitem.addActionListener( this );
     menuitem.setActionCommand("showcell");
     menui.add(menuitem);
+    
+	JMenuItem menuitem1 = new JMenuItem("Secondary Table");
+    menuitem1.addActionListener( this );
+    menuitem1.setActionCommand("showcellr");
+    menui.add(menuitem1);
+    
     menubar.add(menui);
     db_d.setJMenuBar(menubar);
     
@@ -271,7 +279,7 @@ public class CompareFileDialog implements ActionListener {
 			}
 			d_m.dispose(); 
 
-		} if ("showcell".equals(e.getActionCommand())) {
+		} if ("showcell".equals(e.getActionCommand()) || "showcellr".equals(e.getActionCommand())) {
 			
 			// Index has been shifted as new column has been added for once
 			if (indexadded == false) {
@@ -287,18 +295,61 @@ public class CompareFileDialog implements ActionListener {
 				indexadded = true;
 			}
 			
-			RTMDiffUtil rtmdiff = new RTMDiffUtil(rtmLnoMatch,_leftMap, rtmRnoMatch,_rightMap);
-			HashMap<Integer, Vector<Integer>> diffIndex = rtmdiff.compareDiff(true);
-			if ( diffIndex == null || diffIndex.size() == 0) {
-				ConsoleFrame.addText("\n File Comparison Failed");
-				return;
+			if ("showcell".equals(e.getActionCommand())) {
+				RTMDiffUtil rtmdiff = new RTMDiffUtil(rtmLnoMatch,_leftMap, rtmRnoMatch,_rightMap);
+				HashMap<Integer, Vector<Integer>> diffIndex = rtmdiff.compareDiff(true);
+				HashMap<Integer,Integer> matcheddiffIndex = rtmdiff.getDiffMatchedIndex();
+				if ( diffIndex == null || diffIndex.size() == 0) {
+					ConsoleFrame.addText("\n File Comparison Failed"
+							+ "\n Or Primary Table has all new rows");
+					return;
+				}
+				
+				Set<Integer> s =  diffIndex.keySet();
+				for (int index : s) {
+					Integer matchI = matcheddiffIndex.get(index);
+					if (matchI == null || diffIndex.get(index).size() == _leftMap.size() ) {
+						ConsoleFrame.addText("\n New Row at Index:"+index);
+					} else {
+						ConsoleFrame.addText("\n Index:" +index +" of Primary table changed from Index:" + matchI+ " of "
+								+ "Secondary Table" );
+					}
+				}
+				
+				// set the renderer for highlighting
+				for (int k=0; k < _leftMap.size(); k++) 
+					rtmLnoMatchTable.table.getColumnModel().getColumn(_leftMap.get(k)).setCellRenderer
+					( new HighlightCellRenderer(diffIndex));
+				
+				rtmLnoMatchTable.table.repaint();
+			} else { // Secondary Table Information
+				RTMDiffUtil rtmdiff = new RTMDiffUtil(rtmRnoMatch,_rightMap,rtmLnoMatch,_leftMap);
+				HashMap<Integer, Vector<Integer>> diffIndex = rtmdiff.compareDiff(true);
+				HashMap<Integer,Integer> matcheddiffIndex = rtmdiff.getDiffMatchedIndex();
+				if ( diffIndex == null || diffIndex.size() == 0) {
+					ConsoleFrame.addText("\n File Comparison Failed"
+							+ "\n Or Secondary Table has all new rows");
+					return;
+				}
+				
+				Set<Integer> s =  diffIndex.keySet();
+				for (int index : s) {
+					Integer matchI = matcheddiffIndex.get(index);
+					if (matchI == null || diffIndex.get(index).size() == _rightMap.size() ) {
+						ConsoleFrame.addText("\nNew Row at Index:"+index);
+					} else {
+						ConsoleFrame.addText("\n Index:" +index +" of Secondary table chaged from Index:" + matchI+ " of "
+								+ "Primary Table" );
+					}
+				}
+				
+				// set the renderer for highlighting
+				for (int k=0; k < _rightMap.size(); k++) 
+					rtmRnoMatchTable.table.getColumnModel().getColumn(_rightMap.get(k)).setCellRenderer
+					( new HighlightCellRenderer(diffIndex));
+				
+				rtmRnoMatchTable.table.repaint();
 			}
-			// set the renderer for highlighting
-			for (int k=0; k < _leftMap.size(); k++) 
-				rtmLnoMatchTable.table.getColumnModel().getColumn(_leftMap.get(k)).setCellRenderer
-				( new HighlightCellRenderer(diffIndex));
-			
-			rtmLnoMatchTable.table.repaint();
 		}
 	} // end of action
 	
