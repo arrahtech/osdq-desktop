@@ -32,6 +32,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -47,7 +48,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.arrah.framework.analytics.RTMDiffUtil;
 import org.arrah.framework.ndtable.ReportTableModel;
 
-public class CompareFileDialog implements ActionListener {
+public class CompareFileFrame implements ActionListener {
 
 	private ReportTableModel rtmL = null, rtmR = null;
 	private JDialog d_m= null, d_recHead = null;
@@ -59,11 +60,11 @@ public class CompareFileDialog implements ActionListener {
 	private ReportTable rtmLnoMatchTable = null, rtmRnoMatchTable = null;
 	private boolean indexadded = false;
 
-	public CompareFileDialog() { // Default Constructor
+	public CompareFileFrame() { // Default Constructor
 		
 	}
 	
-	public CompareFileDialog(ReportTableModel rtmL, ReportTableModel rtmR) { // Default left and right RTM
+	public CompareFileFrame(ReportTableModel rtmL, ReportTableModel rtmR) { // Default left and right RTM
 		this.rtmL = rtmL;
 		this.rtmR = rtmR;
 		createMapDialog();
@@ -98,7 +99,7 @@ public class CompareFileDialog implements ActionListener {
 	d_recHead.setVisible(false);
 	d_m.setVisible(false); 
 	
-	JDialog db_d = new JDialog();
+	JFrame db_d = new JFrame();
 	db_d.setTitle("Difference Summary Dialog");
 	
 	// Add menu here
@@ -119,10 +120,11 @@ public class CompareFileDialog implements ActionListener {
     db_d.setJMenuBar(menubar);
     
 	db_d.getContentPane().add(tabPane);
-	db_d.setModal(true);
 	db_d.setLocation(75, 75);
 	db_d.pack();
 	db_d.setVisible(true);
+	
+	QualityListener.bringToFront(db_d);
 
 	}
 	
@@ -308,11 +310,10 @@ public class CompareFileDialog implements ActionListener {
 				Set<Integer> s =  diffIndex.keySet();
 				for (int index : s) {
 					Integer matchI = matcheddiffIndex.get(index);
-					if (matchI == null || diffIndex.get(index).size() == _leftMap.size() ) {
+					if (matchI == null || diffIndex.get(index).size() == _leftMap.size() ) { // all new fields
 						ConsoleFrame.addText("\n New Row at Index:"+index);
 					} else {
-						ConsoleFrame.addText("\n Index:" +index +" of Primary table changed from Index:" + matchI+ " of "
-								+ "Secondary Table" );
+						ConsoleFrame.addText("\n Primary table Index:" +index +" --> " + matchI+ " of Secondary Table" );
 					}
 				}
 				
@@ -320,8 +321,8 @@ public class CompareFileDialog implements ActionListener {
 				for (int k=0; k < _leftMap.size(); k++) 
 					rtmLnoMatchTable.table.getColumnModel().getColumn(_leftMap.get(k)).setCellRenderer
 					( new HighlightCellRenderer(diffIndex));
-				
 				rtmLnoMatchTable.table.repaint();
+				
 			} else { // Secondary Table Information
 				RTMDiffUtil rtmdiff = new RTMDiffUtil(rtmRnoMatch,_rightMap,rtmLnoMatch,_leftMap);
 				HashMap<Integer, Vector<Integer>> diffIndex = rtmdiff.compareDiff(true);
@@ -338,8 +339,7 @@ public class CompareFileDialog implements ActionListener {
 					if (matchI == null || diffIndex.get(index).size() == _rightMap.size() ) {
 						ConsoleFrame.addText("\nNew Row at Index:"+index);
 					} else {
-						ConsoleFrame.addText("\n Index:" +index +" of Secondary table chaged from Index:" + matchI+ " of "
-								+ "Primary Table" );
+						ConsoleFrame.addText("\n Secondary table Index:" +index +" --> " + matchI+ " of Primary Table" );
 					}
 				}
 				
@@ -347,7 +347,6 @@ public class CompareFileDialog implements ActionListener {
 				for (int k=0; k < _rightMap.size(); k++) 
 					rtmRnoMatchTable.table.getColumnModel().getColumn(_rightMap.get(k)).setCellRenderer
 					( new HighlightCellRenderer(diffIndex));
-				
 				rtmRnoMatchTable.table.repaint();
 			}
 		}

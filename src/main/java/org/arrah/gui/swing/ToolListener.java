@@ -108,7 +108,7 @@ public class ToolListener implements ActionListener {
 						}
 					}
 					if (source.equals("Diff File")) {
-						new CompareFileDialog(firstRT.getRTMModel(), secondRT.getRTMModel());
+						new CompareFileFrame(firstRT.getRTMModel(), secondRT.getRTMModel());
 						return;
 					}
 					CompareRecordDialog crd=null;
