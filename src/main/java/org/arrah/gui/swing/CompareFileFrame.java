@@ -23,11 +23,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -39,6 +42,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -56,9 +60,11 @@ public class CompareFileFrame implements ActionListener {
 	private JCheckBox[] _checkB;
 	private Vector<String> _lCols, _rCols;
 	private Vector<Integer> _leftMap, _rightMap;
-	private ReportTableModel rtmLnoMatch = null, rtmRnoMatch = null;
-	private ReportTable rtmLnoMatchTable = null, rtmRnoMatchTable = null;
+	private ReportTableModel rtmLnoMatch = null, rtmRnoMatch = null, rtmnonKeyUnMatchData = null;
+	private ReportTable rtmLnoMatchTable = null, rtmRnoMatchTable = null, rtmnonKeyUnMatchDataTable = null;
 	private boolean indexadded = false;
+	
+	private JRadioButton cellm,keym;
 
 	public CompareFileFrame() { // Default Constructor
 		
@@ -81,19 +87,49 @@ public class CompareFileFrame implements ActionListener {
 	}
 	
 	rtmdiff = new RTMDiffUtil(rtmL,_leftMap, rtmR,_rightMap);
-	boolean com = rtmdiff.compare(true,false);
+	boolean com = rtmdiff.compare(true,keym.isSelected());
 	if ( com == false) {
 		ConsoleFrame.addText("\n File Comparison Failed");
 		return;
 	}
+	// Enter duplicate counts and right file matching count
+	if (keym.isSelected() == true) {
+		int duplicate = rtmdiff.getDuplicateCount();
+		Map<Integer,ArrayList<Integer>> mapre = rtmdiff.reverseMap();
+		if (mapre == null || mapre.size() ==0 )
+			return;
+		Set<Integer> keysre = mapre.keySet();
+		for (Integer i:keysre ) {
+			ArrayList<Integer> value = rtmdiff.reverseMap().get(i);
+			if (value.size() > 1)
+			ConsoleFrame.addText("\n Duplicate Primary Table Index: "+i+" - "+value);
+		}
 		
-	tabPane.add("Matched Record",new ReportTable(rtmdiff.getMatchedRTM()));
-	rtmLnoMatch = rtmdiff.leftNoMatchRTM();
-	rtmLnoMatchTable = new ReportTable(rtmLnoMatch);
-	tabPane.add("Primary No Match",rtmLnoMatchTable);
-	rtmRnoMatch = rtmdiff.rightNoMatchRTM();
-	rtmRnoMatchTable = new ReportTable(rtmRnoMatch);
-	tabPane.add("Secondary No Match",rtmRnoMatchTable);
+		ConsoleFrame.addText("\n Duplicated Primary key Count:"+ duplicate);
+		if (duplicate > 15) // warn if more than 15 duplicates
+			JOptionPane.showMessageDialog(null, "Many duplicates. Duplicate counts:"+duplicate,"Duplicate Warning",JOptionPane.WARNING_MESSAGE);
+	}
+	
+	if (keym.isSelected() == false) {
+		tabPane.add("Matched Record",new ReportTable(rtmdiff.getMatchedRTM()));
+		rtmLnoMatch = rtmdiff.leftNoMatchRTM();
+		rtmLnoMatchTable = new ReportTable(rtmLnoMatch);
+		tabPane.add("Primary No Match",rtmLnoMatchTable);
+		rtmRnoMatch = rtmdiff.rightNoMatchRTM();
+		rtmRnoMatchTable = new ReportTable(rtmRnoMatch);
+		tabPane.add("Secondary No Match",rtmRnoMatchTable);
+	} else {
+		rtmLnoMatch = rtmdiff.leftNoMatchRTM();
+		rtmLnoMatchTable = new ReportTable(rtmLnoMatch);
+		tabPane.add("Primary Unmatched Key",rtmLnoMatchTable);
+		rtmRnoMatch = rtmdiff.rightNoMatchRTM();
+		rtmRnoMatchTable = new ReportTable(rtmRnoMatch);
+		tabPane.add("Secondary Unmatched Key",rtmRnoMatchTable);
+		rtmnonKeyUnMatchData = rtmdiff.getMatchFailedRTM();
+		rtmnonKeyUnMatchDataTable = new ReportTable(rtmnonKeyUnMatchData);
+		tabPane.add("Only Key matched records",rtmnonKeyUnMatchDataTable);
+		tabPane.add("All Matched Records",new ReportTable(rtmdiff.getMatchedRTM()));
+	}
 	
 	// Make existing report to go
 	d_recHead.setVisible(false);
@@ -115,6 +151,13 @@ public class CompareFileFrame implements ActionListener {
     menuitem1.addActionListener( this );
     menuitem1.setActionCommand("showcellr");
     menui.add(menuitem1);
+    
+    if (keym.isSelected() == true) { // add menu only for key
+    	JMenuItem menuitem2 = new JMenuItem("Key Match Table");
+    	menuitem2.addActionListener( this );
+    	menuitem2.setActionCommand("showcellkey");
+        menui.add(menuitem2);
+    }
     
     menubar.add(menui);
     db_d.setJMenuBar(menubar);
@@ -171,6 +214,17 @@ public class CompareFileFrame implements ActionListener {
 	
 	private JDialog showHeaderMap() {
 		// Header Making
+		
+		JPanel bjp = new JPanel();
+		cellm = new JRadioButton("Cell Based Matching");
+		keym = new JRadioButton("PrimaryKey Based Match");
+		ButtonGroup bg = new ButtonGroup();
+		bg.add(cellm);bg.add(keym);
+		cellm.setSelected(true);
+		bjp.add(cellm);bjp.add(keym);
+		//bjp.setPreferredSize(new Dimension(675,50));
+		
+		// Center
 		JPanel jp = new JPanel(new SpringLayout());
 		int colCount = rtmL.getModel().getColumnCount(); // left column is master column
 		
@@ -224,6 +278,7 @@ public class CompareFileFrame implements ActionListener {
 		bp.add(cancel);
 
 		JPanel jp_p = new JPanel(new BorderLayout());
+		jp_p.add(bjp, BorderLayout.PAGE_START);
 		jp_p.add(jscrollpane1, BorderLayout.CENTER);
 		jp_p.add(bp, BorderLayout.PAGE_END);
 
@@ -281,7 +336,14 @@ public class CompareFileFrame implements ActionListener {
 			}
 			d_m.dispose(); 
 
-		} if ("showcell".equals(e.getActionCommand()) || "showcellr".equals(e.getActionCommand())) {
+		} 
+		if ("showcellkey".equals(e.getActionCommand())) {
+			rtmnonKeyUnMatchDataTable.table.setDefaultRenderer(Object.class,  new HighlightCellRenderer());
+			rtmnonKeyUnMatchDataTable.table.repaint();
+			
+		}
+		
+		if ("showcell".equals(e.getActionCommand()) || "showcellr".equals(e.getActionCommand())) {
 			
 			// Index has been shifted as new column has been added for once
 			if (indexadded == false) {
@@ -358,10 +420,15 @@ public class CompareFileFrame implements ActionListener {
 		 */
 		private static final long serialVersionUID = 1L;
 		private HashMap<Integer, Vector<Integer>> _diffIndex;
+		private boolean _matchwithFirst = false;
 		
 
 		public HighlightCellRenderer(HashMap<Integer, Vector<Integer>> diffIndex) {
 			_diffIndex = diffIndex;
+		}
+		
+		public HighlightCellRenderer() { // default is match with first
+			_matchwithFirst = true;
 		}
 		
 		public Component getTableCellRendererComponent(JTable table,
@@ -372,18 +439,55 @@ public class CompareFileFrame implements ActionListener {
 					isSelected, hasFocus, row, column);
 			if (value == null ) return c; // for null value
 			
-			// If it is sorting row will change so default
-			if (rtmLnoMatchTable.isSorting() == true) {
-				((JLabel )c).setForeground(Color.BLACK); // default color
+			if (_matchwithFirst == false) {
+				// If it is sorting row will change so default
+				if (rtmLnoMatchTable.isSorting() == true || rtmRnoMatchTable.isSorting() == true ) {
+					((JLabel )c).setForeground(Color.BLACK); // default color
+					return c;
+				}
+				
+				Vector<Integer> vc = _diffIndex.get(row);
+				if (vc != null && vc.size() > 0 && vc.indexOf(column) != -1) 
+					((JLabel )c).setForeground(Color.RED.darker()); // now select it
+				else
+					((JLabel )c).setForeground(Color.BLACK); // default color
+				return c;
+			} else { // match with First
+				if (rtmnonKeyUnMatchDataTable.isSorting() == true  ) {
+					((JLabel )c).setForeground(Color.BLACK); // default color
+					return c;
+				}
+				if (row >= 1 ) {
+					Object fircurr = table.getValueAt(row, 0); // count start from 0
+					Object firprev = table.getValueAt(row-1, 0);
+					if (fircurr == null || firprev == null || "".equals(fircurr.toString()) || "".equals(firprev.toString())) {
+						((JLabel )c).setForeground(Color.BLACK);
+						//System.out.println("zero column came:"+fircurr);
+						return c;
+					}
+					
+					Object colcurr = table.getValueAt(row, column);
+					Object colprev = table.getValueAt(row -1, column);
+					
+					if ((colcurr == null && colprev != null) || (colcurr != null && colprev == null) ) {
+						((JLabel )c).setForeground(Color.RED.darker()); // now select it
+						return c;
+					}
+					if (colcurr == null && colprev == null)  {
+						((JLabel )c).setForeground(Color.BLACK); // default color
+						return c;
+					}
+					if (colcurr.toString().compareTo(colprev.toString()) != 0) {
+						((JLabel )c).setForeground(Color.RED.darker()); // now select it
+						return c;
+					} else {
+						((JLabel )c).setForeground(Color.BLACK); // default color
+					}
+				} else
+					((JLabel )c).setForeground(Color.BLACK); // default color
+						
 				return c;
 			}
-			
-			Vector<Integer> vc = _diffIndex.get(row);
-			if (vc != null && vc.size() > 0 && vc.indexOf(column) != -1) 
-				((JLabel )c).setForeground(Color.RED.darker()); // now select it
-			else
-				((JLabel )c).setForeground(Color.BLACK); // default color
-			return c;
 		}
 	} // End of HighlightCellRenderer
 	
