@@ -96,8 +96,7 @@ public class CompareFileFrame implements ActionListener {
 	if (keym.isSelected() == true) {
 		int duplicate = rtmdiff.getDuplicateCount();
 		Map<Integer,ArrayList<Integer>> mapre = rtmdiff.reverseMap();
-		if (mapre == null || mapre.size() ==0 )
-			return;
+		if (mapre != null && mapre.size() > 0 ) {
 		Set<Integer> keysre = mapre.keySet();
 		for (Integer i:keysre ) {
 			ArrayList<Integer> value = rtmdiff.reverseMap().get(i);
@@ -108,6 +107,7 @@ public class CompareFileFrame implements ActionListener {
 		ConsoleFrame.addText("\n Duplicated Primary key Count:"+ duplicate);
 		if (duplicate > 15) // warn if more than 15 duplicates
 			JOptionPane.showMessageDialog(null, "Many duplicates. Duplicate counts:"+duplicate,"Duplicate Warning",JOptionPane.WARNING_MESSAGE);
+		}
 	}
 	
 	if (keym.isSelected() == false) {
@@ -222,6 +222,8 @@ public class CompareFileFrame implements ActionListener {
 		bg.add(cellm);bg.add(keym);
 		cellm.setSelected(true);
 		bjp.add(cellm);bjp.add(keym);
+		keym.addActionListener(this);
+		cellm.addActionListener(this);
 		//bjp.setPreferredSize(new Dimension(675,50));
 		
 		// Center
@@ -242,12 +244,15 @@ public class CompareFileFrame implements ActionListener {
 
 		for (int i =0; i < colCount; i++ ){
 			_rColC[i] = new JComboBox<String>();
-			for ( int j=0; j < _rCols.size() ; j++)
+			for ( int j=0; j < _rCols.size() ; j++) 
 				_rColC[i].addItem(_rCols.get(j));
+			if (i < _rCols.size())
+				_rColC[i].setSelectedIndex(i) ;  // So that mapping is easy
 		}
 		
 		for (int i=0; i < colCount; i++) {
 			_checkB[i] = new JCheckBox();
+			_checkB[i].setSelected(true); // Keep selected for less work
 			jp.add(_checkB[i]);
 			JLabel rColLabel = new JLabel(_lCols.get(i),JLabel.TRAILING);
 			jp.add(rColLabel);
@@ -296,6 +301,23 @@ public class CompareFileFrame implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if(  e.getSource() instanceof JRadioButton) {
+			JRadioButton selRadio= (JRadioButton)e.getSource();
+			String radText= selRadio.getText();
+			if(radText.equals("PrimaryKey Based Match") ) {
+				boolean selected = selRadio.isSelected();
+				if (selected == true) { // Key has been selected to uncheck keys
+					for (int i=0; i <_checkB.length; i++)
+					_checkB[i].setSelected(false);
+				}
+			} else {
+				boolean selected = selRadio.isSelected();
+				if (selected == true) { // cell has been selected to uncheck keys
+					for (int i=0; i <_checkB.length; i++)
+					_checkB[i].setSelected(true);
+				}
+			}
+		}
 		if ("cancel".equals(e.getActionCommand())) 
 			d_m.dispose();
 		if ("cancelHeader".equals(e.getActionCommand())) 
