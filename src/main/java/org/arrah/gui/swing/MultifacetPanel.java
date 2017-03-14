@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -37,6 +38,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
@@ -65,6 +67,8 @@ public class MultifacetPanel implements ActionListener, ItemListener {
     private JDBCRowset _rows;
     private SimilarityCheckLucene _simcheck;
     private boolean isCancel=false;
+    private JRadioButton jr1;
+    private JTextField jtx1;
 
 
     // For independent table and selected Columns
@@ -73,7 +77,6 @@ public class MultifacetPanel implements ActionListener, ItemListener {
         _rt = createRT(tabName,colV);
         _simcheck = new SimilarityCheckLucene(_rt.getRTMModel());
         colName = getColName();
-        _simcheck.makeIndex();
         mapDialog();
     }
 
@@ -83,7 +86,7 @@ public class MultifacetPanel implements ActionListener, ItemListener {
         _rt = reportTable;
         _simcheck = new SimilarityCheckLucene(_rt.getRTMModel());
         colName = getColName();
-        _simcheck.makeIndex();
+       // _simcheck.makeIndex();
         mapDialog();
 
     }
@@ -124,6 +127,15 @@ public class MultifacetPanel implements ActionListener, ItemListener {
 
     // UI for multi-facet search
     private JDialog mapDialog() {
+    	//Header
+    	JPanel headerp = new JPanel();
+    	jr1 = new JRadioButton("Memory Index");
+    	jr1.setSelected(true);
+    	JRadioButton jr2 = new JRadioButton("File Index");
+    	ButtonGroup bgrp = new ButtonGroup();
+    	bgrp.add(jr1);bgrp.add(jr2);
+    	jtx1 = new JTextField("Index_name",25);
+    	headerp.add(jr1);headerp.add(jr2);headerp.add(jtx1);
 
         int colC = colName.length;
         sType = new JComboBox[colC];
@@ -206,6 +218,7 @@ public class MultifacetPanel implements ActionListener, ItemListener {
         bp.add(cancel);
 
         JPanel jp_p = new JPanel(new BorderLayout());
+        jp_p.add(headerp, BorderLayout.PAGE_START);
         jp_p.add(jscrollpane1, BorderLayout.CENTER);
         jp_p.add(bp, BorderLayout.PAGE_END);
 
@@ -225,7 +238,19 @@ public class MultifacetPanel implements ActionListener, ItemListener {
 
         if (command.equals("simcheck")) {
             try {
+            	String indexName = jtx1.getText();
+            	if (jr1.isSelected() == false)  { // file index is selected
+            		if (indexName == null || "".equals(indexName)) {
+            			JOptionPane.showMessageDialog(null, "Index Name can not be empty");
+            			return;
+            		}
+            	}
                 d_m.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                if (jr1.isSelected() == true) // RAM Selected
+                	_simcheck.makeIndex();
+                else
+                _simcheck.makeIndex(indexName);
+                
                 if (validateInput() == false ) return;
                 searchTableIndex();
             } finally {
@@ -273,9 +298,9 @@ public class MultifacetPanel implements ActionListener, ItemListener {
                         term.trim();
                         break;
                     case 2:
-                        term = serterm;
-                        term.trim();
                     case 3: // It may have multi-words
+                    	term = serterm;
+                        term.trim();
                         term = term.replaceAll(",", " ");
                         term = term.replaceAll("\\s+", " ");
                         String[] token = term.split(" ");
