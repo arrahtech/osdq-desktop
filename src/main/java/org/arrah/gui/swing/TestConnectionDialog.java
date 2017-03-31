@@ -25,7 +25,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
-
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,6 +46,8 @@ import javax.swing.SwingUtilities;
 
 import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.xml.FilePaths;
+import org.arrah.framework.xml.XmlReader;
 import org.arrah.framework.xml.XmlWriter;
 
 public class TestConnectionDialog extends JDialog implements ActionListener, ItemListener {
@@ -107,10 +108,24 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 							"SQLServer JDBC Client","SQLServer Windows Bridge","Access JDBC Client",
 							"Access Windows Bridge","Postgres JDBC Client","DB2 JDBC Client",
 							"Hive JDBC Client","Hive2 JDBC Client","Informix JDBC Client","Splice Derby Client","Teiid JDBC client","Others (JDBC Bridge)","Others (Windows Bridge)"}; 
-		String[] cname = {"New Connection"};
+		
+		String[] cname;
+		String[] oldconn = new XmlReader().getDBNames();
+		if (oldconn != null) {
+			int len = oldconn.length;
+			cname = new String[len+2];
+			cname[0] = "New Connection";
+			cname[1] = "-----------";
+			for (int i=0; i < len; i++)
+				cname[i+2] = oldconn[i];
+			
+		} else {
+			cname = new String[]{"New Connection","-----------"};
+		}
+	
 		jc = new JComboBox<String>(dbtype);
 		jc.addActionListener(this);
-                
+		
         jccon = new JComboBox<String>(cname);
 		
 		//Create and populate the panel which is enhanced by Advance button        
@@ -569,8 +584,9 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
             
             new XmlWriter().writeConnection(_dbparam);
             
-            cleanText();
-            coname.setText("");
+            // no need to clean it up
+            // cleanText();
+            // coname.setText("");
             
             infoStatus = "Database Connection Successfully Added";
             info.setText(infoStatus);
@@ -579,54 +595,58 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
                 
 		if ("testconn".equals(command)) {
 			// Prompt here for null fields
-			
 			String status="";
-			String dsn_s = dsn.getText();
-			String user_s = user.getText();
-			char[] passwd = passfield.getPassword();
-			String driver_s = driver.getText();
-			String protocol_s = protocol.getText();
-			String catalog_s = catalog.getText();
-			String schemaPattern_s = schemaPattern.getText();
-			String tablePattern_s = tablePattern.getText();
-			String colPattern_s = colPattern.getText();
-			String type_s = type.getText();
-			String jdbc_cs_s = jdbc_cs.getText();
-			String restype_s = restype.getSelectedItem().toString();
-			String resconcur_s = resconcur.getSelectedItem().toString();
-			String quote_s = quoteC.isSelected()==true?"YES":"NO";
 			
-			// Validate resconcur_s resconcur_s
-			if (restype.isEnabled() == true || resconcur.isEnabled() == true) {
-				if (restype_s.compareToIgnoreCase("ResultSet Type") == 0 || 
-						resconcur_s.compareToIgnoreCase("ResultSet Concurrency")==0 ) {
-					JOptionPane.showMessageDialog(null, "Please choose Resultset Type and Concurrency");
-					return;
+			if (jccon.getSelectedIndex() > 1) { // new connection selected
+				String connectName = jccon.getSelectedItem().toString();
+				_dbparam = new XmlReader().getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", connectName);
+			} else {
+				String dsn_s = dsn.getText();
+				String user_s = user.getText();
+				char[] passwd = passfield.getPassword();
+				String driver_s = driver.getText();
+				String protocol_s = protocol.getText();
+				String catalog_s = catalog.getText();
+				String schemaPattern_s = schemaPattern.getText();
+				String tablePattern_s = tablePattern.getText();
+				String colPattern_s = colPattern.getText();
+				String type_s = type.getText();
+				String jdbc_cs_s = jdbc_cs.getText();
+				String restype_s = restype.getSelectedItem().toString();
+				String resconcur_s = resconcur.getSelectedItem().toString();
+				String quote_s = quoteC.isSelected()==true?"YES":"NO";
+				
+				// Validate resconcur_s resconcur_s
+				if (restype.isEnabled() == true || resconcur.isEnabled() == true) {
+					if (restype_s.compareToIgnoreCase("ResultSet Type") == 0 || 
+							resconcur_s.compareToIgnoreCase("ResultSet Concurrency")==0 ) {
+						JOptionPane.showMessageDialog(null, "Please choose Resultset Type and Concurrency");
+						return;
+					}
+					resconcur_s = resconcur_s.compareToIgnoreCase("CONCUR_READ_ONLY") ==0 ?"1007" : "1008";
+					if (restype_s.compareToIgnoreCase("TYPE_FORWARD_ONLY") == 0)
+						restype_s="1003";
+					if (restype_s.compareToIgnoreCase("TYPE_SCROLL_INSENSITIVE") == 0)
+						restype_s="1004";
+					if (restype_s.compareToIgnoreCase("TYPE_SCROLL_SENSITIVE") == 0)
+						restype_s="1005";	
 				}
-				resconcur_s = resconcur_s.compareToIgnoreCase("CONCUR_READ_ONLY") ==0 ?"1007" : "1008";
-				if (restype_s.compareToIgnoreCase("TYPE_FORWARD_ONLY") == 0)
-					restype_s="1003";
-				if (restype_s.compareToIgnoreCase("TYPE_SCROLL_INSENSITIVE") == 0)
-					restype_s="1004";
-				if (restype_s.compareToIgnoreCase("TYPE_SCROLL_SENSITIVE") == 0)
-					restype_s="1005";
-					
+				
+				if(dsn_s != null) _dbparam.put("Database_DSN", dsn_s);
+				if(user_s != null)_dbparam.put("Database_User", user_s);
+				if(passwd != null)_dbparam.put("Database_Passwd", new String(passwd) );
+				if(driver_s != null)_dbparam.put("Database_Driver", driver_s);
+				if(protocol_s != null)_dbparam.put("Database_Protocol", protocol_s);
+				if(catalog_s != null)_dbparam.put("Database_Catalog", catalog_s);
+				if(schemaPattern_s != null)_dbparam.put("Database_SchemaPattern", schemaPattern_s);
+				if(tablePattern_s != null)_dbparam.put("Database_TablePattern", tablePattern_s);
+				if(colPattern_s != null)_dbparam.put("Database_ColumnPattern", colPattern_s);
+				if(type_s != null)_dbparam.put("Database_TableType", type_s);
+				if(jdbc_cs_s != null)_dbparam.put("Database_JDBC", jdbc_cs_s);
+				if(restype_s != null)_dbparam.put("Database_ResultsetType", restype_s);
+				if(resconcur_s != null)_dbparam.put("Database_ResultsetConcur", resconcur_s);
+				if(quote_s != null)_dbparam.put("Database_SupportQuote", quote_s);
 			}
-			
-			if(dsn_s != null) _dbparam.put("Database_DSN", dsn_s);
-			if(user_s != null)_dbparam.put("Database_User", user_s);
-			if(passwd != null)_dbparam.put("Database_Passwd", new String(passwd) );
-			if(driver_s != null)_dbparam.put("Database_Driver", driver_s);
-			if(protocol_s != null)_dbparam.put("Database_Protocol", protocol_s);
-			if(catalog_s != null)_dbparam.put("Database_Catalog", catalog_s);
-			if(schemaPattern_s != null)_dbparam.put("Database_SchemaPattern", schemaPattern_s);
-			if(tablePattern_s != null)_dbparam.put("Database_TablePattern", tablePattern_s);
-			if(colPattern_s != null)_dbparam.put("Database_ColumnPattern", colPattern_s);
-			if(type_s != null)_dbparam.put("Database_TableType", type_s);
-			if(jdbc_cs_s != null)_dbparam.put("Database_JDBC", jdbc_cs_s);
-			if(restype_s != null)_dbparam.put("Database_ResultsetType", restype_s);
-			if(resconcur_s != null)_dbparam.put("Database_ResultsetConcur", resconcur_s);
-			if(quote_s != null)_dbparam.put("Database_SupportQuote", quote_s);
 			
 			try {
 				
@@ -647,7 +667,8 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 			}
 			if("Connection Successful".equals(status)) {
 				ok_b.setEnabled(true);
-                add_b.setEnabled(true);
+				if (jccon.getSelectedIndex() < 1 )
+					add_b.setEnabled(true);
 			}
 			
 			return;

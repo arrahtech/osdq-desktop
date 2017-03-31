@@ -146,11 +146,11 @@ public class XmlWriter {
 		document = docBuilder.parse(file);
 		document.getDocumentElement().normalize();
 	} catch (SAXException exc) {
-		System.out.println("\n XmlReader error:" + exc.getMessage());
+		System.out.println("\n XmlWriter error:" + exc.getMessage());
 	} catch (ParserConfigurationException exc) {
-		System.out.println("\n XmlReader error:" + exc.getMessage());
+		System.out.println("\n XmXmlWriter error:" + exc.getMessage());
 	} catch (IOException exc) {
-		System.out.println("\n XmlReader error:" + exc.getMessage());
+		System.out.println("\n XmlWriter error:" + exc.getMessage());
 	}
 		return document;
 	}
@@ -472,6 +472,10 @@ public class XmlWriter {
                 db = doc.createElement("database_Type");
                 db.setTextContent(dbConnection.get("Database_Type"));
                 entry.appendChild(db);
+                
+                db = doc.createElement("database_Catalog");
+                db.setTextContent(dbConnection.get("Database_Catalog"));
+                entry.appendChild(db);
 
                 db = doc.createElement("database_User");
                 db.setTextContent(dbConnection.get("Database_User"));
@@ -565,6 +569,10 @@ public class XmlWriter {
                 db.setTextContent(dbConnection.get("Database_Type"));
                 entry.appendChild(db);
 
+                db = doc.createElement("database_Catalog");
+                db.setTextContent(dbConnection.get("Database_Catalog"));
+                entry.appendChild(db);
+                
                 db = doc.createElement("database_User");
                 db.setTextContent(dbConnection.get("Database_User"));
                 entry.appendChild(db);
