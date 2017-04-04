@@ -13,12 +13,11 @@ It also had Hadoop ( Big data ) support to move files to/from Hadoop Grid, Creat
 
 **Changes**
 
-6.1.6 Changes:
+6.2.0 Changes:
 
-a) Training, Validation and Test data preparation added
-b) File Loader added
-c) Rounding methods added for data preparation
-d) Unspecified bug fixes
+a.) More similarity based logic added
+b.) Primary key based file diff
+c.) Unspecified bug fixes
 
 
 **Features**
