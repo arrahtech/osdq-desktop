@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import org.arrah.framework.rdbms.QueryBuilder;
 import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.scheduler.QuartzScheduler;
 import org.arrah.framework.xml.FilePaths;
@@ -129,14 +128,7 @@ public class JobScheduler extends javax.swing.JFrame {
                         hashTable = new Hashtable<String, String>();
                         hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
                         hashRule.put("Database_Type", hashTable.get("Database_Type"));
-
-                        if (hashRule.get("rule_Type").equals("JOIN")) {
-                            query = new QueryBuilder().getJoinQuery(hashRule);
-                        } else if (hashRule.get("rule_Type").equals("NON-JOIN")) {
-                            query = new QueryBuilder().getNonJoinQuery(hashRule);
-                        }
-
-                        
+                        query = hashRule.get("query_Text");
                     }
                 }
             }

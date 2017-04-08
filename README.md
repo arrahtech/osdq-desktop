@@ -1,4 +1,4 @@
-OSDQ Desktop V6.1.9-SNAPSHOT
+OSDQ Desktop V6.2.0
 
 [![Build Status](https://drone.io/github.com/arrahtec/profiler/status.png)](https://drone.io/github.com/arrahtec/profiler/latest)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dm/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dw/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)
 
@@ -53,10 +53,13 @@ Getting Started
 
 If you are a developer or you want to build the project yourself, you first need to build and install [osdq-core](https://github.com/arrahtec/osdq-core) into local maven repository of your machine.
 
-1. git clone https://github.com/arrahtec/osdq-desktop project
-2. mvn install
-3. git clone this project
-4. mvn package
+1. git clone https://github.com/arrahtec/osdq-core
+2. cd osdq-core
+3. mvn install
+4. cd ..
+5. git clone https://github.com/arrahtec/osdq-desktop
+6. cd osdq-desktop
+7. mvn package
 
 This will build the final zip under target folder of osdq-desktop project.
 

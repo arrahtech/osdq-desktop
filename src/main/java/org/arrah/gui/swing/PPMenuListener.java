@@ -190,7 +190,7 @@ public class PPMenuListener implements ActionListener {
 						TableRelationInfo t = levelTable.get(i);
 						rt.put(t.tableName, t);
 					}
-					RelationPanel rp = new RelationPanel(rt, maxLevel - 1);
+					new RelationPanel(rt, maxLevel - 1);
 				}
 			} else {
 				JOptionPane.showMessageDialog(null, "No Relevant Data Found",

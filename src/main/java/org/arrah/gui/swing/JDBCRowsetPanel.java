@@ -307,6 +307,8 @@ public class JDBCRowsetPanel extends JPanel implements ActionListener {
 
 		for (int i = 1; i < numberOfColumns + 1; i++) {
 			col_name[i - 1] = rsmd.getColumnName(i);
+			// hive appends table.colname but below is working fine - why ??
+			// System.out.println("Column Name:"+col_name[i - 1]);
 			col_type[i - 1] = rsmd.getColumnType(i);
 		}
 		_rt = new ReportTable(col_name, isEdit, true);

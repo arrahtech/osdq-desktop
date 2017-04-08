@@ -444,7 +444,8 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		jmenuitem38.addActionListener(new DBMetaInfoPanel(jmenubar));
 		jmenu1.add(jmenuitem38);
 		jmenu1.addSeparator();
-		JMenu jmenu10 = new JMenu("Search");
+		
+		JMenu jmenu10 = new JMenu("MetaData fuzzy Search");
 		JMenuItem jmenuitem40 = new JMenuItem("Table Name");
 		jmenuitem40.addActionListener(new DBMetaInfoPanel(jmenubar));
 		jmenu10.add(jmenuitem40);
@@ -459,6 +460,23 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		jmenu10.add(jmenuitem43);
 		jmenu1.add(jmenu10);
 		jmenu1.addSeparator();
+		
+		JMenu containmeta = new JMenu("MetaData contain Search");
+		JMenuItem tcontains = new JMenuItem("Table Contains");
+		tcontains.addActionListener(new DBMetaInfoPanel(jmenubar));
+		containmeta.add(tcontains);
+		JMenuItem ccontains = new JMenuItem("Column Contains");
+		ccontains.addActionListener(new DBMetaInfoPanel(jmenubar));
+		containmeta.add(ccontains);
+		JMenuItem ncontains = new JMenuItem("Native Contains");
+		ncontains.addActionListener(new DBMetaInfoPanel(jmenubar));
+		containmeta.add(ncontains);
+		JMenuItem scontains = new JMenuItem("SQL Contains");
+		scontains.addActionListener(new DBMetaInfoPanel(jmenubar));
+		containmeta.add(scontains);
+		jmenu1.add(containmeta);
+		jmenu1.addSeparator();
+		
 		JMenuItem piimenu = new JMenuItem("Personally Identifiable Info");
 		piimenu.addActionListener(new DBMetaInfoPanel(jmenubar));
 		jmenu1.add(piimenu);
