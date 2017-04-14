@@ -756,7 +756,12 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 		if ("catalog".equals(sel_id)) {
 			infoStatus = "Enter Catalog to connect. It is NOT a must field.\n" +
 					"SQL will be build like Catalog.Table \n" +
-					"Most Databases do not need that";
+					"\n \n Most Databases do not need that. Some Example: "+
+					"\n Catalogs and schemas (e.g. SQL Server, PostGres, Hive)" +
+					"\n Catalogs only (e.g. MySQL,SpliceDB,MariaDB)" +
+					"\n Schemas only (e.g. Oracle)" +
+					"\n None (e.g. SQLite, Informix, AccessDB)"
+					;
 			info.setText(infoStatus);
 			
 		}
