@@ -78,7 +78,7 @@ public class KMeanPanel extends JPanel implements  Serializable {
 
 	}
 	// Create the K Mean Plot
-	public void drawKMeanPlot( int noOfCluster, Vector<?>colname )  throws Exception {
+	public void drawKMeanPlot( int noOfCluster, Vector<String>colname )  throws Exception {
 		
 	KMeansAlgorithm algorithm = new KMeansAlgorithm();
     // predicted number of clusters
@@ -89,6 +89,10 @@ public class KMeanPanel extends JPanel implements  Serializable {
          = (ClusteringDataMiningModel) algorithm.analyze( inputData );
 
     ChartGenerator chartGenerator = new ChartGenerator();
+    if (colname.size() == 1)
+    	colname.add(1,colname.get(0).toString());
+    
+    chartGenerator.setAttributes(colname);
         
     // visualize the clusters formed (2D only)
     List<Cluster> clusters = dataMiningModel.getClusters();

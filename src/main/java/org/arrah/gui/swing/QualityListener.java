@@ -564,6 +564,7 @@ public class QualityListener implements ActionListener {
 		bringToFront(frame);
 	}
 	/* Create Data for KMean Plot */
+	@SuppressWarnings("unchecked")
 	private void kMeanAction(String table, Vector<?> col, boolean isInclusive) {
 		QueryBuilder qb = new QueryBuilder(
 				Rdbms_conn.getHValue("Database_DSN"), table,
@@ -588,7 +589,7 @@ public class QualityListener implements ActionListener {
 		KMeanPanel kp = new KMeanPanel("K Mean Cluster", "Columns", "Value");
 		try {
 			kp.addRTMDataSet(rtm, col);
-			kp.drawKMeanPlot(5,col); // hard coded to 5
+			kp.drawKMeanPlot(5,(Vector<String>) col); // hard coded to 5
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Exception:"+e.getMessage());
 			return;

@@ -1292,8 +1292,16 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		KMeanPanel km = new KMeanPanel("KMean Plot","Field","Value");
 		Vector<String> colname = new Vector<String>();
 		colname.add(col1);
+		colname.add(comCol1);
+		
+		/* removing non duplicating logic
 		if (col1.equals(comCol1) == false) 
 			colname.add(comCol1);
+		 For testing 3rd col 
+		colname.add("First"); // testing need to remove
+		colname.add("Second"); // testing need to remove
+		*/
+		
 		try {
 			km.addRTMDataSet(_rt.getRTMModel(), colname);
 			km.drawKMeanPlot(noClus,colname);
