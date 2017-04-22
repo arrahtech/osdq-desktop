@@ -466,12 +466,12 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		}
 		JPanel lat = new JPanel(new GridLayout(3,2));
 		
-		JLabel info = new JLabel("  Select Column  :");
+		JLabel info = new JLabel("   X-axis Column  :");
 		lat.add(info);
 		comboLat = new JComboBox<String>(col_n);
 		lat.add(comboLat);
 		
-		JLabel info1 = new JLabel("  Select Column  :");
+		JLabel info1 = new JLabel("  Y-axis Column  :");
 		lat.add(info1);
 		comboLon = new JComboBox<String>(col_n);
 		lat.add(comboLon);
@@ -496,7 +496,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 
 		jp.add(bp,BorderLayout.SOUTH);
 		
-		jp.setPreferredSize(new Dimension(300, 100));
+		jp.setPreferredSize(new Dimension(330, 140));
 		jd = new JDialog();
 		jd.setTitle("KMean Parameters Input");
 		jd.setLocation(150, 150);
