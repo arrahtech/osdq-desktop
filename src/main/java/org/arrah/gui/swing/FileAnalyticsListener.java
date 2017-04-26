@@ -25,8 +25,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -37,11 +39,13 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpringLayout;
 
@@ -664,7 +668,6 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 
 	}
 
-
 	private void createAnalytics(int analType) {
 		if (_chartType == BARCHART) {
 			createDialog(BARCHART);
@@ -733,7 +736,22 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 			if (cancel_clicked)
 				return;
 			int noClus = (Integer) clusterF.getValue();
-			showKMeanPlot(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),noClus);
+			List<String> selV = new ArrayList<String>();
+			int selType = JOptionPane.showConfirmDialog(null, "Do you want to add more attributes to your cluster ?",
+					"Attribute Selection",JOptionPane.YES_NO_OPTION);
+			if (selType == JOptionPane.YES_OPTION) {
+				JList<String> list = new JList<String>(col_n);
+	            list.setSelectionMode(
+	                ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+	            
+	           JOptionPane jp = new JOptionPane();
+	           jp.setMessage(new JScrollPane(list));
+	           JDialog jd = jp.createDialog("Select More Attributes");
+	           jd.setVisible(true);
+	           selV = ((JList<String>)((JScrollPane)jp.getMessage()).getViewport().getView()).getSelectedValuesList();
+			}
+			showKMeanPlot(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),noClus,selV);
+			
 		} else if ( _chartType == TIMESERIES) {
 			createTimeSeriesDialog();
 			if (cancel_clicked)
@@ -1287,21 +1305,14 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		jd.setVisible(true);
 		
 	}
-	private void showKMeanPlot(String col1, String comCol1, int noClus) {
+	private void showKMeanPlot(String col1, String comCol1, int noClus,List<String> extraCol) {
 
 		KMeanPanel km = new KMeanPanel("KMean Plot","Field","Value");
 		Vector<String> colname = new Vector<String>();
 		colname.add(col1);
 		colname.add(comCol1);
-		
-		/* removing non duplicating logic
-		if (col1.equals(comCol1) == false) 
-			colname.add(comCol1);
-		 For testing 3rd col 
-		colname.add("First"); // testing need to remove
-		colname.add("Second"); // testing need to remove
-		*/
-		
+		colname.addAll(2, extraCol);
+
 		try {
 			km.addRTMDataSet(_rt.getRTMModel(), colname);
 			km.drawKMeanPlot(noClus,colname);

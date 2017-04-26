@@ -127,7 +127,7 @@ public class KMeanPanel extends JPanel implements  Serializable,ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		
 		 List<Cluster> clusters = dataMiningModel.getClusters();
 		int colcount = dataMiningModel.getAttributeNameOrder().size();
 		
