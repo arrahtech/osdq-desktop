@@ -49,6 +49,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpringLayout;
 
+import net.sourceforge.openforecast.models.MultipleLinearRegressionModel;
+
 import org.arrah.framework.analytics.LocationAnalysis;
 import org.arrah.framework.analytics.TabularReport;
 import org.arrah.framework.datagen.TimeUtil;
@@ -532,7 +534,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		
 		JLabel dim = new JLabel("Regression Type");
 		regressionP.add(dim);
-		comboT = new JComboBox<String>(new String[] {"Linear","Polynomial","Power"});
+		comboT = new JComboBox<String>(new String[] {"Linear","Polynomial","Power","MultiVariable Linear"});
 		regressionP.add(comboT);
 		
 
@@ -765,6 +767,25 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 			if (cancel_clicked)
 				return;
 			int dimIndex = comboT.getSelectedIndex();
+			
+			// in case multi linear is selected
+			if (dimIndex == 3) {
+				List<String> selV = new ArrayList<String>();
+				int selType = JOptionPane.showConfirmDialog(null, "Do you want to add more attributes to your Regression ?",
+						"Attribute Selection",JOptionPane.YES_NO_OPTION);
+				if (selType == JOptionPane.YES_OPTION) {
+					JList<String> list = new JList<String>(col_n);
+		            list.setSelectionMode(
+		                ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		            
+		           JOptionPane jp = new JOptionPane();
+		           jp.setMessage(new JScrollPane(list));
+		           JDialog jd = jp.createDialog("Select More Attributes");
+		           jd.setVisible(true);
+		           selV = ((JList<String>)((JScrollPane)jp.getMessage()).getViewport().getView()).getSelectedValuesList();
+				}
+				multilinearPlot(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),selV);
+			} else
 			showRegressionPlot(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),dimIndex);
 		} else if ( _chartType == TIMELINESS) {
 			createTimelinessDialog();
@@ -1328,6 +1349,30 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		jd.setModal(true);
 		jd.pack();
 		jd.setVisible(true);
+		
+	}
+	
+	private void multilinearPlot(String col1, String comCol1, List<String> extraCol) {
+
+		String[] indep = new String[extraCol.size() + 1];
+		indep[0] = comCol1;
+		for (int i=1; i < indep.length; i++ )
+			indep[i] =extraCol.get(i-1) ;
+		
+		try {
+			net.sourceforge.openforecast.DataSet ds = RTMUtil.getDataSetfromRTM(_rt.getRTMModel(), col1,indep);
+			net.sourceforge.openforecast.models.MultipleLinearRegressionModel mld = new MultipleLinearRegressionModel();
+			mld.init(ds);
+			String intercept = new Double(mld.getIntercept()).toString();
+			Hashtable<String,Double> coeff = mld.getCoefficients();
+			
+			System.out.println("Intercept:"+intercept);
+			System.out.println("Coeff:"+coeff.toString());
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,"Exception:"+e.getMessage());
+			return;
+		}
 		
 	}
 	
