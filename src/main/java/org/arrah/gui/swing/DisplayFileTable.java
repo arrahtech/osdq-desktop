@@ -651,6 +651,12 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		option_m.add(undoC_m);
 		option_m.addSeparator();
 		
+		JMenuItem filter_m = new JMenuItem("Filter");
+		filter_m.addActionListener(this);
+		filter_m.setActionCommand("filtercond");
+		option_m.add(filter_m);
+		option_m.addSeparator();
+		
 		JMenuItem dedupC_m = new JMenuItem("DeDup");
 		dedupC_m.addActionListener(this);
 		dedupC_m.setActionCommand("dedup");
@@ -808,6 +814,18 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(null, "Could not get Correlation for dataset");
 				else
 					JOptionPane.showMessageDialog(null, "Corrleation is:" + corr);
+				
+				return;
+			}
+			if (command.equals("filtercond")) {
+				_rt.cancelSorting();
+				int index_a = selectedColIndex(_rt,"Select Column to Apply filter");
+				if (index_a < 0)
+					return;
+				new FilterDialog(_rt.getRTMModel(),index_a);
+				
+				revalidate();
+				repaint();
 				
 				return;
 			}
