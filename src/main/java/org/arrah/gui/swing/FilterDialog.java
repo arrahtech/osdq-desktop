@@ -24,6 +24,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.Vector;
@@ -47,6 +48,10 @@ public class FilterDialog implements ActionListener {
 	private ReportTableModel _rtm;
 	private int _colIndex;
 	
+	Vector<Integer> delete_v;
+	Vector<Object[]> delrow_v;
+	int response=0;
+	
 	public FilterDialog (ReportTableModel rtm, int colIndex) {
 		_rtm = rtm;
 		_colIndex = colIndex;
@@ -66,9 +71,11 @@ public class FilterDialog implements ActionListener {
 		selBox = new JCheckBox[numPairs];
 		lvalue = new JLabel[numPairs];
 		
-		Set<Object> keys = ordinalData.keySet();
+		Object[] key_s = ordinalData.keySet().toArray();
+		Arrays.sort(key_s);
+		// Set<Object> keys = ordinalData.keySet();
 		int i=0;
-        for(Object key: keys){
+        for(Object key: key_s){
 		
 			lvalue[i] = new JLabel(key +"("+ordinalData.get(key)+")",JLabel.TRAILING);
 			selBox[i] = new JCheckBox();
@@ -128,17 +135,26 @@ public class FilterDialog implements ActionListener {
 					if (selBox[i].isSelected() == true) // only selected one
 						filtercond.add(lvalue[i].getText().substring(0, lvalue[i].getText().indexOf("(")));
 				}
+				
 				int rowC = _rtm.getModel().getRowCount();
-						
+				int incrementC = -1; // increment at first line
+				delete_v = new Vector<Integer>();
+				delrow_v = new Vector<Object[]>();
+				
 				for (int i=0; i < rowC; i++) {
+					incrementC++; // now index is 0
 					Object rowobj = _rtm.getModel().getValueAt(i, _colIndex);
-					System.out.println(i +"--"+rowobj.toString() + ":" + filtercond.toString());
-					if (rowobj == null || filtercond.indexOf(rowobj.toString()) == -1) { // could not find so delete
+					if (rowobj == null) continue; // not removing null
+					if (filtercond.indexOf(rowobj.toString()) == -1) { // could not find so delete
+						// Before delete add into delete vector
+						delete_v.add(incrementC);
+						delrow_v.add(_rtm.getRow(i));
 						_rtm.removeRows(i, 1);
 						// now decrease count and index
 						i--;rowC--;
 					}
 				}
+				response = 1;
 				return;
 			}
 		} catch (Exception e1) {
