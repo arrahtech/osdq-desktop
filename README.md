@@ -1,4 +1,4 @@
-OSDQ Desktop V6.2.0
+OSDQ Desktop V6.2.1
 
 [![Build Status](https://drone.io/github.com/arrahtec/profiler/status.png)](https://drone.io/github.com/arrahtec/profiler/latest)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dm/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dw/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)
 
@@ -13,10 +13,10 @@ It also had Hadoop ( Big data ) support to move files to/from Hadoop Grid, Creat
 
 **Changes**
 
-6.2.0 Changes:
+6.2.1 Changes:
 
-a.) More similarity based logic added
-b.) Primary key based file diff
+a.) Added Filer and unfilter
+b.) Multi linear regression and cluserting added
 c.) Unspecified bug fixes
 
 
