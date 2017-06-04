@@ -165,7 +165,7 @@ public class ExpressionBuilderPanel implements ActionListener {
 
 		SpringLayout layout = new SpringLayout();
 		panel.setLayout(layout);
-		panel.setPreferredSize(new Dimension(950, 510));
+		panel.setPreferredSize(new Dimension(1100, 510));
 		
 		layout.putConstraint(SpringLayout.NORTH, ll, 5, SpringLayout.NORTH,panel);
 		layout.putConstraint(SpringLayout.WEST, ll, 0, SpringLayout.WEST,listScroller);
@@ -177,7 +177,8 @@ public class ExpressionBuilderPanel implements ActionListener {
 		layout.putConstraint(SpringLayout.NORTH, _expane, 2,SpringLayout.SOUTH, infolabel);
 		layout.putConstraint(SpringLayout.WEST, _expane, 5, SpringLayout.EAST,listScroller);
 		layout.putConstraint(SpringLayout.NORTH, exml, 2, SpringLayout.NORTH,panel);
-		layout.putConstraint(SpringLayout.WEST, exml, 5, SpringLayout.EAST,_expane);
+		//layout.putConstraint(SpringLayout.WEST, exml, 5, SpringLayout.EAST,_expane);
+		layout.putConstraint(SpringLayout.WEST, exml, 5, SpringLayout.EAST,tabPane);
 		
 		layout.putConstraint(SpringLayout.NORTH, statusL, 2,SpringLayout.SOUTH, _expane);
 		layout.putConstraint(SpringLayout.WEST, statusL, 0, SpringLayout.WEST,_expane);
@@ -192,7 +193,7 @@ public class ExpressionBuilderPanel implements ActionListener {
 		layout.putConstraint(SpringLayout.SOUTH, rowPanel, -10, SpringLayout.NORTH,ok);
 		layout.putConstraint(SpringLayout.WEST, rowPanel, 40, SpringLayout.WEST,panel);
 		layout.putConstraint(SpringLayout.SOUTH, ok, -5, SpringLayout.SOUTH,panel);
-		layout.putConstraint(SpringLayout.WEST, ok, -450, SpringLayout.EAST,panel);
+		layout.putConstraint(SpringLayout.WEST, ok, -575, SpringLayout.EAST,panel);
 		layout.putConstraint(SpringLayout.SOUTH, cancel, 0, SpringLayout.SOUTH,ok);
 		layout.putConstraint(SpringLayout.WEST, cancel, 5, SpringLayout.EAST,ok);
 
@@ -322,38 +323,55 @@ public class ExpressionBuilderPanel implements ActionListener {
 		JPanel numFuncP = new JPanel();
 		JLabel numfuncL = new JLabel();
 		String numfuncText = "<html><body> <pre>";
-		numfuncText += "abs() acos() asin() atan() <br>" ;
-		numfuncText += "atan2() ceil() cos() exp() floor() <br>";
-		numfuncText += "IEEEremainder() log() max() min() pow() <br>";
-		numfuncText += "random() rint() round() sin() sqrt() <br>";
-		numfuncText += "tan() toDegrees() toRadians() </pre>";
-		numfuncText += "<br> For more information about above <br> functions look into Java Math Class";
+		numfuncText += " abs(number) acos(number) asin(number)<br>" ;
+		numfuncText += " atan(number) atan2(number,number) ceil(number)<br>" ;
+		numfuncText += " cos(number) exp(number) floor(number)<br>";
+		numfuncText += " IEEEremainder(number,number) log(number)<br>";
+		numfuncText += " max(number,number) min(number,number)<br>";
+		numfuncText += " pow(number,number) random() rint(number)<br>";
+		numfuncText += " round(number) sin(number) sqrt(number) <br>";
+		numfuncText += " tan(number) toDegrees(number) toRadians(number) </pre>";
+		numfuncText += " For more information about above <br> functions look into Java Math Class";
 		numfuncText += "</html></body>";
 		
 		numfuncL.setText(numfuncText);
 		numFuncP.add(numfuncL);
-		tabPanel.addTab("Numeric",numFuncP);
+		JScrollPane js1 = new JScrollPane();
+		js1.setHorizontalScrollBarPolicy(
+				   JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		js1.setVerticalScrollBarPolicy(
+				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		js1.setViewportView(numFuncP);
+		js1.setPreferredSize(new Dimension(450,250));
+		tabPanel.addTab("Numeric",js1);
 		
 		JPanel strfuncP = new JPanel();
 		JLabel strfuncL = new JLabel();
 		String strfuncText = "<html><body> <pre>";
-		strfuncText += "compareTo() compareToIgnoreCase() concat()<br>" ;
-		strfuncText += "endsWith() equals() equalsIgnoreCase() eval()<br>";
-		strfuncText += "indexOf() lastIndexOf() length() replace()<br>";
-		strfuncText += "startsWith() substring() toLowerCase()<br>";
-		strfuncText += "toUpperCase() trim() </pre>";
+		strfuncText += "charAt(\"string\",integer) compareTo(\"string\",\"string\") compareToIgnoreCase(\"string\",\"string\") concat(\"string\",\"string\")<br>" ;
+		strfuncText += "endsWith((\"string\",\"string\") equals((\"string\",\"string\") equalsIgnoreCase((\"string\",\"string\") <br>";
+		strfuncText += "indexOf(\"string\",\"string\",integer) lastIndexOf(\"string\",\"string\",integer) length(\"string\") replace(\"string\",\"char\",\"char\")<br>";
+		strfuncText += "startsWith(\"string\",\"string\",integer) substring(\"string\",integer,integer) toLowerCase(\"string\")<br>";
+		strfuncText += "toUpperCase(\"string\") trim(\"string\") </pre>";
 		strfuncText += "<br> For more information about above <br> functions look into Java String Class";
 		strfuncText += "</html></body>";
 		
 		strfuncL.setText(strfuncText);
-		strfuncP.add(strfuncL);
-		tabPanel.addTab("String",strfuncP);
+		strfuncP.add(strfuncL);		
+		JScrollPane js2 = new JScrollPane();
+		js2.setHorizontalScrollBarPolicy(
+				   JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		js2.setVerticalScrollBarPolicy(
+				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		js2.setViewportView(strfuncP);
+		js2.setPreferredSize(new Dimension(450,250));
+		tabPanel.addTab("String",js2);
 		
 		JPanel cumFuncP = new JPanel();
 		JLabel cumFuncL = new JLabel();
 		String cumFuncText = "<html><body><pre>";
-		cumFuncText += "Functions:SUM_ AVG_ MIN_ MAX_ CUMSUM_ CUMAVG_ <br>PREV_ NEXT_<br> <br>";
-		cumFuncText += "Examples:#{SUM_COLNAME} will be replaced by <br> Total SUM of the column COLNAME<br><br>";
+		cumFuncText += "Functions:SUM_ AVG_ MIN_ MAX_ CUMSUM_ CUMAVG_ <br>PREV_ NEXT_<br>";
+		cumFuncText += "Examples:#{SUM_COLNAME} will be replaced by <br> Total SUM of the column COLNAME<br>";
 		cumFuncText += "Examples:#{CUMAVG_COLNAME} will be replaced<br> by Cumulative Average of that row <br> for the column COLNAME<br>";
 		cumFuncText += "</pre></html></body>";
 		
@@ -362,7 +380,7 @@ public class ExpressionBuilderPanel implements ActionListener {
 		tabPanel.addTab("Utility",cumFuncP);
 		
 		
-		tabPanel.setPreferredSize(new Dimension (325,200));
+		tabPanel.setPreferredSize(new Dimension (425,235));
 		
 		return tabPanel;
 	}

@@ -128,6 +128,8 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 	private Vector<Object> copy_v;
 	private Vector<Integer> delete_v = null;
 	private Vector<Object[]> delrow_v = null;
+	private Vector<Integer> filter_v = null; // for filter
+	private Vector<Object[]> filterrow_v = null; // for filter
 
 	private JCheckBox local, overWrite; 
 	private JTextField locationf;
@@ -651,6 +653,18 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		option_m.add(undoC_m);
 		option_m.addSeparator();
 		
+		JMenuItem filter_m = new JMenuItem("Filter");
+		filter_m.addActionListener(this);
+		filter_m.setActionCommand("filtercond");
+		option_m.add(filter_m);
+		
+		JMenuItem unfilter_m = new JMenuItem("Remove Filter");
+		unfilter_m.addActionListener(this);
+		unfilter_m.setActionCommand("unfilter");
+		option_m.add(unfilter_m);
+		
+		option_m.addSeparator();
+		
 		JMenuItem dedupC_m = new JMenuItem("DeDup");
 		dedupC_m.addActionListener(this);
 		dedupC_m.setActionCommand("dedup");
@@ -811,6 +825,32 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				
 				return;
 			}
+			if (command.equals("filtercond")) {
+				_rt.cancelSorting();
+				int index_a = selectedColIndex(_rt,"Select Column to Apply filter");
+				if (index_a < 0)
+					return;
+				FilterDialog fd = new FilterDialog(_rt.getRTMModel(),index_a);
+				int j = fd.response;
+				if (j == 1) {
+					if (filter_v == null)
+						filter_v = new Vector<Integer>();
+					if (filterrow_v == null)
+						filterrow_v = new Vector<Object[]>();
+					for (int i = 0; i < fd.delete_v.size()
+							&& i < fd.delrow_v.size(); i++) {
+						filter_v.add(fd.delete_v.get(i));
+						filterrow_v.add(fd.delrow_v.get(i));
+					}
+					revalidate();
+					repaint();
+				}
+				
+				revalidate();
+				repaint();
+				
+				return;
+			}
 			if (command.equals("undocond")) {
 				if (delete_v == null || delrow_v == null) {
 					JOptionPane.showMessageDialog(null, "Condition is not Set");
@@ -824,6 +864,20 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				delrow_v = null;
 				delete_v.clear();
 				delete_v = null;
+			}
+			if (command.equals("unfilter")) {
+				if (filter_v == null || filterrow_v == null) {
+					JOptionPane.showMessageDialog(null, "Filter is not Set");
+					return;
+				}
+				for (int i = 0; i < filter_v.size() ;  i++) {
+					_rt.addRows(filter_v.get(i), 1);
+					_rt.pasteRow(filter_v.get(i), filterrow_v.get(i));
+				}
+				filter_v.clear();
+				filter_v = null;
+				filterrow_v.clear();
+				filterrow_v = null;
 			}
 			if (command.equals("createcond")) {
 				Vector[] vector1 = new Vector[2];

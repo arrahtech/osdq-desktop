@@ -435,6 +435,11 @@ public class TableMenuListener implements ActionListener, ItemListener {
 			table.repaint(); // to make rendering work first time
 			return;
 		}
+		if (source.getText().compareTo("Open Analysis Panel") == 0) {
+			DisplayFileTable dt = new DisplayFileTable(_rt);
+			dt.showGUI();
+			return;
+		}
 		if (source.getText().compareTo("InComplete Records") == 0) {
 			String count = JOptionPane.showInputDialog("Number of Columns Null or Empty?");
 			if (count == null) return;
