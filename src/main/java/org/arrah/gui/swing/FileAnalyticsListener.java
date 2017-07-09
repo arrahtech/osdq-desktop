@@ -25,9 +25,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Set;
 import java.util.Vector;
+import java.util.Iterator;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -37,13 +41,17 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpringLayout;
+
+import net.sourceforge.openforecast.models.MultipleLinearRegressionModel;
 
 import org.arrah.framework.analytics.LocationAnalysis;
 import org.arrah.framework.analytics.TabularReport;
@@ -466,12 +474,12 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		}
 		JPanel lat = new JPanel(new GridLayout(3,2));
 		
-		JLabel info = new JLabel("  Select Column  :");
+		JLabel info = new JLabel("   X-axis Column  :");
 		lat.add(info);
 		comboLat = new JComboBox<String>(col_n);
 		lat.add(comboLat);
 		
-		JLabel info1 = new JLabel("  Select Column  :");
+		JLabel info1 = new JLabel("  Y-axis Column  :");
 		lat.add(info1);
 		comboLon = new JComboBox<String>(col_n);
 		lat.add(comboLon);
@@ -496,7 +504,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 
 		jp.add(bp,BorderLayout.SOUTH);
 		
-		jp.setPreferredSize(new Dimension(300, 100));
+		jp.setPreferredSize(new Dimension(330, 140));
 		jd = new JDialog();
 		jd.setTitle("KMean Parameters Input");
 		jd.setLocation(150, 150);
@@ -528,7 +536,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		
 		JLabel dim = new JLabel("Regression Type");
 		regressionP.add(dim);
-		comboT = new JComboBox<String>(new String[] {"Linear","Polynomial","Power"});
+		comboT = new JComboBox<String>(new String[] {"Linear","Polynomial","Power","MultiVariable Linear"});
 		regressionP.add(comboT);
 		
 
@@ -664,7 +672,6 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 
 	}
 
-
 	private void createAnalytics(int analType) {
 		if (_chartType == BARCHART) {
 			createDialog(BARCHART);
@@ -733,7 +740,22 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 			if (cancel_clicked)
 				return;
 			int noClus = (Integer) clusterF.getValue();
-			showKMeanPlot(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),noClus);
+			List<String> selV = new ArrayList<String>();
+			int selType = JOptionPane.showConfirmDialog(null, "Do you want to add more attributes to your cluster ?",
+					"Attribute Selection",JOptionPane.YES_NO_OPTION);
+			if (selType == JOptionPane.YES_OPTION) {
+				JList<String> list = new JList<String>(col_n);
+	            list.setSelectionMode(
+	                ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+	            
+	           JOptionPane jp = new JOptionPane();
+	           jp.setMessage(new JScrollPane(list));
+	           JDialog jd = jp.createDialog("Select More Attributes");
+	           jd.setVisible(true);
+	           selV = ((JList<String>)((JScrollPane)jp.getMessage()).getViewport().getView()).getSelectedValuesList();
+			}
+			showKMeanPlot(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),noClus,selV);
+			
 		} else if ( _chartType == TIMESERIES) {
 			createTimeSeriesDialog();
 			if (cancel_clicked)
@@ -747,6 +769,27 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 			if (cancel_clicked)
 				return;
 			int dimIndex = comboT.getSelectedIndex();
+			
+			// in case multi linear is selected
+			if (dimIndex == 3) {
+				List<String> selV = new ArrayList<String>();
+				int selType = JOptionPane.showConfirmDialog(null, "Do you want to add more attributes to your Regression ?",
+						"Attribute Selection",JOptionPane.YES_NO_OPTION);
+				if (selType == JOptionPane.YES_OPTION) {
+					JList<String> list = new JList<String>(col_n);
+		            list.setSelectionMode(
+		                ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		            
+		           JOptionPane jp = new JOptionPane();
+		           jp.setMessage(new JScrollPane(list));
+		           JDialog jd = jp.createDialog("Select More Attributes");
+		           jd.setVisible(true);
+		           selV = ((JList<String>)((JScrollPane)jp.getMessage()).getViewport().getView()).getSelectedValuesList();
+				}
+				// Y is independent
+				multilinearPlot(comboLon.getSelectedItem().toString(),comboLat.getSelectedItem().toString(),selV,true);
+			} else
+				// X and Y
 			showRegressionPlot(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),dimIndex);
 		} else if ( _chartType == TIMELINESS) {
 			createTimelinessDialog();
@@ -778,6 +821,25 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 			if (cancel_clicked)
 				return;
 			int dimIndex = comboT.getSelectedIndex();
+			// in case multi linear is selected
+			if (dimIndex == 3) {
+				List<String> selV = new ArrayList<String>();
+				int selType = JOptionPane.showConfirmDialog(null, "Do you want to add more attributes to your Enrichment ?",
+						"Attribute Selection",JOptionPane.YES_NO_OPTION);
+				if (selType == JOptionPane.YES_OPTION) {
+					JList<String> list = new JList<String>(col_n);
+		            list.setSelectionMode(
+		                ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		            
+		           JOptionPane jp = new JOptionPane();
+		           jp.setMessage(new JScrollPane(list));
+		           JDialog jd = jp.createDialog("Select More Attributes");
+		           jd.setVisible(true);
+		           selV = ((JList<String>)((JScrollPane)jp.getMessage()).getViewport().getView()).getSelectedValuesList();
+				}
+				// Y is independent
+				showDataEnrichmentTable(comboLon.getSelectedItem().toString(),comboLat.getSelectedItem().toString(),selV);
+			} else
 			showDataEnrichmentTable(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),dimIndex);
 		}
 
@@ -1287,13 +1349,14 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		jd.setVisible(true);
 		
 	}
-	private void showKMeanPlot(String col1, String comCol1, int noClus) {
+	private void showKMeanPlot(String col1, String comCol1, int noClus,List<String> extraCol) {
 
 		KMeanPanel km = new KMeanPanel("KMean Plot","Field","Value");
 		Vector<String> colname = new Vector<String>();
 		colname.add(col1);
-		if (col1.equals(comCol1) == false) 
-			colname.add(comCol1);
+		colname.add(comCol1);
+		colname.addAll(2, extraCol);
+
 		try {
 			km.addRTMDataSet(_rt.getRTMModel(), colname);
 			km.drawKMeanPlot(noClus,colname);
@@ -1309,6 +1372,44 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		jd.setModal(true);
 		jd.pack();
 		jd.setVisible(true);
+		
+	}
+	
+	private Hashtable<String,Double> multilinearPlot(String depen, String indepdent, List<String> extraCol, boolean showOption) {
+
+		String[] indep = new String[extraCol.size() + 1];
+		indep[0] = indepdent;
+		for (int i=1; i < indep.length; i++ )
+			indep[i] =extraCol.get(i-1) ;
+		Hashtable<String,Double> coeff = new Hashtable<String,Double>();
+		
+		try {
+			net.sourceforge.openforecast.DataSet ds = RTMUtil.getDataSetfromRTM(_rt.getRTMModel(), depen,indep);
+			net.sourceforge.openforecast.models.MultipleLinearRegressionModel mld = new MultipleLinearRegressionModel();
+			mld.init(ds);
+			String intercept = new Double(mld.getIntercept()).toString();
+			coeff = mld.getCoefficients();
+			
+			if (showOption == true) {
+				String showS = "<HTML> Intercept:"+intercept +"<br>";
+				Set<String> keys = coeff.keySet();
+			    Iterator<String> itr = keys.iterator();
+			    while (itr.hasNext()) { 
+			       String str = itr.next();
+			       showS += "Column: "+str+" Coefficient: "+coeff.get(str) +"<br>";
+			    } 
+			    showS += "</HTML>";
+			    JOptionPane.showMessageDialog(null, showS);
+			    return coeff;
+			} else {
+				coeff.put(depen, mld.getIntercept());
+				return coeff;
+			}
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,"Exception:"+e.getMessage());
+			return coeff;
+		}
 		
 	}
 	
@@ -1396,6 +1497,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		
 	}
 	
+	// Data enrichment using two variable regression
 	private void showDataEnrichmentTable(String dateCol, String  numCol,  int dimIndex) {
 		
 		XYSeries xyseries = new XYSeries("Regression Data Enrichment");
@@ -1411,6 +1513,19 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 	        	ad = Regression.getPowerRegression(xyseriescollection, 0);
 	        }
 			RTMUtil.addEnrichment(_rt.getRTMModel(), dateCol,numCol,ad,dimIndex);
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,"Exception:"+e.getMessage());
+			return;
+		}
+	}
+	
+	// Data enrichment using multi linear regression
+	private void showDataEnrichmentTable(String depCol, String  indeCol, List<String> extraCol  ) {
+		
+		try {
+			Hashtable<String,Double> coeff = multilinearPlot(depCol,indeCol,extraCol,false);
+			RTMUtil.addEnrichment(_rt.getRTMModel(), depCol,indeCol,extraCol,coeff);
 			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null,"Exception:"+e.getMessage());

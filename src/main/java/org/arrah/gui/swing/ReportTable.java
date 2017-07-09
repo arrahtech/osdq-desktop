@@ -678,6 +678,12 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 			JMenuItem incomplete = new JMenuItem("InComplete Records");
 			incomplete.addActionListener(new TableMenuListener(this));
 			popup.add(incomplete);
+			popup.addSeparator();
+			
+			// Open this report table in analysis panel
+			JMenuItem analysisP = new JMenuItem("Open Analysis Panel");
+			analysisP.addActionListener(new TableMenuListener(this));
+			popup.add(analysisP);
 			
 			popup.show(menu, 0, menu.getHeight());
 

@@ -19,10 +19,14 @@ package org.arrah.gui.swing;
  */
 
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import org.arrah.framework.ndtable.ReportTableModel;
@@ -37,10 +41,11 @@ import net.sf.jdmf.data.output.clustering.ClusteringDataMiningModel;
 import net.sf.jdmf.visualization.clustering.ChartGenerator;
 
 
-public class KMeanPanel extends JPanel implements  Serializable {
+public class KMeanPanel extends JPanel implements  Serializable,ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	private ClusteringInputData inputData;
+    private ClusteringDataMiningModel dataMiningModel;
 
 	public KMeanPanel(String titleName, String xName, String yName) {
 
@@ -77,17 +82,20 @@ public class KMeanPanel extends JPanel implements  Serializable {
 
 	}
 	// Create the K Mean Plot
-	public void drawKMeanPlot( int noOfCluster, Vector<?>colname )  throws Exception {
+	public void drawKMeanPlot( int noOfCluster, Vector<String>colname )  throws Exception {
 		
 	KMeansAlgorithm algorithm = new KMeansAlgorithm();
     // predicted number of clusters
     inputData.setNumberOfClusters( noOfCluster );
 
 	// analyze input data and produce a model        
-    ClusteringDataMiningModel dataMiningModel 
-         = (ClusteringDataMiningModel) algorithm.analyze( inputData );
+    dataMiningModel = (ClusteringDataMiningModel) algorithm.analyze( inputData );
 
     ChartGenerator chartGenerator = new ChartGenerator();
+    if (colname.size() == 1)
+    	colname.add(1,colname.get(0).toString());
+    
+    chartGenerator.setAttributes(colname);
         
     // visualize the clusters formed (2D only)
     List<Cluster> clusters = dataMiningModel.getClusters();
@@ -106,9 +114,58 @@ public class KMeanPanel extends JPanel implements  Serializable {
      
      final ChartPanel piechartPanel = new ChartPanel(pieChart);
      piechartPanel.setPreferredSize(new java.awt.Dimension(400, 300));
+     
+     JButton showclus = new JButton("Show Cluster Data");
+     showclus.addActionListener(this);
+     showclus.setActionCommand("showclus");
    
      this.add(chartPanel);
      this.add(piechartPanel);
+     this.add(showclus);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		 List<Cluster> clusters = dataMiningModel.getClusters();
+		int colcount = dataMiningModel.getAttributeNameOrder().size();
+		
+		String[] columns = new String[colcount+2]; // clustername,pointid, point
+		columns[0] = "Cluster";columns[1] = "PointID";
+		for (int i =2; i <columns.length; i++)
+			columns[i] = dataMiningModel.getAttributeNameOrder().get(i-2);
+		ReportTableModel rtm = new ReportTableModel(columns,true,true);
+		
+		// Now fill the object and create table
+		Object[] row = new Object[columns.length];
+		for(Cluster clus:clusters) {
+			row[0] = clus.getName();
+			
+			// Check centroid first
+			row[1] = "Centroid";
+			Vector<Double> cpoint = clus.getCentroid();
+			for (int i=0; i < cpoint.size(); i++)
+				row[i+2] = cpoint.elementAt(i);
+				rtm.addFillRow(row);
+				
+			// Now fill all points
+			List<Vector<Double>> points =  clus.getPoints();
+			for (int i=0; i < points.size(); i++) {
+				row[1] = "Point"+i;
+				Vector<Double> point = points.get(i);
+				for(int j=0; j < point.size(); j++)
+					row[j+2] = point.elementAt(j);
+				rtm.addFillRow(row);
+			}
+		}
+		
+		JDialog jd = new JDialog();
+		jd.setTitle("Cluster Data Dialog");
+		jd.setLocation(150, 100);
+		jd.getContentPane().add(new ReportTable(rtm));
+		jd.setModal(true);
+		jd.pack();
+		jd.setVisible(true);
 	}
 
 

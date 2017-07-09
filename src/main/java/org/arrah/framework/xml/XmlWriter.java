@@ -157,11 +157,11 @@ public class XmlWriter {
 		document = docBuilder.parse(file);
 		document.getDocumentElement().normalize();
 	} catch (SAXException exc) {
-		System.out.println("\n XmlReader error:" + exc.getMessage());
+		System.out.println("\n XmlWriter error:" + exc.getMessage());
 	} catch (ParserConfigurationException exc) {
-		System.out.println("\n XmlReader error:" + exc.getMessage());
+		System.out.println("\n XmXmlWriter error:" + exc.getMessage());
 	} catch (IOException exc) {
-		System.out.println("\n XmlReader error:" + exc.getMessage());
+		System.out.println("\n XmlWriter error:" + exc.getMessage());
 	}
 		return document;
 	}
@@ -225,6 +225,10 @@ public class XmlWriter {
                 Element rule_Desc = doc.createElement("rule_Description");
                 rule_Desc.setTextContent(hashRule.get("rule_Description"));
                 rule.appendChild(rule_Desc);
+                
+                Element query_Text = doc.createElement("query_Text");
+                query_Text.setTextContent(hashRule.get("query_Text"));
+                rule.appendChild(query_Text);
 
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
@@ -286,6 +290,10 @@ public class XmlWriter {
                 Element rule_Desc = doc.createElement("rule_Description");
                 rule_Desc.setTextContent(hashRule.get("rule_Description"));
                 rule.appendChild(rule_Desc);
+                
+                Element query_Text = doc.createElement("query_Text");
+                query_Text.setTextContent(hashRule.get("query_Text"));
+                rule.appendChild(query_Text);
                 
                 root.appendChild(rule);
                 doc.normalize();
@@ -366,6 +374,7 @@ public class XmlWriter {
                         eElement.getElementsByTagName("condition_Names").item(0).setTextContent(hashRule.get("condition_Names"));
                         eElement.getElementsByTagName("join_Name").item(0).setTextContent(hashRule.get("join_Name"));
                         eElement.getElementsByTagName("rule_Description").item(0).setTextContent(hashRule.get("rule_Description"));
+                        eElement.getElementsByTagName("query_Text").item(0).setTextContent(hashRule.get("query_Text"));
                     }
                 }
             }
@@ -474,6 +483,10 @@ public class XmlWriter {
                 db = doc.createElement("database_Type");
                 db.setTextContent(dbConnection.get("Database_Type"));
                 entry.appendChild(db);
+                
+                db = doc.createElement("database_Catalog");
+                db.setTextContent(dbConnection.get("Database_Catalog"));
+                entry.appendChild(db);
 
                 db = doc.createElement("database_User");
                 db.setTextContent(dbConnection.get("Database_User"));
@@ -567,6 +580,10 @@ public class XmlWriter {
                 db.setTextContent(dbConnection.get("Database_Type"));
                 entry.appendChild(db);
 
+                db = doc.createElement("database_Catalog");
+                db.setTextContent(dbConnection.get("Database_Catalog"));
+                entry.appendChild(db);
+                
                 db = doc.createElement("database_User");
                 db.setTextContent(dbConnection.get("Database_User"));
                 entry.appendChild(db);

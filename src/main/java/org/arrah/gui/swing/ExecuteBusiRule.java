@@ -22,7 +22,6 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import org.arrah.framework.rdbms.QueryBuilder;
 import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.xml.FilePaths;
 import org.arrah.framework.xml.XmlReader;
@@ -105,14 +104,7 @@ public class ExecuteBusiRule extends javax.swing.JFrame {
                         hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
                         
                         hashRule.put("Database_Type", hashTable.get("Database_Type"));
-                        switch (hashRule.get("rule_Type")) {
-                            case "JOIN":
-                                txtBusirule.setText(new QueryBuilder().getJoinQuery(hashRule));
-                                break;
-                            case "NON-JOIN":
-                                txtBusirule.setText(new QueryBuilder().getNonJoinQuery(hashRule));
-                                break;
-                        }
+                        txtBusirule.setText(hashRule.get("query_Text"));
                     } else {
                         txtBusirule.setText("");
                     }

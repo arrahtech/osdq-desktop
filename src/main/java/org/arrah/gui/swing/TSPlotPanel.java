@@ -219,6 +219,4 @@ public class TSPlotPanel extends JPanel implements ActionListener, Serializable 
 	    this.setLayout(new BorderLayout());
 	    this.add(chartPanel,BorderLayout.CENTER);
 		}
-
-
 }

@@ -135,7 +135,9 @@ public class CompareRecordDialog implements ActionListener {
 		_simIndex = new JFormattedTextField[colCount];
 		
 		String[] algoList = new String[]{"Levenshtein","JaroWinkler","Jaro",
-				"NeedlemanWunch","SmithWaterman","SmithWatermanGotoh"};
+				"NeedlemanWunch","SmithWaterman","SmithWatermanGotoh","CosineSimilarity",
+				"DiceSimilarity","JaccardSimilarity","OverlapCoefficient","BlockDistance",
+				"EuclideanDistance","MatchingCoefficient","SimonWhite"};
 		
 		for (int i =0; i < colCount; i++ ){
 			_rColC[i] = new JComboBox<String>();
