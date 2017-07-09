@@ -54,7 +54,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class PlotterDataPanel extends JPanel implements PropertyChangeListener,
 		KeyListener, FocusListener {
@@ -130,12 +130,12 @@ public class PlotterDataPanel extends JPanel implements PropertyChangeListener,
 
 	public double[] fillXValues() throws SQLException {
 		QueryBuilder q_factory = new QueryBuilder(_dsn, _table, _column,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getDBType());
 		String q_str = q_factory.get_prep_query();
 		try {
 
-			Rdbms_conn.openConn();
-			PreparedStatement stmt = Rdbms_conn.createQuery(q_str);
+			Rdbms_NewConn.get().openConn();
+			PreparedStatement stmt = Rdbms_NewConn.get().createQuery(q_str);
 			if (stmt == null) {
 				ConsoleFrame.addText("\n ERROR:Bin Query Null");
 				return null;
@@ -180,7 +180,7 @@ public class PlotterDataPanel extends JPanel implements PropertyChangeListener,
 				}
 				rs.close();
 			}
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 
 		} catch (SQLException e) {
 			ConsoleFrame.addText("\n SQL Exception in Bin Query");

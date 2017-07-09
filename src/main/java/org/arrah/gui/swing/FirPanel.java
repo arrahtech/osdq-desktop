@@ -46,7 +46,7 @@ import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.profile.FirstInformation;
 import org.arrah.framework.profile.TableMetaInfo;
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class FirPanel extends JPanel {
 	/**
@@ -79,7 +79,7 @@ public class FirPanel extends JPanel {
 				mouseevent.getComponent().setCursor(
 								java.awt.Cursor
 										.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
-				Vector<String> vector = Rdbms_conn.getTable();
+				Vector<String> vector = Rdbms_NewConn.get().getTable();
 				String s = tableN.getText();
 				int i = vector.indexOf(s);
 				ReportTable reporttable = null;
@@ -137,7 +137,7 @@ public class FirPanel extends JPanel {
 						String st = tableN.getText();
 						String sc = colN.getText();
 						QueryBuilder querybuilder = new QueryBuilder(sd, st,
-								sc, Rdbms_conn.getDBType());
+								sc, Rdbms_NewConn.get().getDBType());
 						String top_sel_query = querybuilder.top_query(true,
 								"top_count", "20");
 						String bottom_sel_query = querybuilder.bottom_query(
@@ -145,8 +145,8 @@ public class FirPanel extends JPanel {
 						ReportTable rt = new ReportTable(new String[] { "Top",
 								"Bottom" });
 						try {
-							Rdbms_conn.openConn();
-							ResultSet rs = Rdbms_conn.runQuery(top_sel_query);
+							Rdbms_NewConn.get().openConn();
+							ResultSet rs = Rdbms_NewConn.get().runQuery(top_sel_query);
 							int counter = 0;
 							while (rs.next()) {
 								String top_val = rs.getString("top_count");
@@ -154,14 +154,14 @@ public class FirPanel extends JPanel {
 								rt.setTableValueAt(top_val, counter++, 0);
 							}
 							rs.close();
-							rs = Rdbms_conn.runQuery(bottom_sel_query);
+							rs = Rdbms_NewConn.get().runQuery(bottom_sel_query);
 							counter = 0;
 							while (rs.next()) {
 								String bot_val = rs.getString("bottom_count");
 								rt.setTableValueAt(bot_val, counter++, 1);
 							}
 							rs.close();
-							Rdbms_conn.closeConn();
+							Rdbms_NewConn.get().closeConn();
 						} catch (SQLException exp) {
 							ConsoleFrame.addText("Error: " + exp.getMessage());
 							JOptionPane.showMessageDialog(null,
@@ -274,11 +274,11 @@ public class FirPanel extends JPanel {
 			}
 			if (colN.getText().equals("")) {
 				tC = "0";
-				table_qb = new QueryBuilder(s, s1, Rdbms_conn.getDBType());
+				table_qb = new QueryBuilder(s, s1, Rdbms_NewConn.get().getDBType());
 				runTableQuery(table_qb, "");
 			} else {
 				QueryBuilder querybuilder = new QueryBuilder(s, s1, s2,
-						Rdbms_conn.getDBType());
+						Rdbms_NewConn.get().getDBType());
 				removeAll();
 				add(createColPanel());
 				revalidate();
@@ -614,14 +614,14 @@ public class FirPanel extends JPanel {
 			String s1 = querybuilder.get_tableAll_query();
 			if (s != null && !s.equals(""))
 				s1 = s1 + " WHERE " + s;
-			Rdbms_conn.openConn();
-			ResultSet resultset = Rdbms_conn.runQuery(s1, 100); // get 100 rows
+			Rdbms_NewConn.get().openConn();
+			ResultSet resultset = Rdbms_NewConn.get().runQuery(s1, 100); // get 100 rows
 			_rt = SqlTablePanel.getSQLValue(resultset, true);
 			resultset.close();
 			String s2 = querybuilder.get_tableCount_query();
 			if (s != null && !s.equals(""))
 				s2 = s2 + " WHERE " + s;
-			for (ResultSet resultset1 = Rdbms_conn.runQuery(s2); resultset1
+			for (ResultSet resultset1 = Rdbms_NewConn.get().runQuery(s2); resultset1
 					.next(); colC.setText(tC))
 				tC = resultset1.getString("row_count");
 
@@ -629,7 +629,7 @@ public class FirPanel extends JPanel {
 			add(createTableP(tableP));
 			revalidate();
 			repaint();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException sqlexception) {
 			ConsoleFrame.addText("\n Error: Report Table Not Filled");
 			ConsoleFrame.addText("\n " + sqlexception.getMessage());

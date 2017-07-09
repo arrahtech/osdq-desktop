@@ -41,7 +41,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.arrah.framework.hadooputil.HiveQueryBuilder;
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class DuplicatePane extends JPanel {
 	/**
@@ -69,8 +69,8 @@ public class DuplicatePane extends JPanel {
 
 	private ReportTable runQuery(String query) {
 		try {
-			Rdbms_conn.openConn();
-			ResultSet rs = Rdbms_conn.runQuery(query);
+			Rdbms_NewConn.get().openConn();
+			ResultSet rs = Rdbms_NewConn.get().runQuery(query);
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int colc = rsmd.getColumnCount();
 			_ht = new Hashtable<String, Integer>();
@@ -80,7 +80,7 @@ public class DuplicatePane extends JPanel {
 			}
 			_rt = SqlTablePanel.getSQLValue(rs, true);
 			rs.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException sqle) {
 			JOptionPane.showMessageDialog(null, sqle.getMessage(),
 					"Duplicate Error Dialog", JOptionPane.ERROR_MESSAGE);
@@ -240,11 +240,11 @@ public class DuplicatePane extends JPanel {
 			}
 			// Following will not work for Hive
 			// Hive does not support JDBCRowsetPanel prepared query
-			if (Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) { //hive
+			if (Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) { //hive
 				
 				HiveQueryBuilder qb = new HiveQueryBuilder(
-						Rdbms_conn.getHValue("Database_DSN"), _table,
-						Rdbms_conn.getDBType());
+						Rdbms_NewConn.get().getHValue("Database_DSN"), _table,
+						Rdbms_NewConn.get().getDBType());
 				String query = qb.get_hiveequal_query(vc_s,vc_t,vc_v, _condition);
 				try {
 					_rs = new JDBCRowsetPanel(query, true, vc_s.get(0));
@@ -258,8 +258,8 @@ public class DuplicatePane extends JPanel {
 				
 			} else {
 			QueryBuilder qb = new QueryBuilder(
-					Rdbms_conn.getHValue("Database_DSN"), _table,
-					Rdbms_conn.getDBType());
+					Rdbms_NewConn.get().getHValue("Database_DSN"), _table,
+					Rdbms_NewConn.get().getDBType());
 			String query = qb.get_equal_query(vc_s, _condition);
 			try {
 				_rs = new JDBCRowsetPanel(query, true, vc_s.get(0), vc_t, vc_v);

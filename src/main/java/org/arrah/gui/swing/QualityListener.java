@@ -47,7 +47,6 @@ import org.arrah.framework.ndtable.ResultsetToRTM;
 import org.arrah.framework.rdbms.JDBCRowset;
 import org.arrah.framework.rdbms.QueryBuilder;
 import org.arrah.framework.rdbms.Rdbms_NewConn;
-import org.arrah.framework.rdbms.Rdbms_conn;
 import org.arrah.framework.util.KeyValueParser;
 import org.arrah.framework.util.StringCaseFormatUtil;
 
@@ -424,13 +423,13 @@ public class QualityListener implements ActionListener {
 					if (_fileParse == null ) return;
 					
 					try {
-						Rdbms_NewConn newConn = new Rdbms_NewConn(_fileParse);
-						if ( newConn.openConn() == false) return;
-						newConn.populateTable();
-						Vector<String> table_v = newConn.getTable();
+						Rdbms_NewConn.init(_fileParse);
+						if (Rdbms_NewConn.get().openConn() == false) return;
+						Rdbms_NewConn.get().populateTable();
+						Vector<String> table_v = Rdbms_NewConn.get().getTable();
 						String tableName = table_v.get(0);
-						Vector avector[] = newConn.populateColumn(tableName,null);
-						newConn.closeConn();
+						Vector avector[] = Rdbms_NewConn.get().populateColumn(tableName,null);
+						Rdbms_NewConn.get().closeConn();
 						CompareTableInfoDialog newDialog = new CompareTableInfoDialog (selTP.getTable(), vc,
 								table_v,avector[0],_fileParse );
 						newDialog.createMapDialog();
@@ -507,8 +506,8 @@ public class QualityListener implements ActionListener {
 	/* Duplicate Quality Check */
 	private boolean dupAction(String table, Vector<?> col) {
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), table,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), table,
+				Rdbms_NewConn.get().getDBType());
 		String query = qb.get_table_duprow_query(col, selTP.getQueryString());
 
 		JFrame frame = new JFrame("Duplicate Row Show Frame");
@@ -525,19 +524,19 @@ public class QualityListener implements ActionListener {
 	/* Create Data for Box Plot */
 	private void boxPlotAction(String table, Vector<?> col, boolean isInclusive) {
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), table,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), table,
+				Rdbms_NewConn.get().getDBType());
 		String query = qb.get_tableAll_query();
 		if (!"".equals(selTP.getQueryString()))
 			query += " WHERE" + selTP.getQueryString();
 		ReportTableModel rtm = null;
 
 		try {
-			Rdbms_conn.openConn();
-			ResultSet rs = Rdbms_conn.runQuery(query);
+			Rdbms_NewConn.get().openConn();
+			ResultSet rs = Rdbms_NewConn.get().runQuery(query);
 			rtm = ResultsetToRTM.getSQLValue(rs, true);
 			rs.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException sql_e) {
 			JOptionPane.showMessageDialog(null, sql_e.getMessage(),
 					"BoxPlot Error Dialog", JOptionPane.ERROR_MESSAGE);
@@ -566,19 +565,19 @@ public class QualityListener implements ActionListener {
 	/* Create Data for KMean Plot */
 	private void kMeanAction(String table, Vector<?> col, boolean isInclusive) {
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), table,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), table,
+				Rdbms_NewConn.get().getDBType());
 		String query = qb.get_tableAll_query();
 		if (!"".equals(selTP.getQueryString()))
 			query += " WHERE " + selTP.getQueryString();
 		ReportTableModel rtm = null;
 
 		try {
-			Rdbms_conn.openConn();
-			ResultSet rs = Rdbms_conn.runQuery(query);
+			Rdbms_NewConn.get().openConn();
+			ResultSet rs = Rdbms_NewConn.get().runQuery(query);
 			rtm = ResultsetToRTM.getSQLValue(rs, true);
 			rs.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException sql_e) {
 			JOptionPane.showMessageDialog(null, sql_e.getMessage(),
 					"K Mean Error Dialog", JOptionPane.ERROR_MESSAGE);
@@ -606,8 +605,8 @@ public class QualityListener implements ActionListener {
 	/* Checks Null and empty string - Completeness Analysis */
 	private void incAction(String table, Vector<?> col, boolean isInclusive) {
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), table,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), table,
+				Rdbms_NewConn.get().getDBType());
 		String query = qb.get_inclusive_query(col, isInclusive);
 		if (!"".equals(selTP.getQueryString()))
 			query += " AND (" + selTP.getQueryString() + ")";
@@ -655,8 +654,8 @@ public class QualityListener implements ActionListener {
 	private void searchAction(String table, Vector<?> col,
 			Hashtable<String, String> filter, String options) throws SQLException {
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), table,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), table,
+				Rdbms_NewConn.get().getDBType());
 		String query = qb.get_tableAll_query();
 		if (!"".equals(selTP.getQueryString()))
 			query += " WHERE " + selTP.getQueryString();
@@ -703,8 +702,8 @@ public class QualityListener implements ActionListener {
 	private void repalceNullAction(String table, Vector<?> col, String replaceWith)
 			throws SQLException {
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), table,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), table,
+				Rdbms_NewConn.get().getDBType());
 		String query = qb.get_tableAll_query();
 		if (!"".equals(selTP.getQueryString()))
 			query += " WHERE " + selTP.getQueryString();
@@ -790,8 +789,8 @@ public class QualityListener implements ActionListener {
 			return; // Nothing to parse
 
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), table,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), table,
+				Rdbms_NewConn.get().getDBType());
 		String query = qb.get_tableAll_query();
 		if (!"".equals(selTP.getQueryString()))
 			query += " WHERE " + selTP.getQueryString();
@@ -833,8 +832,8 @@ public class QualityListener implements ActionListener {
 	/* Fuzzy Search */
 	private void similarAction(String table, Vector<?> col, boolean isDelete) throws SQLException {
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), table,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), table,
+				Rdbms_NewConn.get().getDBType());
 		String query = qb.get_selCol_query(col.toArray(),
 				selTP.getQueryString());
 		rows = new JDBCRowset(query, -1, false);
@@ -845,8 +844,8 @@ public class QualityListener implements ActionListener {
 	/* Cross Column Search */
 	private void crossColumnAction(String table, Vector<?> col) throws SQLException {
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), table,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), table,
+				Rdbms_NewConn.get().getDBType());
 		String query = qb.get_selCol_query(col.toArray(),
 				selTP.getQueryString());
 		rows = new JDBCRowset(query, -1, false);
@@ -880,13 +879,13 @@ public class QualityListener implements ActionListener {
 		}
 
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), table,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), table,
+				Rdbms_NewConn.get().getDBType());
 		String query ="";
 		
 		// Oracle RowsetImpl needs Column name
-		if(Rdbms_conn.getDBType().compareToIgnoreCase("oracle_native") == 0
-                || (Rdbms_conn.getDBType().compareToIgnoreCase("oracle_odbc") == 0))               
+		if(Rdbms_NewConn.get().getDBType().compareToIgnoreCase("oracle_native") == 0
+                || (Rdbms_NewConn.get().getDBType().compareToIgnoreCase("oracle_odbc") == 0))               
 				query = qb.get_tb_value(false);
 		else
 			query = qb.get_tableAll_query();
@@ -932,8 +931,8 @@ public class QualityListener implements ActionListener {
 	private void disceetSearchAction(String table, Vector<?> col,
 			Vector<String> token, boolean match) throws SQLException {
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), table,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), table,
+				Rdbms_NewConn.get().getDBType());
 		String query = qb.get_tableAll_query();
 		if (!"".equals(selTP.getQueryString()))
 			query += " WHERE " + selTP.getQueryString();

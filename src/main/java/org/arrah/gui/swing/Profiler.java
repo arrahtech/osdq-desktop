@@ -58,7 +58,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.util.KeyValueParser;
 
 public class Profiler extends JPanel implements TreeSelectionListener {
@@ -257,18 +257,14 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 	}
 
 	private void createNodes(DefaultMutableTreeNode defaultmutabletreenode) throws SQLException {
-		// Rdbms_conn.init(_fileParse); Test Connection has set it.
+		// Rdbms_NewConn.get().init(_fileParse); Test Connection has set it.
 		String s = (String) _fileParse.get("Database_SchemaPattern");
-		String s1 = (String) _fileParse.get("Database_TablePattern");
-		String s2 = (String) _fileParse.get("Database_TableType");
 		String s3 = (String) _fileParse.get("Database_Catalog");
 		s3 = "";
 
-		Rdbms_conn.populateTable(s3.compareTo("") != 0 ? s3 : (s3 = null), s
-				.compareTo("") != 0 ? s : (s = null),
-				s1.compareTo("") != 0 ? s1 : (s1 = null), s2.split(","));
-		Vector<String> table_v = Rdbms_conn.getTable();
-		Vector<String> tableDesc_v = Rdbms_conn.getTableDesc();
+		Rdbms_NewConn.get().populateTable();
+		Vector<String> table_v = Rdbms_NewConn.get().getTable();
+		Vector<String> tableDesc_v = Rdbms_NewConn.get().getTableDesc();
 		int tableCount = table_v.size();
 
 		for (int i = 0; i < tableCount;) {
@@ -285,8 +281,8 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 				+ _fileParse.get("Database_User"));
 		ConsoleFrame.addText("\n Loading Tables ");
 
-		Rdbms_conn.openConn();
-		DatabaseMetaData databasemetadata = Rdbms_conn.getMetaData();
+		Rdbms_NewConn.get().openConn();
+		DatabaseMetaData databasemetadata = Rdbms_NewConn.get().getMetaData();
 
 		ResultSet resultset1 = null;
 		
@@ -335,7 +331,7 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 	} // End of for loop for tables
 
 		try {
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException sqlexception) {
 			ConsoleFrame.addText("\n SQL exception in Creating Node");
 			JOptionPane.showMessageDialog(null, sqlexception.getMessage(),
@@ -740,7 +736,7 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 
 				if (n == JOptionPane.YES_OPTION) {
 					try {
-						Rdbms_conn.exitConn();
+						Rdbms_NewConn.get().exitConn();
 					} catch (Exception exp) {
 					}
 					; // do nothing
@@ -840,10 +836,10 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 			
 			_fileParse = KeyValueParser.parseFile(args[0]);
 			try {
-				Rdbms_conn.init(_fileParse);
-				String status = Rdbms_conn.testConn();
+				Rdbms_NewConn.get().init(_fileParse);
+				String status = Rdbms_NewConn.get().testConn();
 				if ("Connection Successful".equals(status)) {
-					Rdbms_conn.openConn();
+					Rdbms_NewConn.get().openConn();
 					success = true;
 				} else {
 					System.out.println(" Can not open connection. Check configuration File:"+args[0]);

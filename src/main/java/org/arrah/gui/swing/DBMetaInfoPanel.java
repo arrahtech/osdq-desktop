@@ -34,7 +34,7 @@ import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.profile.DBMetaInfo;
 import org.arrah.framework.profile.TableMetaInfo;
 import org.arrah.framework.rdbms.DataDictionaryPDF;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.rdbms.TableRelationInfo;
 import org.arrah.framework.util.KeyValueParser;
 
@@ -100,7 +100,7 @@ public class DBMetaInfoPanel implements ActionListener {
 			if (s.equals("Personally Identifiable Info")) {
 				// Create the Column name into hashtable
 				Hashtable<String,String>__h = KeyValueParser.parseFile("resource/piiSearch.txt");
-				Vector<String> tableName = Rdbms_conn.getTable();
+				Vector<String> tableName = Rdbms_NewConn.get().getTable();
 				
 				if (tableName == null || __h == null) {
 					JOptionPane.showMessageDialog(null, "Resource file not Found or \n"
@@ -116,7 +116,7 @@ public class DBMetaInfoPanel implements ActionListener {
 				for (int i=0; i<tableName.size(); i++) {
 					String table = tableName.get(i);
 					
-					Vector<?>[] colInfo = Rdbms_conn.populateColumn(table, null);
+					Vector<?>[] colInfo = Rdbms_NewConn.get().populateColumn(table, null);
 					if (colInfo == null ) {
 						JOptionPane.showMessageDialog(null,  "No Column found for Table:"+table);
 						continue;
@@ -299,7 +299,7 @@ public class DBMetaInfoPanel implements ActionListener {
 				if (s31 == null || s31.compareTo("") == 0)
 					return;
 				
-				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
+				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_NewConn.get().getTableCount(), rtm__);
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 0);
 				
@@ -312,7 +312,7 @@ public class DBMetaInfoPanel implements ActionListener {
 				if (s31 == null || s31.compareTo("") == 0)
 					return;
 				
-				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
+				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_NewConn.get().getTableCount(), rtm__);
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 1);
 				
@@ -325,7 +325,7 @@ public class DBMetaInfoPanel implements ActionListener {
 				if (s31 == null || s31.compareTo("") == 0)
 					return;
 				
-				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
+				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_NewConn.get().getTableCount(), rtm__);
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 2);
 				
@@ -338,7 +338,7 @@ public class DBMetaInfoPanel implements ActionListener {
 				if (s31 == null || s31.compareTo("") == 0)
 					return;
 				
-				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_conn.getTableCount(), rtm__);
+				rtm__ = TableMetaInfo.populateTable(2, 0,Rdbms_NewConn.get().getTableCount(), rtm__);
 				rt__ = new ReportTable(rtm__);
 				new SimilarityCheckPanel(s31, rt__, 3);
 				
@@ -347,7 +347,7 @@ public class DBMetaInfoPanel implements ActionListener {
 			} else {
 				return;
 			}
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 			if (isFrame) {
 				JFrame.setDefaultLookAndFeelDecorated(true);
 				JFrame jframe = new JFrame(f_title);

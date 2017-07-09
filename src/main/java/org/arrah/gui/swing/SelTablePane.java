@@ -42,7 +42,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 
 import org.arrah.framework.profile.TableMetaInfo;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class SelTablePane extends JPanel implements ItemListener,
 		ActionListener {
@@ -77,7 +77,7 @@ public class SelTablePane extends JPanel implements ItemListener,
 		// TODO - add information panel to give more information
 		JLabel ta = new JLabel("Select Table");
 
-		Vector<String> vector = Rdbms_conn.getTable();
+		Vector<String> vector = Rdbms_NewConn.get().getTable();
 		table1 = new JComboBox<String>();
 		table1.addItemListener(this);
 		for (int i = 0; i < vector.size(); i++) {
@@ -273,7 +273,7 @@ public class SelTablePane extends JPanel implements ItemListener,
 							JOptionPane.INFORMATION_MESSAGE);
 					return;
 				} else {
-					Vector<String> vector = Rdbms_conn.getTable();
+					Vector<String> vector = Rdbms_NewConn.get().getTable();
 					int i = vector.indexOf(table1.getSelectedItem().toString());
 
 					Vector avector[] = null;

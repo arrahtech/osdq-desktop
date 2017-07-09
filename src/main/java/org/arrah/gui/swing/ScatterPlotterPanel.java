@@ -56,7 +56,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class ScatterPlotterPanel extends JPanel implements ActionListener,
 		ChangeListener, Serializable
@@ -183,11 +183,11 @@ public class ScatterPlotterPanel extends JPanel implements ActionListener,
 		int i = 0;
 
 		QueryBuilder s_prof = new QueryBuilder(_dsn, _table, _column,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getDBType());
 		String all_query = s_prof.get_all_query();
 		try {
-			Rdbms_conn.openConn();
-			ResultSet rs = Rdbms_conn.runQuery(all_query);
+			Rdbms_NewConn.get().openConn();
+			ResultSet rs = Rdbms_NewConn.get().runQuery(all_query);
 			while (rs.next()) {
 				d = rs.getDouble("like_wise");
 				if (rs.wasNull())
@@ -204,7 +204,7 @@ public class ScatterPlotterPanel extends JPanel implements ActionListener,
 				vc.add(i++, new Double(avg));
 			}
 			rs.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException e) {
 			counter = 0;
 			ConsoleFrame.addText("\n Can not fill Cluster");
@@ -455,7 +455,7 @@ public class ScatterPlotterPanel extends JPanel implements ActionListener,
 		     Hashtable<Integer,JComponent> table = new Hashtable<Integer,JComponent>();
 		     int max = getMaximum();
 		     
-		     String format = Rdbms_conn.getHValue("DateFormat");
+		     String format = Rdbms_NewConn.get().getHValue("DateFormat");
 	        	if (format == null || "".equals(format))
 	        		format =  "dd-MMM-YYYY";
 	        	int i = 0;

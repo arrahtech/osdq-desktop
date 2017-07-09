@@ -38,7 +38,6 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
 import org.arrah.framework.rdbms.Rdbms_NewConn;
-import org.arrah.framework.rdbms.Rdbms_conn;
 
 public class TestConnectionDialogbackup extends JDialog implements ActionListener {
 	/**
@@ -493,15 +492,15 @@ public class TestConnectionDialogbackup extends JDialog implements ActionListene
 			try {
 				
 				if (connectionType == 0 ) { // Default connection
-				Rdbms_conn.init(_dbparam);
-				status = Rdbms_conn.testConn();
+				Rdbms_NewConn.get().init(_dbparam);
+				status = Rdbms_NewConn.get().testConn();
 				info.setText(status);
-				Rdbms_conn.closeConn();
+				Rdbms_NewConn.get().closeConn();
 				} else { // New Connection
-					Rdbms_NewConn newConn = new Rdbms_NewConn(_dbparam);
-					status = newConn.testConn();
+					Rdbms_NewConn.init(_dbparam);
+					status = Rdbms_NewConn.get().testConn();
 					info.setText(status);
-					newConn.closeConn();	
+					Rdbms_NewConn.get().closeConn();	
 				}
 			} catch (Exception e1) {
 				System.out.println("Connection Failed");

@@ -40,7 +40,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class ProfilePane extends JPanel implements ActionListener {
 
@@ -288,14 +288,14 @@ public class ProfilePane extends JPanel implements ActionListener {
 
 		// Instantiate QueryBuilder
 		QueryBuilder q_factory = new QueryBuilder(dsn_str, tbl_str, col_str,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getDBType());
 
 		// Find out where the event occured
 		String clicked_but = ((JButton) e.getSource()).getText();
 
 		// Open the connection
 		try {
-			Rdbms_conn.openConn();
+			Rdbms_NewConn.get().openConn();
 		} catch (SQLException sqlexc) {
 			ConsoleFrame.addText("\n Open Connection Exception");
 			JOptionPane.showMessageDialog(null, sqlexc.getMessage(),
@@ -400,7 +400,7 @@ public class ProfilePane extends JPanel implements ActionListener {
 			// First Column population
 
 			if (aggr_query.equals("") == false) {
-				ResultSet rs = Rdbms_conn.runQuery(aggr_query);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(aggr_query);
 				while (rs.next()) {
 					values = createColValue(rs, aggr_sel);
 				}
@@ -411,12 +411,12 @@ public class ProfilePane extends JPanel implements ActionListener {
 			// Get the value for duplicate
 			if (aggr_count.equals("") == false && aggr_dist.equals("") == false) {
 				String ag = "", dg = "";
-				ResultSet rs = Rdbms_conn.runQuery(aggr_count);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(aggr_count);
 				while (rs.next())
 					ag = rs.getString("row_count");
 				rs.close();
 
-				rs = Rdbms_conn.runQuery(aggr_dist);
+				rs = Rdbms_NewConn.get().runQuery(aggr_dist);
 				while (rs.next())
 					dg = rs.getString("dist_count");
 				rs.close();
@@ -428,7 +428,7 @@ public class ProfilePane extends JPanel implements ActionListener {
 			// Second Column population
 
 			if (less_query.equals("") == false) {
-				ResultSet rs = Rdbms_conn.runQuery(less_query);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(less_query);
 				while (rs.next()) {
 					values = createColValue(rs, less_sel);
 				}
@@ -439,12 +439,12 @@ public class ProfilePane extends JPanel implements ActionListener {
 			// Get the value for duplicate
 			if (less_count.equals("") == false && less_dist.equals("") == false) {
 				String ag = "", dg = "";
-				ResultSet rs = Rdbms_conn.runQuery(less_count);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(less_count);
 				while (rs.next())
 					ag = rs.getString("row_count");
 				rs.close();
 
-				rs = Rdbms_conn.runQuery(less_dist);
+				rs = Rdbms_NewConn.get().runQuery(less_dist);
 				while (rs.next())
 					dg = rs.getString("dist_count");
 				rs.close();
@@ -455,7 +455,7 @@ public class ProfilePane extends JPanel implements ActionListener {
 			// Third Column population
 
 			if (more_query.equals("") == false) {
-				ResultSet rs = Rdbms_conn.runQuery(more_query);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(more_query);
 				while (rs.next()) {
 					values = createColValue(rs, more_sel);
 				}
@@ -466,12 +466,12 @@ public class ProfilePane extends JPanel implements ActionListener {
 			// Get the value for duplicate
 			if (more_count.equals("") == false && more_dist.equals("") == false) {
 				String ag = "", dg = "";
-				ResultSet rs = Rdbms_conn.runQuery(more_count);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(more_count);
 				while (rs.next())
 					ag = rs.getString("row_count");
 				rs.close();
 
-				rs = Rdbms_conn.runQuery(more_dist);
+				rs = Rdbms_NewConn.get().runQuery(more_dist);
 				while (rs.next())
 					dg = rs.getString("dist_count");
 				rs.close();
@@ -482,7 +482,7 @@ public class ProfilePane extends JPanel implements ActionListener {
 			// Fourth Column population
 
 			if (bet1_query.equals("") == false) {
-				ResultSet rs = Rdbms_conn.runQuery(bet1_query);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(bet1_query);
 				while (rs.next()) {
 					values = createColValue(rs, bet1_sel);
 				}
@@ -493,12 +493,12 @@ public class ProfilePane extends JPanel implements ActionListener {
 			// Get the value for duplicate
 			if (bet1_count.equals("") == false && bet1_dist.equals("") == false) {
 				String ag = "", dg = "";
-				ResultSet rs = Rdbms_conn.runQuery(bet1_count);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(bet1_count);
 				while (rs.next())
 					ag = rs.getString("row_count");
 				rs.close();
 
-				rs = Rdbms_conn.runQuery(bet1_dist);
+				rs = Rdbms_NewConn.get().runQuery(bet1_dist);
 				while (rs.next())
 					dg = rs.getString("dist_count");
 				rs.close();
@@ -508,7 +508,7 @@ public class ProfilePane extends JPanel implements ActionListener {
 			// Ffth Column population
 
 			if (bet2_query.equals("") == false) {
-				ResultSet rs = Rdbms_conn.runQuery(bet2_query);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(bet2_query);
 				while (rs.next()) {
 					values = createColValue(rs, bet2_sel);
 				}
@@ -519,12 +519,12 @@ public class ProfilePane extends JPanel implements ActionListener {
 			// Get the value for duplicate
 			if (bet2_count.equals("") == false && bet2_dist.equals("") == false) {
 				String ag = "", dg = "";
-				ResultSet rs = Rdbms_conn.runQuery(bet2_count);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(bet2_count);
 				while (rs.next())
 					ag = rs.getString("row_count");
 				rs.close();
 
-				rs = Rdbms_conn.runQuery(bet2_dist);
+				rs = Rdbms_NewConn.get().runQuery(bet2_dist);
 				while (rs.next())
 					dg = rs.getString("dist_count");
 				rs.close();
@@ -534,7 +534,7 @@ public class ProfilePane extends JPanel implements ActionListener {
 
 			// Null Zero Negative Population
 			if (null_query.equals("") == false) {
-				ResultSet rs = Rdbms_conn.runQuery(null_query);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(null_query);
 				while (rs.next()) {
 					table_info.put("Null_Count", rs.getString("equal_count"));
 				}
@@ -542,7 +542,7 @@ public class ProfilePane extends JPanel implements ActionListener {
 			}
 
 			if (zero_query.equals("") == false) {
-				ResultSet rs = Rdbms_conn.runQuery(zero_query);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(zero_query);
 				while (rs.next()) {
 					table_info.put("Zero_Count", rs.getString("equal_count"));
 				}
@@ -550,14 +550,14 @@ public class ProfilePane extends JPanel implements ActionListener {
 			}
 
 			if (neg_query.equals("") == false) {
-				ResultSet rs = Rdbms_conn.runQuery(neg_query);
+				ResultSet rs = Rdbms_NewConn.get().runQuery(neg_query);
 				while (rs.next()) {
 					table_info.put("Neg_Count", rs.getString("row_count"));
 				}
 				rs.close();
 			}
 
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 
 		} catch (SQLException sqlexc) {
 			ConsoleFrame.addText("\n Running Query Exception");

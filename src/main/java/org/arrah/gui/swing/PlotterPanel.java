@@ -40,7 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class PlotterPanel extends JPanel implements MouseListener,
 		ActionListener, Serializable {
@@ -678,7 +678,7 @@ public class PlotterPanel extends JPanel implements MouseListener,
 		String s2 = "Group Avg: ";
 		if (isDateType == true) {
 
-		     String format = Rdbms_conn.getHValue("DateFormat");
+		     String format = Rdbms_NewConn.get().getHValue("DateFormat");
 		     if (format == null || "".equals(format))
 	        		format =  "dd-MMM-YYYY";
 		     SimpleDateFormat df = new SimpleDateFormat(format);

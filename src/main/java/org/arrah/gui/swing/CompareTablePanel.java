@@ -48,7 +48,7 @@ import javax.swing.SpringLayout;
 import org.arrah.framework.profile.InterTableInfo;
 import org.arrah.framework.profile.TableMetaInfo;
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.rdbms.SqlType;
 
 public class CompareTablePanel implements ItemListener, ActionListener {
@@ -88,7 +88,7 @@ public class CompareTablePanel implements ItemListener, ActionListener {
 		JLabel ta = new JLabel("Select Table A");
 		JLabel tb = new JLabel("Select Table B");
 
-		Vector<String> vector = Rdbms_conn.getTable();
+		Vector<String> vector = Rdbms_NewConn.get().getTable();
 		table1 = new JComboBox<String>();
 		table1.addItemListener(this);
 		table2 = new JComboBox<String>();
@@ -481,8 +481,8 @@ public class CompareTablePanel implements ItemListener, ActionListener {
 	private class LinkMouseListener extends MouseAdapter {
 		public void mouseClicked(MouseEvent mouseevent) {
 			QueryBuilder qb = new QueryBuilder(
-					Rdbms_conn.getHValue("Database_DSN"), str1, str3,
-					Rdbms_conn.getDBType());
+					Rdbms_NewConn.get().getHValue("Database_DSN"), str1, str3,
+					Rdbms_NewConn.get().getDBType());
 			qb.setCTableCol(str2, str4);
 			try {
 				mouseevent
@@ -498,8 +498,8 @@ public class CompareTablePanel implements ItemListener, ActionListener {
 				
                 if (s1 != null && s1.equals("<html><body><a href=\"\">Table A Match</A><body></html>")) {
                     
-					if(Rdbms_conn.getDBType().compareToIgnoreCase("oracle_native") == 0
-					|| (Rdbms_conn.getDBType().compareToIgnoreCase("oracle_odbc") == 0)){
+					if(Rdbms_NewConn.get().getDBType().compareToIgnoreCase("oracle_native") == 0
+					|| (Rdbms_NewConn.get().getDBType().compareToIgnoreCase("oracle_odbc") == 0)){
 						query=qb.get_col_match_value(multiple, mX, true, true);
 					}
 					else {
@@ -508,8 +508,8 @@ public class CompareTablePanel implements ItemListener, ActionListener {
 					
 				} else if (s1 != null
 					&& s1.equals("<html><body><a href=\"\">Table A No Match</A><body></html>")) {
-					if(Rdbms_conn.getDBType().compareToIgnoreCase("oracle_native") == 0
-					|| (Rdbms_conn.getDBType().compareToIgnoreCase("oracle_odbc") == 0)){
+					if(Rdbms_NewConn.get().getDBType().compareToIgnoreCase("oracle_native") == 0
+					|| (Rdbms_NewConn.get().getDBType().compareToIgnoreCase("oracle_odbc") == 0)){
 						query=qb.get_col_match_value(multiple, mX, false, true);
 					}
 					else {
@@ -519,8 +519,8 @@ public class CompareTablePanel implements ItemListener, ActionListener {
 				} else if (s1 != null
 					&& s1.equals("<html><body><a href=\"\">Table B No Match</A><body></html>")) {
 					isLeft = false;
-					if(Rdbms_conn.getDBType().compareToIgnoreCase("oracle_native") == 0
-					|| (Rdbms_conn.getDBType().compareToIgnoreCase("oracle_odbc") == 0)){
+					if(Rdbms_NewConn.get().getDBType().compareToIgnoreCase("oracle_native") == 0
+					|| (Rdbms_NewConn.get().getDBType().compareToIgnoreCase("oracle_odbc") == 0)){
 						query=qb.get_col_match_value(multiple, mX, false, false);
 					}
 					else {
@@ -528,8 +528,8 @@ public class CompareTablePanel implements ItemListener, ActionListener {
 					}
 				} else {
 					isLeft = false;
-					if(Rdbms_conn.getDBType().compareToIgnoreCase("oracle_native") == 0
-					|| (Rdbms_conn.getDBType().compareToIgnoreCase("oracle_odbc") == 0)){
+					if(Rdbms_NewConn.get().getDBType().compareToIgnoreCase("oracle_native") == 0
+					|| (Rdbms_NewConn.get().getDBType().compareToIgnoreCase("oracle_odbc") == 0)){
 						query=qb.get_col_match_value(multiple, mX, true, false);
 					}
 					else {
@@ -540,11 +540,11 @@ public class CompareTablePanel implements ItemListener, ActionListener {
                 
 				String pc=""; // Primary column to bring as first column
 				if ( isEditable == false ) {
-				Rdbms_conn.openConn();
-				ResultSet resultset = Rdbms_conn.runQuery(query);
+				Rdbms_NewConn.get().openConn();
+				ResultSet resultset = Rdbms_NewConn.get().runQuery(query);
 				ReportTable _rt = SqlTablePanel.getSQLValue(resultset, true);
 				resultset.close();
-				Rdbms_conn.closeConn();
+				Rdbms_NewConn.get().closeConn();
 				
 				// Put Primary column to First
 				int cc = _rt.table.getColumnCount();

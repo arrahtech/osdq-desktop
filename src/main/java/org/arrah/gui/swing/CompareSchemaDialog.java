@@ -40,10 +40,9 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 
 import org.arrah.framework.analytics.RTMDiffUtil;
 import org.arrah.framework.ndtable.ReportTableModel;
@@ -51,7 +50,6 @@ import org.arrah.framework.profile.DBMetaInfo;
 import org.arrah.framework.profile.NewConnTableMetaInfo;
 import org.arrah.framework.profile.TableMetaInfo;
 import org.arrah.framework.rdbms.Rdbms_NewConn;
-import org.arrah.framework.rdbms.Rdbms_conn;
 
 public class CompareSchemaDialog implements TreeSelectionListener, ActionListener {
 
@@ -188,8 +186,8 @@ public class CompareSchemaDialog implements TreeSelectionListener, ActionListene
 
 	
 	try {
-		newConn = new Rdbms_NewConn(_fileParse);
-		if ( newConn.openConn() == false) {
+		Rdbms_NewConn.init(_fileParse);
+		if ( Rdbms_NewConn.get().openConn() == false) {
 			JOptionPane.showMessageDialog(null, "Can Not Create new Connection",
 					"Schema Comparison Dialog",JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -285,7 +283,7 @@ public class CompareSchemaDialog implements TreeSelectionListener, ActionListene
 			ReportTable rt = null;
 			int i=0;
 			
-			Vector<String> table_v = Rdbms_conn.getTable();
+			Vector<String> table_v = Rdbms_NewConn.get().getTable();
 			if (funcNo >= 3 ) 
 				i = table_v.indexOf(absPath.getPathComponent(2).toString());
 			switch(funcNo) {
@@ -344,7 +342,7 @@ public class CompareSchemaDialog implements TreeSelectionListener, ActionListene
 	private void createNode (DefaultMutableTreeNode node, boolean newConnection) throws SQLException {
 		Vector<String> table_v = new Vector<String>();
 		if (newConnection == false ) {
-			table_v = Rdbms_conn.getTable();
+			table_v = Rdbms_NewConn.get().getTable();
 			
 		} else { // new connection
 			newConn.populateTable();
@@ -457,7 +455,7 @@ public class CompareSchemaDialog implements TreeSelectionListener, ActionListene
 				ReportTableModel rtmL = new ReportTableModel(new String[] {"Table Name"});
 				ReportTableModel rtmR = new ReportTableModel(new String[] {"Table Name"});
 				
-				Vector<String> priTable = Rdbms_conn.getTable();
+				Vector<String> priTable = Rdbms_NewConn.get().getTable();
 				Vector<String> secTable = newConn.getTable();
 				for (String tab: priTable )
 					rtmL.addFillRow(new String[] {tab});
@@ -478,7 +476,7 @@ public class CompareSchemaDialog implements TreeSelectionListener, ActionListene
 		if (tabName == null || tabName.compareTo("") == 0) 
 			return;
 		
-		Vector<String> priTable = Rdbms_conn.getTable();
+		Vector<String> priTable = Rdbms_NewConn.get().getTable();
 		Vector<String> secTable = newConn.getTable();
 		int lefti = priTable.indexOf(tabName);
 		int righti = secTable.indexOf(tabName);

@@ -60,7 +60,7 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
 import org.arrah.framework.ndtable.ResultsetToRTM;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class SqlTablePanel extends JPanel implements ActionListener {
 	/**
@@ -252,14 +252,14 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 				try {
 					((JButton) e.getSource()).setCursor(java.awt.Cursor
 							.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
-					Rdbms_conn.openConn();
+					Rdbms_NewConn.get().openConn();
 					// Set the cursor
 					// Get time for query
 					if ((sp_v[0].compareToIgnoreCase("INSERT") == 0)
 							|| (sp_v[0].compareToIgnoreCase("UPDATE") == 0)
 							|| (sp_v[0].compareToIgnoreCase("DELETE") == 0)) {
 						q_s_t = System.currentTimeMillis();
-						int row_affected = Rdbms_conn.executeUpdate(sql_s);
+						int row_affected = Rdbms_NewConn.get().executeUpdate(sql_s);
 						q_e_t = System.currentTimeMillis();
 
 						if (row_affected > 0)
@@ -269,18 +269,18 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 							bot_scroll.setViewportView(new JLabel(
 									"Query Successfull.."));
 
-						Rdbms_conn.closeConn();
+						Rdbms_NewConn.get().closeConn();
 						diff = q_e_t - q_s_t;
 						q_time.setText(Long.toString(diff) + " ms");
 						return;
 					}
 					q_s_t = System.currentTimeMillis();
-					ResultSet rs = Rdbms_conn.execute(sql_s);
+					ResultSet rs = Rdbms_NewConn.get().execute(sql_s);
 					q_e_t = System.currentTimeMillis();
 					if (rs == null) {
 						bot_scroll.setViewportView(new JLabel(
 								"Query Successfull.."));
-						Rdbms_conn.closeConn();
+						Rdbms_NewConn.get().closeConn();
 						diff = q_e_t - q_s_t;
 						q_time.setText(Long.toString(diff) + " ms");
 						return;
@@ -289,7 +289,7 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 						bot_scroll.setViewportView(rt);
 					} // End of else
 					rs.close();
-					Rdbms_conn.closeConn();
+					Rdbms_NewConn.get().closeConn();
 					diff = q_e_t - q_s_t;
 					q_time.setText(Long.toString(diff) + " ms");
 					return;
@@ -307,16 +307,16 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 				try {
 					((JButton) e.getSource()).setCursor(java.awt.Cursor
 							.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
-					Rdbms_conn.openConn();
+					Rdbms_NewConn.get().openConn();
 					// Set the cursor
 					// Get time for query
 					q_s_t = System.currentTimeMillis();
-					String native_s = Rdbms_conn.checkAndReturnSql(sql_s);
+					String native_s = Rdbms_NewConn.get().checkAndReturnSql(sql_s);
 					q_e_t = System.currentTimeMillis();
 					bot_scroll.setViewportView(new JLabel(
 							"<html>Query OK.<br>Native Query will look like:<br>"
 									+ native_s + "</html>"));
-					Rdbms_conn.closeConn();
+					Rdbms_NewConn.get().closeConn();
 					diff = q_e_t - q_s_t;
 					q_time.setText(Long.toString(diff) + " ms");
 				} catch (SQLException sqle) {

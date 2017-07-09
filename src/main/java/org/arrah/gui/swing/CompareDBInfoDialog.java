@@ -43,7 +43,6 @@ import javax.swing.SpringLayout;
 import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.ndtable.ResultsetToRTM;
 import org.arrah.framework.rdbms.Rdbms_NewConn;
-import org.arrah.framework.rdbms.Rdbms_conn;
 
 
 public class CompareDBInfoDialog implements ActionListener {
@@ -224,12 +223,12 @@ public class CompareDBInfoDialog implements ActionListener {
 	if (_fileParse == null ) { showDialog = false; return; } // do not show dialog
 	
 	try {
-		Rdbms_NewConn newConn = new Rdbms_NewConn(_fileParse);
-		if ( newConn.openConn() == false) return;
-		newConn.populateTable();
-		Vector<String> table_v = newConn.getTable();
-		newConn.closeConn();
-		setFields(Rdbms_conn.getTable(),table_v,_fileParse);
+		Rdbms_NewConn.init(_fileParse);
+		if ( Rdbms_NewConn.get().openConn() == false) return;
+		Rdbms_NewConn.get().populateTable();
+		Vector<String> table_v = Rdbms_NewConn.get().getTable();
+		Rdbms_NewConn.get().closeConn();
+		setFields(Rdbms_NewConn.get().getTable(),table_v,_fileParse);
 		
 	} catch (Exception e1) {
 		System.out.println(e1.getMessage());

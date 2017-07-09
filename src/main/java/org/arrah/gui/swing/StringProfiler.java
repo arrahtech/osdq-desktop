@@ -53,7 +53,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.util.KeyValueParser;
 
 public class StringProfiler extends JPanel implements ActionListener,
@@ -346,7 +346,7 @@ public class StringProfiler extends JPanel implements ActionListener,
 			q3_cont += "%"; // Adding in end so string with starting detected
 
 		QueryBuilder s_prof = new QueryBuilder(_dsn, _table, _col,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getDBType());
 		String like_query_1, like_query_2, like_query_3;
 		boolean like = q_s.getSelectedIndex() == 0 ? true : false;
 
@@ -361,8 +361,8 @@ public class StringProfiler extends JPanel implements ActionListener,
 		}
 
 		try {
-			Rdbms_conn.openConn();
-			ResultSet rs_1 = Rdbms_conn.runQuery(like_query_1);
+			Rdbms_NewConn.get().openConn();
+			ResultSet rs_1 = Rdbms_NewConn.get().runQuery(like_query_1);
 
 			// SQL Bug with Invalid cursor state so take one result set at point
 			// of time
@@ -381,7 +381,7 @@ public class StringProfiler extends JPanel implements ActionListener,
 			}
 			rs_1.close();
 
-			ResultSet rs_2 = Rdbms_conn.runQuery(like_query_2);
+			ResultSet rs_2 = Rdbms_NewConn.get().runQuery(like_query_2);
 			while (rs_2.next()) {
 				if (col_c_2 == i) {
 					qtable.addRow();
@@ -397,7 +397,7 @@ public class StringProfiler extends JPanel implements ActionListener,
 			}
 			rs_2.close();
 
-			ResultSet rs_3 = Rdbms_conn.runQuery(like_query_3);
+			ResultSet rs_3 = Rdbms_NewConn.get().runQuery(like_query_3);
 
 			while (rs_3.next()) {
 				if (col_c_3 == i) {
@@ -414,7 +414,7 @@ public class StringProfiler extends JPanel implements ActionListener,
 			}
 			rs_3.close();
 
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException e) {
 			ConsoleFrame.addText("\n Like Query execution failed");
 			JOptionPane.showMessageDialog(null, e.getMessage(),
@@ -434,7 +434,7 @@ public class StringProfiler extends JPanel implements ActionListener,
 		String regex_query = "";
 
 		QueryBuilder s_prof = new QueryBuilder(_dsn, _table, _col,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getDBType());
 		if (_distinct)
 			regex_query = s_prof.get_freq_all_query();
 		else
@@ -481,8 +481,8 @@ public class StringProfiler extends JPanel implements ActionListener,
 				return;
 			}
 
-			Rdbms_conn.openConn();
-			ResultSet rs = Rdbms_conn.runQuery(regex_query);
+			Rdbms_NewConn.get().openConn();
+			ResultSet rs = Rdbms_NewConn.get().runQuery(regex_query);
 
 			while (rs.next()) {
 
@@ -530,7 +530,7 @@ public class StringProfiler extends JPanel implements ActionListener,
 			} // End of while loop
 
 			rs.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException e) {
 			ConsoleFrame.addText("\n ERROR:Regex Query execution failed");
 			JOptionPane.showMessageDialog(null, e.getMessage(),

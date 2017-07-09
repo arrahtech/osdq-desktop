@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -35,7 +34,7 @@ import javax.swing.JTabbedPane;
 
 import org.arrah.framework.profile.StatisticalAnalysis;
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class StringLenProfilerPanel extends JPanel  {
 
@@ -125,12 +124,12 @@ public class StringLenProfilerPanel extends JPanel  {
 	private void getDataforAnalysis() {
 
 		QueryBuilder s_prof = new QueryBuilder(_dsn, _table, _col,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getDBType());
 		String query = s_prof.get_all_worder_query();
 		
 		try {
-			Rdbms_conn.openConn();
-			ResultSet rs = Rdbms_conn.runQuery(query);
+			Rdbms_NewConn.get().openConn();
+			ResultSet rs = Rdbms_NewConn.get().runQuery(query);
 			_colObj = new ArrayList<Integer>();
 			
 			while (rs.next()) {
@@ -144,7 +143,7 @@ public class StringLenProfilerPanel extends JPanel  {
 			} // End of while loop
 
 			rs.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException e) {
 			ConsoleFrame.addText("\n ERROR:String Length execution failed");
 			JOptionPane.showMessageDialog(null, e.getMessage(),
