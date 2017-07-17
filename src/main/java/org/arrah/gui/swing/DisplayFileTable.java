@@ -576,27 +576,49 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		option_m.add(lookup_m);
 		option_m.addSeparator();
 		
+		JMenu joinm = new JMenu("Joins");
 		JMenuItem diff_m = new JMenuItem("Diff Join");
 		diff_m.addActionListener(this);
 		diff_m.setActionCommand("diffjoin");
-		option_m.add(diff_m);
+		joinm.add(diff_m);
 		
 		JMenuItem join_m = new JMenuItem("Left Outer Join");
 		join_m.addActionListener(this);
 		join_m.setActionCommand("joinfile");
-		option_m.add(join_m);
+		joinm.add(join_m);
 		
 		JMenuItem inner_m = new JMenuItem("Inner Join");
 		inner_m.addActionListener(this);
 		inner_m.setActionCommand("innerjoin");
-		option_m.add(inner_m);
+		joinm.add(inner_m);
 		
 		JMenuItem cart_m = new JMenuItem("Cartesian Join");
 		cart_m.addActionListener(this);
 		cart_m.setActionCommand("cartjoin");
-		option_m.add(cart_m);
+		joinm.add(cart_m);
 		
+		option_m.add(joinm);
 		option_m.addSeparator();
+		
+		JMenu fjoinm = new JMenu("Fuzzy Joins");
+		JMenuItem fdiff_m = new JMenuItem("Fuzzy Diff Join");
+		fdiff_m.addActionListener(this);
+		fdiff_m.setActionCommand("fdiffjoin");
+		fjoinm.add(fdiff_m);
+		
+		JMenuItem fjoin_m = new JMenuItem("Fuzzy Left Outer Join");
+		fjoin_m.addActionListener(this);
+		fjoin_m.setActionCommand("fjoinfile");
+		fjoinm.add(fjoin_m);
+		
+		JMenuItem finner_m = new JMenuItem("Fuzzy Inner Join");
+		finner_m.addActionListener(this);
+		finner_m.setActionCommand("finnerjoin");
+		fjoinm.add(finner_m);
+		
+		option_m.add(fjoinm);
+		option_m.addSeparator();
+		
 
 		JMenuItem loadR_m = new JMenuItem("Load File into Rows");
 		loadR_m.addActionListener(this);
@@ -1690,8 +1712,9 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				}
 				return;
 			}
-			if (command.equals("joinfile") || command.equals("innerjoin") || command.equals("diffjoin")
-					|| command.equals("cartjoin")) {
+			if (command.equals("joinfile") || command.equals("innerjoin") || command.equals("diffjoin") || command.equals("cartjoin") 
+					||
+					command.equals("fjoinfile") || command.equals("finnerjoin") || command.equals("fdiffjoin")) {
 				int lindex = selectedColIndex(_rt,"Select column to Join To:");
 				if (lindex < 0)
 					return;
@@ -1706,14 +1729,35 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				int rindex = selectedColIndex(rtable,"Select column to Join From:");
 				if (rindex < 0)
 					return;
+				
+				float distance = 1.1f;
+				if (command.equals("fjoinfile") || command.equals("finnerjoin") || command.equals("fdiffjoin")) {
+					String val= JOptionPane.showInputDialog("Please enetr fuzzy index 0.0 - no match 1.0 - exact match");
+					if (val == null ) {
+						JOptionPane.showMessageDialog(null,"Not valid input");
+						return;
+					}
+					try {
+						distance = Float.parseFloat(val);
+					} catch (Exception eformat) {
+						JOptionPane.showMessageDialog(null,"Not valid format:" + eformat.getLocalizedMessage());
+						return;
+					}
+				}
 				if( command.equals("joinfile") )
-					_rt = joinTables(_rt, lindex, rtable, rindex, 0); // Left Outer Join
+					_rt = joinTables(_rt, lindex, rtable, rindex, 0,1.1f); // Left Outer Join
 				else if( command.equals("innerjoin") )
-					_rt = joinTables(_rt, lindex, rtable, rindex, 1); // Inner Join
+					_rt = joinTables(_rt, lindex, rtable, rindex, 1,1.1f); // Inner Join
 				else if( command.equals("diffjoin") )
-					_rt = joinTables(_rt, lindex, rtable, rindex, 2); // Diff join
+					_rt = joinTables(_rt, lindex, rtable, rindex, 2,1.1f); // Diff join
+				else if( command.equals("fjoinfile") )
+					_rt = joinTables(_rt, lindex, rtable, rindex, 4,distance); // Fuzzy Left Outer Join
+				else if( command.equals("finnerjoin") )
+					_rt = joinTables(_rt, lindex, rtable, rindex, 5,distance); // Fuzzy Inner Join
+				else if( command.equals("fdiffjoin") )
+					_rt = joinTables(_rt, lindex, rtable, rindex, 6,distance); // Fuzzy Diff join
 				else 
-					_rt = joinTables(_rt, lindex, rtable, rindex, 3); // Cartesian join
+					_rt = joinTables(_rt, lindex, rtable, rindex, 3,1.1f); // Cartesian join
 				return;
 			}
 			if (command.equals("lookup") || command.equals("lookupadd")) {
@@ -2764,11 +2808,11 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 	}
 
 	public static ReportTable joinTables(ReportTable leftT, int indexL,
-			ReportTable rightT, int indexR, int joinType) {
+			ReportTable rightT, int indexR, int joinType, float distance) {
 		// Left table is table displayed
 		leftT.cancelSorting();
 		leftT = new ReportTable(RTMUtil.joinTables(leftT.getRTMModel(), indexL,
-				rightT.getRTMModel(), indexR, joinType));
+				rightT.getRTMModel(), indexR, joinType,distance));
 		return leftT;
 	}
 
