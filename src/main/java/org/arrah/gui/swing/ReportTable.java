@@ -86,7 +86,7 @@ import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.ndtable.ReportTableSorter;
 import org.arrah.framework.ndtable.TableSorter;
 import org.arrah.framework.rdbms.DataDictionaryPDF;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.xls.XlsReader;
 import org.arrah.framework.xml.DTDGenerator;
 import org.arrah.framework.xml.XmlWriter;
@@ -219,7 +219,7 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 				
 				// Default Date Format
 		        if( value instanceof java.util.Date) {
-		        	String format = Rdbms_conn.getHValue("DateFormat");
+		        	String format = Rdbms_NewConn.get().getHValue("DateFormat");
 		        	if (format == null || "".equals(format))
 		        		return c;
 		        	try {
@@ -233,7 +233,7 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 		        }
 		     // Default Number Format
 		        if( value instanceof java.lang.Number) {
-		        	String format = Rdbms_conn.getHValue("NumberFormat");
+		        	String format = Rdbms_NewConn.get().getHValue("NumberFormat");
 		        	if (format == null || "".equals(format))
 		        		return c;
 		        	try {

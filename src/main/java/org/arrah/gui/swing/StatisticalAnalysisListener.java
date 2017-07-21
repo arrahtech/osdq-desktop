@@ -39,7 +39,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class StatisticalAnalysisListener extends JPanel implements
 		ActionListener, Serializable {
@@ -74,7 +74,7 @@ public class StatisticalAnalysisListener extends JPanel implements
 				"Record Upper Value", "Samples Below" });
 
 		QueryBuilder a_q = new QueryBuilder(_dsn, _table, _col,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getDBType());
 
 		String count_str, avg_str, max_str, min_str, sum_str;
 		double count_d = 0, avg_d = 0, max_d = 0, min_d = 0, sum_d = 0;
@@ -82,8 +82,8 @@ public class StatisticalAnalysisListener extends JPanel implements
 		String aggr_query = a_q.aggr_query("5YYYYY", 0, "0", "0");
 		try {
 
-			Rdbms_conn.openConn();
-			ResultSet rs = Rdbms_conn.runQuery(aggr_query);
+			Rdbms_NewConn.get().openConn();
+			ResultSet rs = Rdbms_NewConn.get().runQuery(aggr_query);
 
 			while (rs.next()) {
 
@@ -145,7 +145,7 @@ public class StatisticalAnalysisListener extends JPanel implements
 				perv_a[20] = 0;
 			}
 
-			rs = Rdbms_conn.runQuery(all_q);
+			rs = Rdbms_NewConn.get().runQuery(all_q);
 			while (rs.next()) {
 
 				String q_value = rs.getString("like_wise");
@@ -176,7 +176,7 @@ public class StatisticalAnalysisListener extends JPanel implements
 
 			}
 			rs.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 
 			_table_2.addFillRow(new String[] { "Avg. Absolute Dev.(AAD)",
 					Double.toString(aad) });
@@ -247,8 +247,8 @@ public class StatisticalAnalysisListener extends JPanel implements
 
 		try {
 
-			Rdbms_conn.openConn();
-			ResultSet rs = Rdbms_conn.runQuery(query);
+			Rdbms_NewConn.get().openConn();
+			ResultSet rs = Rdbms_NewConn.get().runQuery(query);
 			while (rs.next()) {
 				String col_name = rs.getString("like_wise");
 				String col_count = rs.getString("row_count");
@@ -260,7 +260,7 @@ public class StatisticalAnalysisListener extends JPanel implements
 
 			}
 			rs.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 
 		} catch (Exception sql_e) {
 			ConsoleFrame.addText("\n ERROR: Frequency Query execution failed");

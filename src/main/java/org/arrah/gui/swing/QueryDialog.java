@@ -50,7 +50,7 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.rdbms.SqlType;
 
 public class QueryDialog extends JDialog implements ActionListener,
@@ -142,15 +142,15 @@ public class QueryDialog extends JDialog implements ActionListener,
 
 			if (LEVEL == 1) { // Table
 				QueryBuilder querybuilder = new QueryBuilder(
-						Rdbms_conn.getHValue("Database_DSN"), _table,
-						Rdbms_conn.getDBType());
+						Rdbms_NewConn.get().getHValue("Database_DSN"), _table,
+						Rdbms_NewConn.get().getDBType());
 				t_cond = querybuilder.get_tableCount_query();
 				a_cond = querybuilder.get_tableAll_query();
 			}
 			if (LEVEL == 2) { // Column
 				QueryBuilder querybuilder = new QueryBuilder(
-						Rdbms_conn.getHValue("Database_DSN"), _table, _column,
-						Rdbms_conn.getDBType());
+						Rdbms_NewConn.get().getHValue("Database_DSN"), _table, _column,
+						Rdbms_NewConn.get().getDBType());
 				t_cond = querybuilder.get_tableCount_query();
 				a_cond = "";
 			}
@@ -297,9 +297,9 @@ public class QueryDialog extends JDialog implements ActionListener,
 			
 			// mysql and hive does not allow quotes for table and columns
 			
-			if ((Rdbms_conn.getDBType().compareToIgnoreCase("mysql") != 0) &&
-			(Rdbms_conn.getDBType().compareToIgnoreCase("hive") != 0) &&
-			(Rdbms_conn.getDBType().compareToIgnoreCase("informix") != 0))
+			if ((Rdbms_NewConn.get().getDBType().compareToIgnoreCase("mysql") != 0) &&
+			(Rdbms_NewConn.get().getDBType().compareToIgnoreCase("hive") != 0) &&
+			(Rdbms_NewConn.get().getDBType().compareToIgnoreCase("informix") != 0))
 				s4 = "\"" + s4 + "\"";
 
 			JComboBox<String> jcombobox = (JComboBox<String>) cb_v.get(j);
@@ -362,7 +362,7 @@ public class QueryDialog extends JDialog implements ActionListener,
 					
 					// This will not work with Hive as it does not support setDate option
 					// query need to build here
-					if (Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
+					if (Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
 						SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // Default format for Hive UnixTimeCall
 						s5 = "unix_timestamp(\'"+sd.format(date) +"\')";
 						
@@ -389,8 +389,8 @@ public class QueryDialog extends JDialog implements ActionListener,
 	private void runValidation(String s) {
 		PreparedStatement preparedstatement;
 		try {
-			Rdbms_conn.openConn();
-			preparedstatement = Rdbms_conn.createQuery(s);
+			Rdbms_NewConn.get().openConn();
+			preparedstatement = Rdbms_NewConn.get().createQuery(s);
 			if (preparedstatement == null) {
 				ConsoleFrame.addText("\n ERROR:Validation Query Null");
 				return;
@@ -415,7 +415,7 @@ public class QueryDialog extends JDialog implements ActionListener,
 				tC = resultset.getString("row_count");
 
 			resultset.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 			apply_b.setEnabled(true);
 		} catch (SQLException sqlexception) {
 			ConsoleFrame.addText("\n SQL Exception in Adhoc Query");
@@ -428,8 +428,8 @@ public class QueryDialog extends JDialog implements ActionListener,
 	private void runApply(String s) {
 		PreparedStatement preparedstatement;
 		try {
-			Rdbms_conn.openConn();
-			preparedstatement = Rdbms_conn.createQuery(s);
+			Rdbms_NewConn.get().openConn();
+			preparedstatement = Rdbms_NewConn.get().createQuery(s);
 			if (preparedstatement == null) {
 				ConsoleFrame.addText("\n ERROR:Bin Query Null");
 				return;
@@ -451,7 +451,7 @@ public class QueryDialog extends JDialog implements ActionListener,
 			ResultSet resultset = preparedstatement.executeQuery();
 			_rt = SqlTablePanel.getSQLValue(resultset, true);
 			resultset.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException sqlexception) {
 			ConsoleFrame.addText("\n SQL Exception in Applying Adhoc Query");
 			JOptionPane.showMessageDialog(null, sqlexception.getMessage(),

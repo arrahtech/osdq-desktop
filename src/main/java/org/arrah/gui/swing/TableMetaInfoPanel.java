@@ -34,7 +34,7 @@ import javax.swing.JPanel;
 
 import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.profile.TableMetaInfo;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class TableMetaInfoPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -45,7 +45,7 @@ public class TableMetaInfoPanel extends JPanel implements ActionListener {
 	private ReportTableModel rtm = null;
 	private JFormattedTextField ft, ft_p;
 	private int queryID = 0;
-	private int tableC = Rdbms_conn.getTableCount(); // Table Count
+	private int tableC = Rdbms_NewConn.get().getTableCount(); // Table Count
 	private JLabel l_e, l_s;
 	private JButton go;
 	private static int DEFAULT_TABLE = 10; // Default Table number

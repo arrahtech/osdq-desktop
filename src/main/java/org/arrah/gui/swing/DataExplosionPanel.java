@@ -34,7 +34,6 @@ import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
 
 import org.arrah.framework.datagen.RandomColGen;
-import org.arrah.framework.util.DiscreetRange;
 import org.arrah.framework.util.StringCaseFormatUtil;
 
 

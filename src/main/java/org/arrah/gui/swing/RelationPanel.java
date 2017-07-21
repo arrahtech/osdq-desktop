@@ -61,7 +61,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
 
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.rdbms.TableRelationInfo;
 
 public class RelationPanel extends JPanel implements MouseMotionListener,
@@ -396,7 +396,7 @@ public class RelationPanel extends JPanel implements MouseMotionListener,
 				int yf = (int) __rf.getLocation().getY();
 				int wf = (int) __rf.getWidth();
 
-				if (Rdbms_conn.getDBType().compareToIgnoreCase("ms_access") == 0) {
+				if (Rdbms_NewConn.get().getDBType().compareToIgnoreCase("ms_access") == 0) {
 					yf += 7; // 14/2 to come in between
 				} else {
 					while (t_f.pk[j] != null

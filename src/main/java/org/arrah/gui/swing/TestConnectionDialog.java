@@ -45,7 +45,6 @@ import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 
 import org.arrah.framework.rdbms.Rdbms_NewConn;
-import org.arrah.framework.rdbms.Rdbms_conn;
 import org.arrah.framework.xml.FilePaths;
 import org.arrah.framework.xml.XmlReader;
 import org.arrah.framework.xml.XmlWriter;
@@ -651,15 +650,15 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 			try {
 				
 				if (connectionType == 0 ) { // Default connection
-				Rdbms_conn.init(_dbparam);
-				status = Rdbms_conn.testConn();
+				Rdbms_NewConn.init(_dbparam);
+				status = Rdbms_NewConn.get().testConn();
 				info.setText(status);
-				Rdbms_conn.closeConn();
+				Rdbms_NewConn.get().closeConn();
 				} else { // New Connection
-					Rdbms_NewConn newConn = new Rdbms_NewConn(_dbparam);
-					status = newConn.testConn();
+					Rdbms_NewConn.init(_dbparam);
+					status = Rdbms_NewConn.get().testConn();
 					info.setText(status);
-					newConn.closeConn();	
+					Rdbms_NewConn.get().closeConn();	
 				}
 			} catch (Exception e1) {
 				System.out.println("Connection Failed");
@@ -920,15 +919,15 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 			        path);
 			  }
 				if (connectionType == 0 ) { // Default connection
-					Rdbms_conn.init(_dbparam);
-					status = Rdbms_conn.testConn();
+					Rdbms_NewConn.init(_dbparam);
+					status = Rdbms_NewConn.get().testConn();
 					info.setText(status);
-					Rdbms_conn.closeConn();
+					Rdbms_NewConn.get().closeConn();
 				} else { // New Connection
-					Rdbms_NewConn newConn = new Rdbms_NewConn(_dbparam);
-					status = newConn.testConn();
+					Rdbms_NewConn.init(_dbparam);
+					Rdbms_NewConn.get().testConn();
 					info.setText(status);
-					newConn.closeConn();	
+					Rdbms_NewConn.get().closeConn();	
 				}
 			} catch (Exception e1) {
 				System.out.println("Connection Failed");

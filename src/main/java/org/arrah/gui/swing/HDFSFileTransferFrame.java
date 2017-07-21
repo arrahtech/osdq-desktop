@@ -24,6 +24,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -43,10 +46,6 @@ import javax.swing.SpringLayout;
 import org.arrah.framework.hadooputil.HDFSTransfer;
 import org.arrah.framework.hadooputil.HDFSTransferProgressListener;
 import org.arrah.framework.util.AsciiParser;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 
 public class HDFSFileTransferFrame extends JFrame implements ActionListener {

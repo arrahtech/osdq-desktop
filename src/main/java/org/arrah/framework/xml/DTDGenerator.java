@@ -1,6 +1,22 @@
 package org.arrah.framework.xml;
 
-import com.icl.saxon.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.sax.SAXSource;
+
+import org.xml.sax.InputSource;
+
+import com.icl.saxon.Context;
+import com.icl.saxon.Controller;
+import com.icl.saxon.ExtendedInputSource;
+import com.icl.saxon.NodeHandler;
+import com.icl.saxon.RuleManager;
 import com.icl.saxon.om.Axis;
 import com.icl.saxon.om.AxisEnumeration;
 import com.icl.saxon.om.DocumentInfo;
@@ -9,16 +25,6 @@ import com.icl.saxon.pattern.AnyNodeTest;
 import com.icl.saxon.pattern.NodeTypeTest;
 import com.icl.saxon.sort.BinaryTree;
 import com.icl.saxon.tinytree.TinyBuilder;
-import org.xml.sax.InputSource;
-
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.sax.SAXSource;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.util.Enumeration;
-import java.util.Vector;
 
 /**
  * DTDGenerator<BR>

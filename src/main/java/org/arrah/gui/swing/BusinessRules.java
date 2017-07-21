@@ -541,7 +541,8 @@ public class BusinessRules extends javax.swing.JFrame {
     		return;
     	}
     	hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", jcbConnection.getSelectedItem().toString());
-    	Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashTable);
+    	Rdbms_NewConn.init(hashTable);
+    	Rdbms_NewConn dbmsConn = Rdbms_NewConn.get();
         dbmsConn.openConn();
         System.out.println("Connected to " + hashTable.get("Database_ConnName"));
         

@@ -30,14 +30,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-import net.sourceforge.openforecast.DataPoint;
-import net.sourceforge.openforecast.DataSet;
-import net.sourceforge.openforecast.ForecastingModel;
-import net.sourceforge.openforecast.Observation;
-import net.sourceforge.openforecast.models.MovingAverageModel;
-import net.sourceforge.openforecast.models.PolynomialRegressionModel;
-import net.sourceforge.openforecast.models.RegressionModel;
-
 import org.arrah.framework.datagen.TimeUtil;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -47,6 +39,14 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
+
+import net.sourceforge.openforecast.DataPoint;
+import net.sourceforge.openforecast.DataSet;
+import net.sourceforge.openforecast.ForecastingModel;
+import net.sourceforge.openforecast.Observation;
+import net.sourceforge.openforecast.models.MovingAverageModel;
+import net.sourceforge.openforecast.models.PolynomialRegressionModel;
+import net.sourceforge.openforecast.models.RegressionModel;
 
 
 

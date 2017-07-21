@@ -2,6 +2,7 @@ package org.arrah.gui.swing;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JMenuItem;
 
 public class BusinesRuleListener implements ActionListener {

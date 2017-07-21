@@ -52,7 +52,7 @@ import org.arrah.framework.dataquality.SimilarityCheckLucene;
 import org.arrah.framework.dataquality.SimilarityCheckLucene.Hits;
 import org.arrah.framework.rdbms.JDBCRowset;
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class MultifacetPanel implements ActionListener, ItemListener {
     private ReportTable _rt, outputRT;
@@ -108,15 +108,15 @@ public class MultifacetPanel implements ActionListener, ItemListener {
     private ReportTable createRT (String tabName, Vector<String> colName) {
         ReportTable newRT = null;
         QueryBuilder qb = new QueryBuilder(
-                Rdbms_conn.getHValue("Database_DSN"), tabName,
-                Rdbms_conn.getDBType());
+                Rdbms_NewConn.get().getHValue("Database_DSN"), tabName,
+                Rdbms_NewConn.get().getDBType());
         String query = qb.get_selCol_query(colName.toArray(),"");
 
         try {
-            Rdbms_conn.openConn();
-            ResultSet rs = Rdbms_conn.runQuery(query);
+            Rdbms_NewConn.get().openConn();
+            ResultSet rs = Rdbms_NewConn.get().runQuery(query);
             newRT = SqlTablePanel.getSQLValue(rs, true);
-            Rdbms_conn.closeConn();
+            Rdbms_NewConn.get().closeConn();
         } catch (SQLException ee) {
             ConsoleFrame.addText("\n SQL Exception:" + ee.getMessage());
             return newRT; // newRT can not be populated

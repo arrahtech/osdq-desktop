@@ -40,7 +40,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.arrah.framework.profile.DBMetaInfo;
 import org.arrah.framework.profile.TableMetaInfo;
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class SearchDBPanel {
 	private String _searchS = null;
@@ -208,18 +208,18 @@ public class SearchDBPanel {
 			_rt.table.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			String table_s = _rt.getValueAt(row_i, 1).toString();
 			QueryBuilder qb = new QueryBuilder(
-					Rdbms_conn.getHValue("Database_DSN"), table_s,
-					Rdbms_conn.getDBType());
+					Rdbms_NewConn.get().getHValue("Database_DSN"), table_s,
+					Rdbms_NewConn.get().getDBType());
 			String toQuery ="";
 			if (_tableSearch == false)
 				toQuery = qb.get_like_table(_searchS, row_i, false);
 			else
 				toQuery = qb.get_like_table_cols(_searchS, _colName, false);	
 			try {
-				Rdbms_conn.openConn();
-				ResultSet rs = Rdbms_conn.runQuery(toQuery);
+				Rdbms_NewConn.get().openConn();
+				ResultSet rs = Rdbms_NewConn.get().runQuery(toQuery);
 				newRT = SqlTablePanel.getSQLValue(rs, true);
-				Rdbms_conn.closeConn();
+				Rdbms_NewConn.get().closeConn();
 			} catch (SQLException ee) {
 				ConsoleFrame.addText("\n SQL Exception:" + ee.getMessage());
 				return; // newRT can not be populated

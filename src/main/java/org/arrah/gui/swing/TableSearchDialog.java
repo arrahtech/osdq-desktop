@@ -32,13 +32,12 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 
 import org.arrah.framework.profile.TableMetaInfo;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.rdbms.SqlType;
 
 
@@ -68,7 +67,7 @@ public class TableSearchDialog implements ActionListener {
 	public JDialog createMapDialog() {
 
 		TableItemListener tl = new TableItemListener();
-		tableList = Rdbms_conn.getTable();
+		tableList = Rdbms_NewConn.get().getTable();
 		_rTableC = new JComboBox<String>();
 		
 		for (int i=0; i < tableList.size(); i++ ) {

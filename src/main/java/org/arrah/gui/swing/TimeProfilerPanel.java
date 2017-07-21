@@ -37,7 +37,7 @@ import javax.swing.JTabbedPane;
 
 import org.arrah.framework.profile.TimeStatisticalAnalysis;
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class TimeProfilerPanel extends JPanel  {
 
@@ -161,12 +161,12 @@ public class TimeProfilerPanel extends JPanel  {
 	private boolean getDataforAnalysis() {
 
 		QueryBuilder s_prof = new QueryBuilder(_dsn, _table, _col,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getDBType());
 		String query = s_prof.get_all_worder_query();
 		
 		try {
-			Rdbms_conn.openConn();
-			ResultSet rs = Rdbms_conn.runQuery(query);
+			Rdbms_NewConn.get().openConn();
+			ResultSet rs = Rdbms_NewConn.get().runQuery(query);
 			
 			/* Get Metadata and validate time field
 			 */
@@ -206,7 +206,7 @@ public class TimeProfilerPanel extends JPanel  {
 			} // End of while loop
 
 			rs.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException e) {
 			ConsoleFrame.addText("\n ERROR:Regex Query execution failed");
 			JOptionPane.showMessageDialog(null, e.getMessage(),

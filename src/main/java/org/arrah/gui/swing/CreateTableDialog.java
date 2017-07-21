@@ -24,7 +24,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.SQLException;
-
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -40,7 +39,7 @@ import javax.swing.SpringLayout;
 
 import org.arrah.framework.hadooputil.HiveQueryBuilder;
 import org.arrah.framework.profile.DBMetaInfo;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class CreateTableDialog extends JDialog implements ActionListener,
 		ItemListener {
@@ -98,19 +97,19 @@ public class CreateTableDialog extends JDialog implements ActionListener,
 					return;
 			
 				try {
-					Rdbms_conn.openConn();
+					Rdbms_NewConn.get().openConn();
 					HiveQueryBuilder queryDB = new HiveQueryBuilder(
-							Rdbms_conn.getHValue("Database_DSN"),Rdbms_conn.getDBType());
+							Rdbms_NewConn.get().getHValue("Database_DSN"),Rdbms_NewConn.get().getDBType());
 					
-					if (Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
+					if (Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
 						 String fielddelim = fielddelim_tf.getText();
 						String createQuery=queryDB.createHiveTable(_tableName_tf.getText(),coldesc,partcoldesc,fielddelim);
-						Rdbms_conn.execute(createQuery);
+						Rdbms_NewConn.get().execute(createQuery);
 					} else {
 						String createQuery=queryDB.createRDBMSTable(coldesc,_tableName_tf.getText(),consdesc);
-						Rdbms_conn.executeUpdate(createQuery);
+						Rdbms_NewConn.get().executeUpdate(createQuery);
 					}
-					Rdbms_conn.closeConn();
+					Rdbms_NewConn.get().closeConn();
 
 					ConsoleFrame.addText("\n The table " + _tableName_tf.getText() + " was created successfully");
 					JOptionPane.showMessageDialog(null,
@@ -163,7 +162,7 @@ public class CreateTableDialog extends JDialog implements ActionListener,
 		
 		// Hive will extra options of choosing row and field delimiter
 		JLabel fieldLabel= new JLabel("Field Delimiter");
-		if (Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
+		if (Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
 			 fielddelim_tf = new JTextField(5);
 			fielddelim_tf.setText("\\t");
 			jpanel.add(fieldLabel);jpanel.add(fielddelim_tf);
@@ -180,7 +179,7 @@ public class CreateTableDialog extends JDialog implements ActionListener,
 		springlayout.putConstraint("North", jscrollpane1, 10, "South",addcol);
 		
 		// Hive will extra options of choosing row and field delimiter
-		if (Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
+		if (Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
 			springlayout.putConstraint("West", fieldLabel, 15, "West", jpanel);
 			springlayout.putConstraint("West",fielddelim_tf , 15, "East", fieldLabel);
 			springlayout.putConstraint("North", fielddelim_tf, 10, "South", jscrollpane1);
@@ -241,7 +240,7 @@ public class CreateTableDialog extends JDialog implements ActionListener,
 		
 		if (isDataTypeValid == true) {
 			dataType = new JComboBox<String>(datatype_s);
-		} else if(Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
+		} else if(Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
 			dataType = new JComboBox<String>(new String[] {"TINYINT", "SMALLINT", "INT", "BIGINT",
 					"BOOLEAN", "FLOAT", "DOUBLE", "DECIMAL", "STRING", "BINARY", "TIMESTAMP","Others"});
 		} else {
@@ -255,7 +254,7 @@ public class CreateTableDialog extends JDialog implements ActionListener,
 		othertype_v.add(capacity, othertype);
 		
 		/* Hive does not support following feature for create Table */
-		if (Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
+		if (Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
 			defaultValue.setEnabled(false);
 			isNull.setEnabled(false);
 			isPrimaryKey.setEnabled(false);
@@ -362,7 +361,7 @@ public class CreateTableDialog extends JDialog implements ActionListener,
 			
 		}
 		if (primaryCol.length() > 0)
-			if(Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("Informix") == 0 )
+			if(Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("Informix") == 0 )
 				consdesc = "PRIMARY KEY ("+primaryCol+")" + " CONSTRAINT " + "PK_"+primaryCol;
 			else
 				consdesc = " p_key,PRIMARY KEY,("+primaryCol+")";

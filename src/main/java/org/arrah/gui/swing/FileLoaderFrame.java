@@ -1,5 +1,14 @@
 package org.arrah.gui.swing;
 
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.SQLException;
+import java.util.Hashtable;
+
 /***********************************************
  *     Copyright to Arrah Technology 2016      *
  *                                             *
@@ -29,16 +38,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import org.arrah.framework.rdbms.Rdbms_conn;
-
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.sql.SQLException;
-import java.util.Hashtable;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class FileLoaderFrame {
 	final private JFrame jframe;
@@ -59,7 +59,7 @@ public class FileLoaderFrame {
 
 				if (n == JOptionPane.YES_OPTION) {
 					try {
-						Rdbms_conn.exitConn();
+						Rdbms_NewConn.get().exitConn();
 					} catch (Exception exp) {
 					}
 					; // do nothing
@@ -219,12 +219,11 @@ public class FileLoaderFrame {
 		
 		jmenubar.add(jmenu6);
 		
-		// Initialize the singleton class RDBMS_Conn t o avoid static call null
+		// Initialize the singleton class Rdbms_NewConn.get() t o avoid static call null
 		try {
-			new Rdbms_conn();
-			Rdbms_conn.init(new Hashtable<String,String>());
+			Rdbms_NewConn.init(new Hashtable<String,String>());
 		} catch (SQLException e) {
-			ConsoleFrame.addText("\n Exception in Initializing Rdbms_conn:"+ e.getLocalizedMessage() );
+			ConsoleFrame.addText("\n Exception in Initializing Rdbms_NewConn.get():"+ e.getLocalizedMessage() );
 		};
 		
 	}

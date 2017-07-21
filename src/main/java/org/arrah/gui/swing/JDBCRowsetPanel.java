@@ -46,7 +46,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellEditor;
 
 import org.arrah.framework.rdbms.JDBCRowset;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.rdbms.UpdatableJdbcRowsetImpl;
 
 
@@ -189,7 +189,7 @@ public class JDBCRowsetPanel extends JPanel implements ActionListener {
 	}
 
 	private void populateTable(int fromIndex, int toIndex) throws SQLException {
-		if (Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") != 0 ) {
+		if (Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("hive") != 0 ) {
 		rows.absolute(fromIndex);
 		rows.previous();
 		} else {

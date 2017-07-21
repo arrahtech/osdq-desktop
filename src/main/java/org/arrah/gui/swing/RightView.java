@@ -49,7 +49,7 @@ import javax.swing.border.EtchedBorder;
 
 import org.arrah.framework.profile.TableMetaInfo;
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class RightView implements ItemListener,ActionListener {
 
@@ -200,7 +200,7 @@ public class RightView implements ItemListener,ActionListener {
 		String tbl_str = "" + table_info.get("Table");
 		String col_str = "" + table_info.get("Column");
 		QueryBuilder q_factory = new QueryBuilder(dsn_str, tbl_str, col_str,
-				Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getDBType());
 
 		if (body_p != null && body_p instanceof JDBCRowsetPanel)
 			((JDBCRowsetPanel) body_p).rowset.close();
@@ -269,7 +269,7 @@ public class RightView implements ItemListener,ActionListener {
 							JOptionPane.INFORMATION_MESSAGE);
 					return;
 				}  else {
-					Vector<String> vector = Rdbms_conn.getTable();
+					Vector<String> vector = Rdbms_NewConn.get().getTable();
 					int i = vector.indexOf(table_name.getText());
 
 					Vector<?> avector[] = null;

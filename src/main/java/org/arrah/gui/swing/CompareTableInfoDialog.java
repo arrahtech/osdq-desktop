@@ -46,7 +46,6 @@ import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.ndtable.ResultsetToRTM;
 import org.arrah.framework.rdbms.QueryBuilder;
 import org.arrah.framework.rdbms.Rdbms_NewConn;
-import org.arrah.framework.rdbms.Rdbms_conn;
 
 
 public class CompareTableInfoDialog implements ActionListener {
@@ -173,8 +172,8 @@ public class CompareTableInfoDialog implements ActionListener {
 				index = _rTableC.getSelectedIndex();
 				String tableName = _rTab.get(index);
 				try {
-				Rdbms_NewConn newConn = new Rdbms_NewConn(_dbParam);
-				 avector = newConn.populateColumn(tableName,null);	
+				Rdbms_NewConn.init(_dbParam);
+				 avector = Rdbms_NewConn.get().populateColumn(tableName,null);	
 				} catch ( SQLException ee) {
 					ConsoleFrame.addText("\n Error in getting column Names for table:"+tableName+"\n"+ee.getMessage());
 					System.out.println("SQL Error:" + ee.getMessage());
@@ -211,34 +210,34 @@ public class CompareTableInfoDialog implements ActionListener {
 			}
 			// Send Information to table comparison
 			QueryBuilder qb = new QueryBuilder(
-					Rdbms_conn.getHValue("Database_DSN"), _lTab,
-					Rdbms_conn.getDBType());
+					Rdbms_NewConn.get().getHValue("Database_DSN"), _lTab,
+					Rdbms_NewConn.get().getDBType());
 			String s1 = qb.get_selCol_query(_lCols.toArray(),"");
 			
 			try {
 			d_m.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
-			Rdbms_conn.openConn();
-			ResultSet resultset = Rdbms_conn.runQuery(s1); 
+			Rdbms_NewConn.get().openConn();
+			ResultSet resultset = Rdbms_NewConn.get().runQuery(s1); 
 			Vector<BigInteger> hashNumber = ResultsetToRTM.getMD5Value(resultset);
 			resultset.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 			
 			// Query to another table
 			int index = _rTableC.getSelectedIndex();
 			String tableName = _rTab.get(index);
-			Rdbms_NewConn newConn = new Rdbms_NewConn(_dbParam);
+			Rdbms_NewConn.init(_dbParam);
 			qb = new QueryBuilder(
-					newConn.getHValue("Database_DSN"), tableName,
-					newConn.getDBType());
+			    Rdbms_NewConn.get().getHValue("Database_DSN"), tableName,
+			    Rdbms_NewConn.get().getDBType());
 			s1 = qb.get_selCol_query(colName_v.toArray(),"");
 			
-			if ( newConn.openConn() == true ) {
-				resultset = newConn.runQuery(s1);
+			if ( Rdbms_NewConn.get().openConn() == true ) {
+				resultset = Rdbms_NewConn.get().runQuery(s1);
 				boolean matval = false;
 				if (mr.isSelected() == true) matval = true;
 				ReportTableModel rtm = ResultsetToRTM.matchMD5Value(resultset,hashNumber,matval);
 				resultset.close();
-				newConn.closeConn();
+				Rdbms_NewConn.get().closeConn();
 				
 				d_m.setVisible(false);
 				

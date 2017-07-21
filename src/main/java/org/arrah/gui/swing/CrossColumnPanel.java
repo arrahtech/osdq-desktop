@@ -57,7 +57,7 @@ import org.apache.lucene.search.Query;
 import org.arrah.framework.dataquality.SimilarityCheckLucene;
 import org.arrah.framework.dataquality.SimilarityCheckLucene.Hits;
 import org.arrah.framework.rdbms.JDBCRowset;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 
 public class CrossColumnPanel implements ActionListener, TableModelListener, ItemListener {
 	private ReportTable _rt, outputRT;
@@ -152,7 +152,7 @@ public class CrossColumnPanel implements ActionListener, TableModelListener, Ite
 		skipVC = new Vector<Integer>();
 		parentMap = new Hashtable<Integer, Integer>();
 		
-		if (Rdbms_conn.getHValue("Database_Type") != null && Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
+		if (Rdbms_NewConn.get().getHValue("Database_Type") != null && Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("hive") == 0 ) {
 		 // for Hive
 				if (_rows != null) _rows.close();
 				try {
@@ -226,7 +226,7 @@ public class CrossColumnPanel implements ActionListener, TableModelListener, Ite
 					if (isRowSet == false)
 						row = _rt.getRow(Integer.parseInt(rowid));
 					else {
-						if (Rdbms_conn.getHValue("Database_Type") != null && Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") != 0 ) {
+						if (Rdbms_NewConn.get().getHValue("Database_Type") != null && Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("hive") != 0 ) {
 							row = _rows.getRow(Integer.parseInt(rowid)); 
 						} else {
 							// will not work for Hive as rowset can not move bothways

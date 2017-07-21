@@ -638,9 +638,9 @@ public class JobScheduler extends javax.swing.JFrame {
            	    }
                 hashValues = new Hashtable<String, String>();
                 hashValues = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", dbName);
-                Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashValues);
+                Rdbms_NewConn.init(hashValues);
 
-                dbmsConn.openConn();
+                Rdbms_NewConn.get().openConn();
                 String[] splitTime = time.split(":");
 
                 // split the time into hours, minutes, seconds so that these are passed as arguments to the scheduler

@@ -268,15 +268,15 @@ public class ExecuteBusiRule extends javax.swing.JFrame {
                 hashTable = new Hashtable<String, String>();
                 hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", dbConnName);
                 
-                Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashTable);
+                Rdbms_NewConn.init(hashTable);
 
-                dbmsConn.openConn();
+                Rdbms_NewConn.get().openConn();
                 
-                rs = dbmsConn.execute(query);
+                rs = Rdbms_NewConn.get().execute(query);
                 
                 loadTableData(rs);
                 
-                dbmsConn.closeConn();
+                Rdbms_NewConn.get().closeConn();
                 
             } catch (  Exception  ex) {
                 Logger.getLogger(ExecuteBusiRule.class.getName()).log(Level.SEVERE, null, ex);

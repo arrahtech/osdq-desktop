@@ -92,7 +92,7 @@ import org.arrah.framework.profile.FileProfile;
 import org.arrah.framework.profile.InterTableInfo;
 import org.arrah.framework.profile.TableMetaInfo;
 import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.rdbms.SqlType;
 import org.arrah.framework.util.DiscreetRange;
 import org.arrah.framework.util.KeyValueParser;
@@ -2224,7 +2224,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 
 		init = false;
 		QueryBuilder qb = new QueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"), Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"), Rdbms_NewConn.get().getDBType());
 		if (isLoad) {
 			unique_table_s = new Vector<String>();
 			query = qb.get_mapping_query(ht, unique_table_s);
@@ -2308,7 +2308,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 	private JDialog mapDialog(boolean toDb) throws IOException {
 		init = false;
 		JPanel jp_p = null;
-		if (Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") == 0 && toDb == true ) {
+		if (Rdbms_NewConn.get().getHValue("Database_Type").compareToIgnoreCase("hive") == 0 && toDb == true ) {
 			jp_p = hiveLoadPanel();
 			jp_p.setPreferredSize(new Dimension(500,300));
 		} else {
@@ -2316,7 +2316,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		ColumnItemListener cl = new ColumnItemListener();
 
 		int colC = _rt.table.getColumnCount();
-		Vector<String> vector = Rdbms_conn.getTable();
+		Vector<String> vector = Rdbms_NewConn.get().getTable();
 		vector1 = new Vector[2];
 		table1 = new JComboBox[colC];
 		col1 = new JComboBox[colC];
@@ -2722,7 +2722,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 						ConsoleFrame.addText("\n " + e.getMessage());
 					}
 				} else {
-					Vector<String> vector = Rdbms_conn.getTable();
+					Vector<String> vector = Rdbms_NewConn.get().getTable();
 					int i = vector.indexOf(table1[_index].getSelectedItem()
 							.toString());
 
@@ -2827,7 +2827,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 	/* This function will create a panel to load data into hive */
 	private JPanel hiveLoadPanel() {
 		
-		Vector<String> vector = Rdbms_conn.getTable();
+		Vector<String> vector = Rdbms_NewConn.get().getTable();
 		vector1 = new Vector[2];
 		table1 = new JComboBox[1]; // Only one is needed to hold tablenames
 
@@ -2909,17 +2909,17 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 	 private void showHiveTableInfo() {
 		 String table  = table1[0].getSelectedItem().toString();
 		 HiveQueryBuilder qb = new HiveQueryBuilder(
-					Rdbms_conn.getHValue("Database_DSN"),table,Rdbms_conn.getDBType());
+					Rdbms_NewConn.get().getHValue("Database_DSN"),table,Rdbms_NewConn.get().getDBType());
 			String query = qb.descHiveTable();
 			
 			try {
 				d_m.setCursor(java.awt.Cursor
 						.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
-				Rdbms_conn.openConn();
-				ResultSet rs = Rdbms_conn.runQuery(query); 
+				Rdbms_NewConn.get().openConn();
+				ResultSet rs = Rdbms_NewConn.get().runQuery(query); 
 				ReportTableModel rtm = ResultsetToRTM.getSQLValue(rs, true);
 				rs.close();
-				Rdbms_conn.closeConn();
+				Rdbms_NewConn.get().closeConn();
 				ReportTable rt = new ReportTable(rtm);
 				
 				/* Now Open Dialog to show */
@@ -2965,16 +2965,16 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		}
 		
 		HiveQueryBuilder qb = new HiveQueryBuilder(
-				Rdbms_conn.getHValue("Database_DSN"),table,Rdbms_conn.getDBType());
+				Rdbms_NewConn.get().getHValue("Database_DSN"),table,Rdbms_NewConn.get().getDBType());
 		String query = qb.appendHiveTable(path, table, local.isSelected(), overWrite.isSelected(), partition);
 		
 		try {
 			d_m.setCursor(java.awt.Cursor
 							.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
-			Rdbms_conn.openConn();
-			ResultSet rs = Rdbms_conn.runQuery(query); 
+			Rdbms_NewConn.get().openConn();
+			ResultSet rs = Rdbms_NewConn.get().runQuery(query); 
 			rs.close();
-			Rdbms_conn.closeConn();
+			Rdbms_NewConn.get().closeConn();
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null,
 					e.getLocalizedMessage(), "Hive SQL Error",

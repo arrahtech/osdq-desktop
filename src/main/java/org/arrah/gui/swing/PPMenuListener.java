@@ -32,7 +32,7 @@ import javax.swing.JOptionPane;
 import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.profile.TableFirstInformation;
 import org.arrah.framework.profile.TableMetaInfo;
-import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.rdbms.TableRelationInfo;
 
 public class PPMenuListener implements ActionListener {
@@ -53,9 +53,9 @@ public class PPMenuListener implements ActionListener {
 		try {
 			String command = e.getActionCommand();
 
-			String cat = Rdbms_conn.getHValue("Database_Catalog");
+			String cat = Rdbms_NewConn.get().getHValue("Database_Catalog");
 			cat = "";
-			String sch = Rdbms_conn.getHValue("Database_SchemaPattern");
+			String sch = Rdbms_NewConn.get().getHValue("Database_SchemaPattern");
 			cat = cat.compareTo("") != 0 ? cat : null;
 			sch = sch.compareTo("") != 0 ? sch : null;
 

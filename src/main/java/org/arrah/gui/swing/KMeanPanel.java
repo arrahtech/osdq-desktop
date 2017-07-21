@@ -29,17 +29,16 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import org.arrah.framework.ndtable.ReportTableModel;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+
 import net.sf.jdmf.algorithms.clustering.KMeansAlgorithm;
 import net.sf.jdmf.data.input.attribute.Attribute;
 import net.sf.jdmf.data.input.clustering.ClusteringInputData;
 import net.sf.jdmf.data.output.clustering.Cluster;
 import net.sf.jdmf.data.output.clustering.ClusteringDataMiningModel;
 import net.sf.jdmf.visualization.clustering.ChartGenerator;
-
-import org.arrah.framework.ndtable.ReportTableModel;
-import org.arrah.gui.swing.ConsoleFrame;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
 
 
 public class KMeanPanel extends JPanel implements  Serializable,ActionListener {
