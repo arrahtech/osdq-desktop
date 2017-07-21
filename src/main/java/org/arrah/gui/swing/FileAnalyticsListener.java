@@ -27,6 +27,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
@@ -131,7 +132,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		jp.setLayout(layout);
 
 		JLabel la = new JLabel("Aggregator for Measure");
-		comboAggr = new JComboBox<String>(new String[] {"Sum","Absolute Sum","Avg","Count","Min","Max"});
+		comboAggr = new JComboBox<String>(new String[] {"Sum","Absolute Sum","Avg","Count","Min","Max","Unique Count"});
 		jp.add(la);
 		jp.add(comboAggr);
 		
@@ -864,6 +865,8 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 						+ comboX.getSelectedItem().toString();
 			Class<?> cclass = _rt.table.getColumnClass(ys);
 			int aindex = comboAggr.getSelectedIndex();
+			HashMap<String,Vector<Object>> uniqMap = new HashMap<String,Vector<Object>>();
+			
 			for (int i = 0; i < _rowC; i++) {
 				String key;
 				Object obj = _rt.table.getValueAt(i, xs);
@@ -883,7 +886,9 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 				Double oldV = _map.get(key);
 				
 				if (oldV == null) {
-					if (cclass.getName().toUpperCase().contains("DOUBLE"))
+					if (aindex == 3 || aindex == 6)
+						_map.put(key, 1.0D); // for count and uniq count
+					else if (cclass.getName().toUpperCase().contains("DOUBLE"))
 						_map.put(key, (Double) value);
 					else
 						_map.put(key, 1.0D); // if not number take count
@@ -911,12 +916,44 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 							if ((Double) value >  oldV )
 							_map.put(key, (Double)value); 
 							break;
+						case 6: //Unique count
+							if (uniqMap.containsKey(key) == false) { // new entry
+								Vector<Object> keyVec = new Vector<Object>();
+								keyVec.add(value);
+								uniqMap.put(key, keyVec);
+								_map.put(key, (double)uniqMap.get(key).size());
+								break;
+							} else { //if key is found
+								Vector<Object> keyVec = uniqMap.get(key);
+								if (keyVec.indexOf(value) == -1)  {//this value not there
+									keyVec.add(value);
+									_map.put(key, (double)keyVec.size());
+									break;
+								} else { // it is already there
+									break;
+								}
+							}
 						default:
 						}
 					}
-					
-					else
+					else { // Not number but count and uniq count should work
+						if (aindex == 6) { // uniq count
+							if (uniqMap.containsKey(key) == false) { // new entry
+								Vector<Object> keyVec = new Vector<Object>();
+								keyVec.add(value);
+								uniqMap.put(key, keyVec);
+								_map.put(key, (double)uniqMap.get(key).size());
+							} else { //if key is found
+								Vector<Object> keyVec = uniqMap.get(key);
+								if (keyVec.indexOf(value) == -1)  {//this value not there
+									keyVec.add(value);
+									_map.put(key, (double)keyVec.size());
+								} else { // it is already there
+								}
+							} //end of else
+						} else
 						_map.put(key, (oldV + 1)); // if not number take count
+					}
 				}
 			} // End of Row iteration
 		}  else if (action.equals("reportok")) {
