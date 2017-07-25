@@ -1226,9 +1226,9 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		JPanel cenP = new JPanel(new SpringLayout());
 		String [] field = null;
 		if (chartType == REPORT)
-			field = new String[]{"Group By","Sum","Absolute Sum","Count","Average"}; // add Avg, count
+			field = new String[]{"Group By","Sum","Absolute Sum","Count","Average","Unique Count"}; // add Avg, count
 		if (chartType == CROSSTAB) 		// Cross Tab Row and Column dimension
-			field = new String[]{"Row Dimension","Column Dimension","Sum","Absolute Sum","Count","Average"};
+			field = new String[]{"Row Dimension","Column Dimension","Sum","Absolute Sum","Count","Average","Unique Count"}; //added Uniq Count
 
 		comboCol = new JComboBox[_colC];
 		comboField = new JComboBox[_colC];
