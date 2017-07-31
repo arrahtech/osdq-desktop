@@ -13,7 +13,8 @@ package org.arrah.gui.swing;
  ***********************************************/
 
 /* This file is used for getting info about 
- * comparing files taken as RTM
+ * comparing diffing files taken as RTM
+ * to the cell level
  * 
  */
 
