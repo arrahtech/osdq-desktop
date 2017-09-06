@@ -619,6 +619,11 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		option_m.add(fjoinm);
 		option_m.addSeparator();
 		
+		JMenuItem er_m = new JMenuItem("Entity Resolution");
+		er_m.addActionListener(this);
+		er_m.setActionCommand("ersearch");
+		option_m.add(er_m);
+		option_m.addSeparator();
 
 		JMenuItem loadR_m = new JMenuItem("Load File into Rows");
 		loadR_m.addActionListener(this);
@@ -827,6 +832,16 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 			}
 			if (command.equals("mfsearch")){
 				new MultifacetPanel(_rt);
+				return;
+			}
+			if (command.equals("ersearch")){
+				JOptionPane.showMessageDialog (null, "Choose the file for Entity Resolution");
+				
+				ImportFilePanel impF = new ImportFilePanel(false);
+				ReportTable rtable = impF.getTable();
+				if (rtable == null)
+					return;
+				new ERPanel(_rt,rtable);
 				return;
 			}
 			if (command.equals("pcorrelation")) {

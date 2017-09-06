@@ -195,8 +195,8 @@ public class MultifacetPanel implements ActionListener, ItemListener {
             jp.add(sHigher[i]);
 
             if (colType[i].toUpperCase().contains("DATE") || colType[i].toUpperCase().contains("TIME") ) {
-            	sLower[i].setToolTipText("yyyyMMDDHHmmss");
-            	sHigher[i].setToolTipText("yyyyMMDDHHmmss");
+            	sLower[i].setToolTipText("yyyyMMddHHmmss");
+            	sHigher[i].setToolTipText("yyyyMMddHHmmss");
             }
         }
         SpringUtilities.makeCompactGrid(jp, colC + 1, 5, 3, 3, 3, 3); // +1 for
