@@ -79,6 +79,7 @@ import javax.swing.text.MaskFormatter;
 
 import org.arrah.framework.analytics.MetadataMatcher;
 import org.arrah.framework.analytics.NormalizeCol;
+import org.arrah.framework.analytics.SetAnalysis;
 import org.arrah.framework.datagen.AggrCumRTM;
 import org.arrah.framework.datagen.RandomColGen;
 import org.arrah.framework.dataquality.FillCheck;
@@ -415,6 +416,26 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		correlation.addActionListener(this);
 		correlation.setActionCommand("pcorrelation");
 		analytics_m.add(correlation);
+		analytics_m.addSeparator();
+		
+		// Set Analysis
+		JMenu setA = new JMenu("Set Analysis");
+		JMenuItem setU = new JMenuItem("Union Set");
+		setU.addActionListener(this);
+		setU.setActionCommand("setunion");
+		setA.add(setU);
+		
+		JMenuItem setI = new JMenuItem("Intersection Set");
+		setI.addActionListener(this);
+		setI.setActionCommand("setintersection");
+		setA.add(setI);
+		
+		JMenuItem setD = new JMenuItem("Difference Set");
+		setD.addActionListener(this);
+		setD.setActionCommand("setdifference");
+		setA.add(setD);
+		
+		analytics_m.add(setA);
 
 		// Column Menu
 		JMenuItem addC_m = new JMenuItem("Add Column");
@@ -875,6 +896,37 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(null, "Could not get Correlation for dataset");
 				else
 					JOptionPane.showMessageDialog(null, "Corrleation is:" + corr);
+				
+				return;
+			}
+			if (command.equals("setunion")||command.equals("setintersection") ||
+					command.equals("setdifference")) {
+				_rt.cancelSorting();
+				int index_a = selectedColIndex(_rt,"Select First Column");
+				if (index_a < 0)
+					return;
+				int index_b = selectedColIndex(_rt,"Select Second Column");
+				if (index_b < 0)
+					return;
+				Vector<Object> inputData_a = _rt.getRTMModel().getColDataV(index_a);
+				Vector<Object> inputData_b = _rt.getRTMModel().getColDataV(index_b);
+				
+				SetAnalysis sa = new SetAnalysis(inputData_a,inputData_b);
+				Vector<Object> res = new Vector<Object> ();
+				if (command.equals("setunion"))
+					res = sa.getUnion();
+				else if (command.equals("setintersection"))
+					res = sa.getIntersection();
+				else
+					res = sa.getDifference(inputData_a, inputData_b);
+				
+				if (res == null || res.size() == 0)
+					JOptionPane.showMessageDialog(null, "Message:"+sa.getErrstr());
+				else {
+					for (Object o : res)
+						System.out.println(o.toString());
+				}
+
 				
 				return;
 			}
