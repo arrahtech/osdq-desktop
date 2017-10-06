@@ -34,7 +34,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -419,6 +421,29 @@ public class TableMenuListener implements ActionListener, ItemListener {
 			if (i < 0 ) return;
 			columnSearchIndex = i;
 			conditonalDialog();
+			return;
+		}
+		if (source.getText().compareTo("Unique Records") == 0) {
+			int i = selectedColIndex(table);
+			if (i < 0 ) return;
+			Vector<Object> colV = _rt.getRTMModel().getColDataV(i);
+			colV = new Vector<Object>(new HashSet<Object>(colV));// remove duplicates
+			
+			ReportTable newRTFill = new ReportTable(new String[]{"Unique Records"}, true, true);
+			Object[] newR = new Object[1];
+			for (Object o : colV) {
+				newR[0] = o;
+				newRTFill.addFillRow(newR);
+			}
+			
+			JDialog d_fill = new JDialog();
+			d_fill.setModal(true);
+			d_fill.setTitle("Unique Records Dialog");
+			d_fill.setLocation(250, 250);
+			d_fill.getContentPane().add(newRTFill);
+			d_fill.pack();
+			d_fill.setVisible(true);
+
 			return;
 		}
 		if (source.getText().compareTo("WhiteSpace Rendering") == 0) {

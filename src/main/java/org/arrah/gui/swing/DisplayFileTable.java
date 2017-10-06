@@ -910,24 +910,41 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					return;
 				Vector<Object> inputData_a = _rt.getRTMModel().getColDataV(index_a);
 				Vector<Object> inputData_b = _rt.getRTMModel().getColDataV(index_b);
-				
+				String dTitle="";
 				SetAnalysis sa = new SetAnalysis(inputData_a,inputData_b);
 				Vector<Object> res = new Vector<Object> ();
-				if (command.equals("setunion"))
+				if (command.equals("setunion")) {
 					res = sa.getUnion();
-				else if (command.equals("setintersection"))
-					res = sa.getIntersection();
-				else
-					res = sa.getDifference(inputData_a, inputData_b);
-				
-				if (res == null || res.size() == 0)
-					JOptionPane.showMessageDialog(null, "Message:"+sa.getErrstr());
-				else {
-					for (Object o : res)
-						System.out.println(o.toString());
+					dTitle = "Union";
 				}
-
+				else if (command.equals("setintersection")) {
+					res = sa.getIntersection();
+					dTitle = "Intersection";
+				}
+				else {
+					res = sa.getDifference(inputData_a, inputData_b);
+					dTitle = "Difference";
+				}
 				
+				if (res == null || res.size() == 0) {
+					JOptionPane.showMessageDialog(null, "Message:"+sa.getErrstr());
+					return;
+				} else {
+					ReportTable newRTFill = new ReportTable(new String[]{dTitle}, true, true);
+					Object[] newR = new Object[1];
+					for (Object o : res) {
+						newR[0] = o;
+						newRTFill.addFillRow(newR);
+					}
+					
+					JDialog d_fill = new JDialog();
+					d_fill.setModal(true);
+					d_fill.setTitle("Set Table Dialog");
+					d_fill.setLocation(250, 250);
+					d_fill.getContentPane().add(newRTFill);
+					d_fill.pack();
+					d_fill.setVisible(true);
+				}
 				return;
 			}
 			if (command.equals("filtercond")) {

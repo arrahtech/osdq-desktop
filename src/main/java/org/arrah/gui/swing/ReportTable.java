@@ -660,6 +660,11 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 			popup.add(menu4);
 			popup.addSeparator();
 			
+			JMenuItem uRecord = new JMenuItem("Unique Records");
+			uRecord.addActionListener(new TableMenuListener(this));
+			popup.add(uRecord);
+			popup.addSeparator();
+			
 			JMenuItem menu5 = new JMenuItem("Number Rendering");
 			menu5.addActionListener(new TableMenuListener(table));
 			popup.add(menu5);
