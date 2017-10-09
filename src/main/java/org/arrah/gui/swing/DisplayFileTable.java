@@ -436,6 +436,27 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		setA.add(setD);
 		
 		analytics_m.add(setA);
+		analytics_m.addSeparator();
+		
+		// Fuzzy Set Analysis
+		JMenu fsetA = new JMenu("Fuzzy Set Analysis");
+		JMenuItem fsetU = new JMenuItem("Fuzzy Union Set");
+		fsetU.addActionListener(this);
+		fsetU.setActionCommand("fsetunion");
+		fsetA.add(fsetU);
+		
+		JMenuItem fsetI = new JMenuItem("Fuzzy Intersection Set");
+		fsetI.addActionListener(this);
+		fsetI.setActionCommand("fsetintersection");
+		fsetA.add(fsetI);
+		
+		JMenuItem fsetD = new JMenuItem("Fuzzy Difference Set");
+		fsetD.addActionListener(this);
+		fsetD.setActionCommand("fsetdifference");
+		fsetA.add(fsetD);
+		
+		analytics_m.add(fsetA);
+		
 
 		// Column Menu
 		JMenuItem addC_m = new JMenuItem("Add Column");
@@ -940,6 +961,54 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					JDialog d_fill = new JDialog();
 					d_fill.setModal(true);
 					d_fill.setTitle("Set Table Dialog");
+					d_fill.setLocation(250, 250);
+					d_fill.getContentPane().add(newRTFill);
+					d_fill.pack();
+					d_fill.setVisible(true);
+				}
+				return;
+			}
+			if (command.equals("fsetunion")||command.equals("fsetintersection") ||
+					command.equals("fsetdifference")) {
+				_rt.cancelSorting();
+				int index_a = selectedColIndex(_rt,"Select First Column");
+				if (index_a < 0)
+					return;
+				int index_b = selectedColIndex(_rt,"Select Second Column");
+				if (index_b < 0)
+					return;
+				Vector<Object> inputData_a = _rt.getRTMModel().getColDataV(index_a);
+				Vector<Object> inputData_b = _rt.getRTMModel().getColDataV(index_b);
+				String dTitle="";
+				SetAnalysis sa = new SetAnalysis(inputData_a,inputData_b);
+				Vector<Object> res = new Vector<Object> ();
+				if (command.equals("fsetunion")) {
+					res = sa.getUnion(0.8f);
+					dTitle = "Fuzzy Union";
+				}
+				else if (command.equals("fsetintersection")) {
+					res = sa.getIntersection(0.8f);
+					dTitle = "Fuzzy Intersection";
+				}
+				else {
+					res = sa.getDifference(inputData_a, inputData_b,0.8f);
+					dTitle = "Fuzzy Difference";
+				}
+				
+				if (res == null || res.size() == 0) {
+					JOptionPane.showMessageDialog(null, "Message:"+sa.getErrstr());
+					return;
+				} else {
+					ReportTable newRTFill = new ReportTable(new String[]{dTitle}, true, true);
+					Object[] newR = new Object[1];
+					for (Object o : res) {
+						newR[0] = o;
+						newRTFill.addFillRow(newR);
+					}
+					
+					JDialog d_fill = new JDialog();
+					d_fill.setModal(true);
+					d_fill.setTitle("Fuzzy Set Table Dialog");
 					d_fill.setLocation(250, 250);
 					d_fill.getContentPane().add(newRTFill);
 					d_fill.pack();
