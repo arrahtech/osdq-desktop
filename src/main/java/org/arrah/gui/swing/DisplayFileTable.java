@@ -77,9 +77,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
+import org.arrah.framework.analytics.ChiSquareTest;
 import org.arrah.framework.analytics.MetadataMatcher;
 import org.arrah.framework.analytics.NormalizeCol;
 import org.arrah.framework.analytics.SetAnalysis;
+import org.arrah.framework.analytics.TabularReport;
 import org.arrah.framework.datagen.AggrCumRTM;
 import org.arrah.framework.datagen.RandomColGen;
 import org.arrah.framework.dataquality.FillCheck;
@@ -416,6 +418,13 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		correlation.addActionListener(this);
 		correlation.setActionCommand("pcorrelation");
 		analytics_m.add(correlation);
+		analytics_m.addSeparator();
+		
+		// Chi Square Correlation
+		JMenuItem chisquare = new JMenuItem("Chi-Square Independence Test");
+		chisquare.addActionListener(this);
+		chisquare.setActionCommand("pchisquare");
+		analytics_m.add(chisquare);
 		analytics_m.addSeparator();
 		
 		// Set Analysis
@@ -917,6 +926,34 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(null, "Could not get Correlation for dataset");
 				else
 					JOptionPane.showMessageDialog(null, "Corrleation is:" + corr);
+				
+				return;
+			}
+			if (command.equals("pchisquare")) {
+				_rt.cancelSorting();
+				int index_a = selectedColIndex(_rt,"Select Row Attribute");
+				if (index_a < 0)
+					return;
+				int index_b = selectedColIndex(_rt,"Select Column Attribute");
+				if (index_b < 0)
+					return;
+				Vector<Integer> _reportColV = new Vector<Integer>();
+				Vector<Integer> _reportFieldV = new Vector<Integer>();
+				_reportColV.add(index_a);_reportColV.add(index_b);_reportColV.add(index_a); // group by group by count
+				_reportFieldV.add(0);_reportFieldV.add(0);_reportFieldV.add(3); // group by group by count
+				ReportTableModel newRTM = TabularReport.showReport(_rt.getRTMModel(), _reportColV, _reportFieldV);
+				newRTM = RTMUtil.sortRTM(newRTM, true);
+				
+				// Now prepare for Cross Tab or contingency table
+				_reportFieldV.set(1,1); _reportFieldV.set(2,2);// increase by one for cross tab
+				ReportTableModel newRTMCross = TabularReport.tabToCrossTab(newRTM, _reportColV, _reportFieldV);
+				
+				ChiSquareTest chsq = new ChiSquareTest(newRTMCross);
+				double chsqV = chsq.getChiSquare();
+				int degofF = chsq.getDegreeOfFreedom();
+
+				JOptionPane.showMessageDialog(null, " Chi Square is :"+chsqV+ "\n Degree of Freedom is:"+degofF);
+
 				
 				return;
 			}
