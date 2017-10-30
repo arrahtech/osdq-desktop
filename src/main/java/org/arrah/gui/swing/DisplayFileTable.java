@@ -952,7 +952,8 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				double chsqV = chsq.getChiSquare();
 				int degofF = chsq.getDegreeOfFreedom();
 
-				JOptionPane.showMessageDialog(null, " Chi Square is :"+chsqV+ "\n Degree of Freedom is:"+degofF);
+				JOptionPane.showMessageDialog(null, " Chi Square is :"+chsqV+ "\n Degree of Freedom is:"+degofF
+						+"\n To get p-Value look into chart at resource/chidistribution.txt");
 
 				
 				return;
