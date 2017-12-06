@@ -55,12 +55,13 @@ public class TSPlotPanel extends JPanel implements ActionListener, Serializable 
 	private String xTitle, yTitle;
 	private String title;
 	private TimeSeries dataset;
+	private TimeSeries[] datasets = null; // for multiline series
 
 	public TSPlotPanel(String titleName, String xName, String yName) {
 		title = titleName;
 		xTitle = xName;
-		yTitle = yName;
-		dataset = new TimeSeries("Time Series Plot");
+		yTitle = "Range";
+		dataset = new TimeSeries(yName);
 		addMouseListener(new PopupListener());
 	}
 	
@@ -72,10 +73,24 @@ public class TSPlotPanel extends JPanel implements ActionListener, Serializable 
 		return dataset;	
 	}
 	
+	public void setTimeSeries(TimeSeries[] _dataset) {
+		datasets = _dataset;	
+	}
+	
+	public TimeSeries[] getTimeSeriesA() {
+		return datasets;	
+	}
+	
 	// Create the Time Series Plot
 	public void drawTSPlot() throws Exception {
 		TimeSeriesCollection tsdataset = new TimeSeriesCollection();
 		tsdataset.addSeries(dataset);
+		
+		if (datasets != null && datasets.length > 0)  { // multiple series
+				for (TimeSeries a : datasets)
+					tsdataset.addSeries(a);
+					
+		}
 		
 	JFreeChart chart = ChartFactory.createTimeSeriesChart(
 				title,  // title

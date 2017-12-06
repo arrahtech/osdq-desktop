@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -33,9 +34,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,12 +51,15 @@ import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -61,9 +67,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import org.arrah.framework.dataquality.FillCheck;
+import org.arrah.framework.ndtable.RTMUtil;
 import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.ndtable.ReportTableSorter;
 import org.arrah.framework.util.KeyValueParser;
+import org.jfree.data.time.TimeSeries;
 
 
 
@@ -73,7 +81,7 @@ public class TableMenuListener implements ActionListener, ItemListener {
 	private JFormattedTextField gt, lt, et;
 	private String prev = ""; // Empty string not null
 	private String reg_prev = ""; // Empty string not null
-	private JDialog d, jd, jdc;
+	private JDialog d, jd, jdc,jdt;
 	private int rowI = 0;
 	private int colI = 0, columnSearchIndex= -1; // selected Column for search
 	private int rowcount = 0;
@@ -87,6 +95,8 @@ public class TableMenuListener implements ActionListener, ItemListener {
 	private String replace = null; // replace string
 	private JComboBox<String> c_combo, c_combo1, c_combo2;
 	private ReportTable _rt;
+	
+	private JComboBox<String>  comboLat,comboLon,comboT;// for timeseries
 	
 
 	public TableMenuListener(JTable rt) {
@@ -196,6 +206,65 @@ public class TableMenuListener implements ActionListener, ItemListener {
 		if (action_c.compareToIgnoreCase("cancel") == 0) {
 			replace = null;
 			d.dispose();
+			return;
+		}
+		if (action_c.compareToIgnoreCase("tcancel") == 0) {
+			replace = null;
+			jdt.dispose();
+			return;
+		}
+		if (action_c.compareToIgnoreCase("timeseriesok") == 0) {
+			List<String> selV = new ArrayList<String>();
+			int selType = JOptionPane.showConfirmDialog(null, "Do you want to add more attributes to Time Series ?",
+					"Attribute Selection",JOptionPane.YES_NO_OPTION);
+			if (selType == JOptionPane.YES_OPTION) {
+				String[] col_n = new String[colcount];
+				for (int i = 0; i < colcount; i++) {
+					col_n[i] = _rt.table.getColumnName(i);
+				}
+				JList<String> list = new JList<String>(col_n);
+	            list.setSelectionMode(
+	                ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+	            
+	           JOptionPane jp = new JOptionPane();
+	           jp.setMessage(new JScrollPane(list));
+	           JDialog jd = jp.createDialog("Select More Attributes");
+	           jd.setVisible(true);
+	           selV = ((JList<String>)((JScrollPane)jp.getMessage()).getViewport().getView()).getSelectedValuesList();
+			}
+			int dimIndex = comboT.getSelectedIndex();
+			String dateCol = comboLat.getSelectedItem().toString();
+			String numCol = comboLon.getSelectedItem().toString();
+			replace = null;
+			jdt.dispose();
+			
+			TSPlotPanel ts = new TSPlotPanel("Time Series",dateCol,numCol);
+			try {
+				
+				RTMUtil.addRTMDataSet(ts.getTimeSeries(),_rt.getRTMModel(), dateCol,numCol,dimIndex);
+				TimeSeries[] tsjA = new TimeSeries[selV.size()];
+				int tin = 0;
+				for (String s:selV) { // add more series
+					TimeSeries tsj = new TimeSeries(s);
+					tsj = RTMUtil.addRTMDataSet(tsj,_rt.getRTMModel(), dateCol,s,dimIndex);
+					tsjA[tin] = tsj;
+					i++;
+				}
+				ts.setTimeSeries(tsjA);
+				ts.drawTSPlot();
+			} catch (Exception e1) {
+				JOptionPane.showMessageDialog(null,"Exception:"+e1.getMessage());
+				return;
+			}
+			
+			jdt = new JDialog();
+			jdt.setTitle("Time Series Dialog");
+			jdt.setLocation(150, 100);
+			jdt.getContentPane().add(ts);
+			jdt.setModal(true);
+			jdt.pack();
+			jdt.setVisible(true);
+			
 			return;
 		}
 		if (action_c.compareToIgnoreCase("exit") == 0) {
@@ -494,9 +563,12 @@ public class TableMenuListener implements ActionListener, ItemListener {
 			jdn.setVisible(true);
 			return;
 		}
-		
+		if (source.getText().compareTo("Line Chart") == 0) {
+			createTimeSeriesDialog();
+			return;
+		}	
 
-	}// End of Action Performed
+	} // End of Action Performed
 
 	public void itemStateChanged(ItemEvent e) {
 		stateChanged = true;
@@ -813,5 +885,61 @@ public class TableMenuListener implements ActionListener, ItemListener {
 			return c;
 		}
 	} // End of MyCellRenderer
+	
+		private void createTimeSeriesDialog() {
+			JPanel jp = new JPanel(new BorderLayout());
+			colcount = table.getColumnCount();
+			String[] col_n = new String[colcount];
+			
+			for (int i = 0; i < colcount; i++) {
+				col_n[i] = _rt.table.getColumnName(i);
+			}
+			
+			JPanel timeserP = new JPanel(new GridLayout(3,2));
+			JLabel info = new JLabel("  Select Date Column  :");
+			timeserP.add(info);
+			comboLat = new JComboBox<String>(col_n);
+			timeserP.add(comboLat);
+			
+			JLabel cenLat = new JLabel(" Select Number Column :");
+			timeserP.add(cenLat);
+			comboLon = new JComboBox<String>(col_n);
+			timeserP.add(comboLon);
+			jp.add(timeserP,BorderLayout.CENTER);
+			
+			
+			JLabel dim = new JLabel("Time Dimension");
+			timeserP.add(dim);
+			comboT = new JComboBox<String>(new String[] {"Year","Quarter","Month","Week", "Day",
+					"Hour","Minute","Second","Milli Second"});
+			timeserP.add(comboT);
+			
+	
+			JPanel bp = new JPanel();
+			JButton ok = new JButton("OK");
+			ok.addKeyListener(new KeyBoardListener());
+			
+			ok.setActionCommand("timeseriesok");
+			ok.addActionListener(this);
+			bp.add(ok);
+			JButton can = new JButton("Cancel");
+			can.addKeyListener(new KeyBoardListener());
+			can.setActionCommand("tcancel");
+			can.addActionListener(this);
+			bp.add(can);
+	
+			jp.add(bp,BorderLayout.SOUTH);
+			
+			jp.setPreferredSize(new Dimension(350, 175));
+			jdt = new JDialog();
 
-}
+			jdt.setTitle("TimeSeries Parameters Input");
+			jdt.setLocation(150, 150);
+			jdt.getContentPane().add(jp);
+			jdt.setModal(true);
+			jdt.pack();
+			jdt.setVisible(true);
+	
+		}
+		
+} // End of Table Menu Listener

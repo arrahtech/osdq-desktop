@@ -761,10 +761,8 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 			createTimeSeriesDialog();
 			if (cancel_clicked)
 				return;
-			// int aggrIndex = comboAggr.getSelectedIndex();
-			int aggrIndex = 0; // dummy
 			int dimIndex = comboT.getSelectedIndex();
-			showTSPlot(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),aggrIndex,dimIndex);
+			showTSPlot(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),dimIndex);
 		} else if ( _chartType == REGRESSION ) {
 			createRegressionDialog();
 			if (cancel_clicked)
@@ -806,10 +804,8 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 			createTimeSeriesDialog();
 			if (cancel_clicked)
 				return;
-			// int aggrIndex = comboAggr.getSelectedIndex();
-			int aggrIndex = 0; // dummy
 			int dimIndex = comboT.getSelectedIndex();
-			showTSForecastPlot(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),aggrIndex,dimIndex);
+			showTSForecastPlot(comboLat.getSelectedItem().toString(),comboLon.getSelectedItem().toString(),dimIndex);
 		} else if (_chartType == TIMEREGRESSION ) {
 			createTimeRegressionDialog();
 			if (cancel_clicked)
@@ -1450,7 +1446,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		
 	}
 	
-	private void showTSPlot(String dateCol, String  numCol, int aggrIndex, int dimIndex) {
+	private void showTSPlot(String dateCol, String  numCol, int dimIndex) {
 
 		TSPlotPanel ts = new TSPlotPanel("Time Series",dateCol,numCol);
 		try {
@@ -1471,7 +1467,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 		
 	}
 	
-	private void showTSForecastPlot(String dateCol, String  numCol, int aggrIndex, int dimIndex) {
+	private void showTSForecastPlot(String dateCol, String  numCol, int dimIndex) {
 
 		TSPlotPanel ts = new TSPlotPanel("Time Series Forecast",dateCol,numCol);
 		
