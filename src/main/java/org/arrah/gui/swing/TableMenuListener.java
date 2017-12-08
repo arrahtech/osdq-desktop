@@ -563,7 +563,7 @@ public class TableMenuListener implements ActionListener, ItemListener {
 			jdn.setVisible(true);
 			return;
 		}
-		if (source.getText().compareTo("Line Chart") == 0) {
+		if (source.getText().compareTo("TimeSeries Chart") == 0) {
 			createTimeSeriesDialog();
 			return;
 		}	

@@ -693,7 +693,7 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 			
 			// Charts
 			JMenu chartM = new JMenu("Charts");
-			JMenuItem lineC = new JMenuItem("Line Chart");
+			JMenuItem lineC = new JMenuItem("TimeSeries Chart");
 			chartM.add(lineC);
 			lineC.addActionListener(new TableMenuListener(this));
 			popup.add(chartM);
