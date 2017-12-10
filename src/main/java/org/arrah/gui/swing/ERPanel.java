@@ -1,7 +1,7 @@
 package org.arrah.gui.swing;
 
 /***********************************************
- *     Copyright to Arrah Technology 2016      *
+ *     Copyright to Arrah Technology 2017      *
  *     http://www.arrahtec.org                 *
  *                                             *
  * Any part of code or file can be changed,    *
@@ -13,8 +13,8 @@ package org.arrah.gui.swing;
  ***********************************************/
 
 /*
- * This file is used to create multifaceted
- * search - based on value and range
+ * This file is used to create entity
+ * resolution input and processing
  *
  */
 
@@ -26,8 +26,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
@@ -44,55 +42,50 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
 import org.apache.lucene.document.Document;
-//import org.apache.lucene.queryParser.QueryParser;
-//import org.apache.lucene.search.Hits;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Query;
+import org.arrah.framework.dataquality.EntityResolutionLucene;
 import org.arrah.framework.dataquality.SimilarityCheckLucene;
 import org.arrah.framework.dataquality.SimilarityCheckLucene.Hits;
-import org.arrah.framework.rdbms.JDBCRowset;
-import org.arrah.framework.rdbms.QueryBuilder;
-import org.arrah.framework.rdbms.Rdbms_conn;
 
-public class MultifacetPanel implements ActionListener, ItemListener {
-    private ReportTable _rt, outputRT;
+
+public class ERPanel implements ActionListener, ItemListener {
+    private ReportTable _rt, _rtMap, outputRT;
     private String[] colName;
     private String[] colType;
     private JDialog d_m;
     private JFrame dg;
-    private JComboBox<String>[] sType;
-    private JTextField[] sSearch;
+    private JComboBox<String>[] sType, mcolName;
     private JTextField[] sLower,sHigher;
-    boolean isRowSet = false;
-    private JDBCRowset _rows;
     private SimilarityCheckLucene _simcheck;
-    private boolean isCancel=false;
     private JRadioButton jr1;
     private JTextField jtx1;
+    private Vector<EntityResolutionLucene.MappingClass>  mappingV;
+    private boolean _onemapping = false;
 
 
-    // For independent table and selected Columns
-    public MultifacetPanel( String tabName, Vector<String> colV) {
+    // For RTM  table and single Column Search
+    public ERPanel(ReportTable reportTableIndex, ReportTable reportTableSearch) {
 
-        _rt = createRT(tabName,colV);
+        _rt = reportTableIndex;
+        _rtMap = reportTableSearch;
         _simcheck = new SimilarityCheckLucene(_rt.getRTMModel());
         colName = getColName();
         mapDialog();
+
     }
-
+    
     // For RTM  table and single Column Search
-    public MultifacetPanel(ReportTable reportTable) {
-
-        _rt = reportTable;
+    public ERPanel(ReportTable reportTableIndex, ReportTable reportTableSearch, boolean mappingType) {
+    	_onemapping = mappingType;
+        _rt = reportTableIndex;
+        _rtMap = reportTableSearch;
         _simcheck = new SimilarityCheckLucene(_rt.getRTMModel());
         colName = getColName();
-       // _simcheck.makeIndex();
         mapDialog();
 
     }
 
     // Private supporting functions
-
     private String[] getColName() {
         int colC = _rt.table.getColumnCount();
         colName = new String[colC];
@@ -103,26 +96,6 @@ public class MultifacetPanel implements ActionListener, ItemListener {
             colType[i] = _rt.table.getColumnClass(i).getName();
         }
         return colName;
-    }
-
-    private ReportTable createRT (String tabName, Vector<String> colName) {
-        ReportTable newRT = null;
-        QueryBuilder qb = new QueryBuilder(
-                Rdbms_conn.getHValue("Database_DSN"), tabName,
-                Rdbms_conn.getDBType());
-        String query = qb.get_selCol_query(colName.toArray(),"");
-
-        try {
-            Rdbms_conn.openConn();
-            ResultSet rs = Rdbms_conn.runQuery(query);
-            newRT = SqlTablePanel.getSQLValue(rs, true);
-            Rdbms_conn.closeConn();
-        } catch (SQLException ee) {
-            ConsoleFrame.addText("\n SQL Exception:" + ee.getMessage());
-            return newRT; // newRT can not be populated
-        }
-        return newRT;
-
     }
 
     // UI for multi-facet search
@@ -139,7 +112,7 @@ public class MultifacetPanel implements ActionListener, ItemListener {
 
         int colC = colName.length;
         sType = new JComboBox[colC];
-        sSearch = new JTextField[colC];
+        mcolName = new JComboBox[colC];
         sLower = new JTextField[colC];
         sHigher = new JTextField[colC];
         JTextField[] sColName = new JTextField[colC];
@@ -151,52 +124,53 @@ public class MultifacetPanel implements ActionListener, ItemListener {
 
         JLabel l1 = new JLabel("Field Name");
         l1.setForeground(Color.BLUE);
-        JLabel l2 = new JLabel("Search Criterion");
+        JLabel l2 = new JLabel("Map To");
         l2.setForeground(Color.BLUE);
-        JLabel l3 = new JLabel("Search String");
+        JLabel l3 = new JLabel("Map Type");
         l3.setForeground(Color.BLUE);
-        JLabel l4 = new JLabel("Lower Range");
+        JLabel l4 = new JLabel("Input 1");
         l4.setForeground(Color.BLUE);
-        JLabel l5 = new JLabel("Upper Range");
+        JLabel l5 = new JLabel("Input 2");
         l5.setForeground(Color.BLUE);
 
-        jp.add(l1);
         jp.add(l2);
+        jp.add(l1);
         jp.add(l3);
         jp.add(l4);
         jp.add(l5);
 
 
         for (int i = 0; i < colC; i++) {
-            sColName[i] = new JTextField(8);
+            mcolName[i] = new JComboBox<String>(_rtMap.getAllColNameAsString());
+            jp.add(mcolName[i]);
+            
+            sColName[i] = new JTextField(10);
             sColName[i].setText(colName[i]);
             sColName[i].setEditable(false);
             sColName[i].setToolTipText(colType[i]);
             jp.add(sColName[i]);
+            
+
 
             sType[i] = new JComboBox<String>(new String[] { "Not Applicable", "Exact Match",
-                    "Similar-Any Word", "Similar-All Words", "Range Bound" });
+                    "Similar-Any Word", "Similar-All Words", "Range Bound - Number","Starts With","Ends With","Range Bound - Date" });
             sType[i].addItemListener(this);
             sType[i].setActionCommand(Integer.toString(i));
             jp.add(sType[i]);
 
-            sSearch[i] = new JTextField(10);
-            sSearch[i].setEnabled(false);
-            jp.add(sSearch[i]);
-
             sLower[i] = new JTextField(10);
-            sLower[i].setText(new String("Lower"));
+            sLower[i].setText(new String("Input"));
             sLower[i].setEnabled(false);
             jp.add(sLower[i]);
 
             sHigher[i] = new JTextField(10);
-            sHigher[i].setText(new String("Higher"));
+            sHigher[i].setText(new String("Input"));
             sHigher[i].setEnabled(false);
             jp.add(sHigher[i]);
 
             if (colType[i].toUpperCase().contains("DATE") || colType[i].toUpperCase().contains("TIME") ) {
-            	sLower[i].setToolTipText("yyyyMMddHHmmss");
-            	sHigher[i].setToolTipText("yyyyMMddHHmmss");
+            	sLower[i].setToolTipText("Lower bound in seconds");
+            	sHigher[i].setToolTipText("Upper bound in seconds");
             }
         }
         SpringUtilities.makeCompactGrid(jp, colC + 1, 5, 3, 3, 3, 3); // +1 for
@@ -204,9 +178,9 @@ public class MultifacetPanel implements ActionListener, ItemListener {
 
         JScrollPane jscrollpane1 = new JScrollPane(jp);
         if (colC * 35 + 50 > 400)
-            jscrollpane1.setPreferredSize(new Dimension(625, 400));
+            jscrollpane1.setPreferredSize(new Dimension(725, 400));
         else
-            jscrollpane1.setPreferredSize(new Dimension(625, colC * 35 + 50));
+            jscrollpane1.setPreferredSize(new Dimension(725, colC * 35 + 50));
 
         JPanel bp = new JPanel();
 
@@ -227,7 +201,7 @@ public class MultifacetPanel implements ActionListener, ItemListener {
         jp_p.add(bp, BorderLayout.PAGE_END);
 
         d_m = new JDialog();
-        d_m.setTitle("MultiFacet Map Dialog");
+        d_m.setTitle("Entity Resolution Dialog");
         d_m.setLocation(150, 150);
         d_m.getContentPane().add(jp_p);
         d_m.setModal(true);
@@ -254,145 +228,73 @@ public class MultifacetPanel implements ActionListener, ItemListener {
                 	_simcheck.makeIndex();
                 else
                 _simcheck.makeIndex(indexName);
-                
                 if (validateInput() == false ) return;
-                searchTableIndex();
+                searchTableIndex(_onemapping);
             } finally {
                 d_m.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 d_m.dispose();
             }
         }
         if (command.equals("mcancel")) {
-            if (isRowSet == true && _rows != null)
-                _rows.close();
-            setCancel(true);
             d_m.dispose();
         }
     }
 
-    // Create Lucene query
-    private String getQString() {
-        String queryString = "";
-        int colc = colName.length;
+ 
+    private void searchTableIndex(boolean oneMapping) { // Search the table
+    	String [] oldCol = _rtMap.getRTMModel().getAllColNameStr();
+    	String[] newCol = new String[colName.length + oldCol.length];
+    	for (int i=0; i <oldCol.length; i++ )
+    		newCol[i] = oldCol[i];
+    	for (int i=0; i <colName.length; i++ )
+    		newCol[oldCol.length+i] = colName[i];
 
-        for (int j = 0; j < colc; j++) {
-            int type = sType[j].getSelectedIndex();
-            // float fuzzyval = 0.600f; // default fuzzy value
-            int fuzzyval = 3; // default fuzzy value float depreacted
-            String serterm= null;String lv = null; String hv = null;
-
-            if (sSearch[j].isEnabled() == true)
-                serterm = sSearch[j].getText();
-
-            if (sLower[j].isEnabled() == true && sHigher[j].isEnabled() == true) {
-                lv = (String)sLower[j].getText();
-                hv = (String)sHigher[j].getText();
-            }
-
-            String multiWordQuery = "";
-
-            if (serterm != null || lv != null || hv != null) {
-                String term ="";
-
-                switch (type) {
-                    case 0:
-                        continue; // do not use
-                    case 1: // Exact match
-                        term = serterm;
-                        term.trim();
-                        break;
-                    case 2:
-                    case 3: // It may have multi-words
-                    	term = serterm;
-                        term.trim();
-                        term = term.replaceAll(",", " ");
-                        term = term.replaceAll("\\s+", " ");
-                        String[] token = term.split(" ");
-                        String newTerm = "";
-                        for (int i = 0; i < token.length; i++) {
-                            if (token[i] == null || "".equals(token[i]))
-                                continue;
-
-                            if (newTerm.equals("") == false && type == 3)
-                                newTerm += " AND ";
-                            if (newTerm.equals("") == false && type == 2)
-                                newTerm += " OR ";
-                            newTerm += colName[j] + ":"
-                                    + QueryParser.escape(token[i]) + "~"+fuzzyval+ " "; // For Fuzzy Logic
-                        }
-                        multiWordQuery = newTerm;
-                        break;
-                    case 4: // It may have range Bound query
-                        String ls = lv.toString();
-                        String hs = hv.toString();
-                        newTerm = colName[j] + ":[" + ls+ " TO " + hs+ "]";
-
-                        multiWordQuery = newTerm;
-                        break;
-
-                    default:
-                        break;
-
-                }
-                if (queryString.equals("") == false)
-                    queryString += " AND ";
-                if (type == 2 || type == 3 || type == 4) // Single Word Match
-                    queryString += multiWordQuery;
-                else if (type == 1) // Exact match
-                    queryString += colName[j] + ":\"" + term + "\"";
-            }
-        }
-        ConsoleFrame.addText("\n Lucene Query is:"+queryString);
-        return queryString;
-    }
-
-
-    private void searchTableIndex() { // Search the table
-        outputRT = new ReportTable(colName, false, true);
+    	
+        outputRT = new ReportTable(newCol, false, true);
 
         if (_simcheck.openIndex() == false)
             return;
 
-        String queryString = getQString();
-        if (queryString == null || queryString.equals("") == true) {
-            isCancel = true;
-            JOptionPane.showMessageDialog(null,"Empty Query");
-            return;
+        EntityResolutionLucene erl = new EntityResolutionLucene(_rtMap.getRTMModel());
+        int rowC = _rtMap.getModel().getRowCount();
+        
+        for (int i=0; i < rowC; i++ ) {
+	        String queryString = erl.prepareLQuery(getMappingValue(), i);
+	        if (queryString == null || queryString.equals("") == true) {
+	            ConsoleFrame.addText("\nEmpty Query for Row:"+i);
+	            continue;
+	        }
+	        
+	        Query qry = _simcheck.parseQuery(queryString);
+	        Hits hit = _simcheck.searchIndex(qry);
+	        if (hit == null || hit.length() <= 0) {
+	        	ConsoleFrame.addText("\nNo Record Found for Row:" +i);
+	            continue;
+	        }
+	        
+	        // Iterate over the Documents in the Hits object
+	        for (int j = 0; j < hit.length(); j++) {
+	            try {
+	            	if (oneMapping == true && j ==1) break; // break inner loop
+	                Document doc = hit.doc(j);
+	                String rowid = doc.get("at__rowid__");
+	                Object[] row = null, rowMap = null;
+	                row = _rt.getRow(Integer.parseInt(rowid));
+	                rowMap = _rtMap.getRow(i);
+	                outputRT.addFillRow(rowMap,row);
+	            } catch (Exception e) {
+	                ConsoleFrame.addText("\n " + e.getMessage());
+	                ConsoleFrame.addText("\n Error: Can not open Document");
+	            }
+	        }
         }
-
-        Query qry = _simcheck.parseQuery(queryString);
-        Hits hit = _simcheck.searchIndex(qry);
-        if (hit == null || hit.length() <= 0) {
-            JOptionPane.showMessageDialog(null,
-                    "No Matching Record Found", "No Record Found",
-                    JOptionPane.INFORMATION_MESSAGE);
-            isCancel = true; // do not dispose
-            return;
-        }
-        // Iterate over the Documents in the Hits object
-
-        for (int j = 0; j < hit.length(); j++) {
-            try {
-                Document doc = hit.doc(j);
-                String rowid = doc.get("at__rowid__");
-                Object[] row = null;
-                row = _rt.getRow(Integer.parseInt(rowid));
-
-                outputRT.addFillRow(row);
-
-            } catch (Exception e) {
-                ConsoleFrame.addText("\n " + e.getMessage());
-                ConsoleFrame.addText("\n Error: Can not open Document");
-            }
-        }
-
 
         _simcheck.closeSeachIndex();
 
         JPanel jp_p = new JPanel(new BorderLayout());
         jp_p.add(outputRT, BorderLayout.CENTER);
         // Show the table now
-        dg = new JFrame("Multi facet  Frame");
+        dg = new JFrame("Entity Resolution Frame");
         dg.setLocation(250, 100);
         dg.getContentPane().add(jp_p);
         dg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -410,26 +312,34 @@ public class MultifacetPanel implements ActionListener, ItemListener {
             int index = Integer.parseInt(selCombo.getActionCommand());
 
             if("Not Applicable".equalsIgnoreCase(s) == true) {
-                sSearch[index].setEnabled(false);
                 sLower[index].setEnabled(false);
                 sHigher[index].setEnabled(false);
 
             } else {
 
-                if("Exact Match".equalsIgnoreCase(s) == true  ) {
-                    sSearch[index].setEnabled(true);
-                    sLower[index].setEnabled(false);
+                if("Starts With".equalsIgnoreCase(s) == true ||
+                		"Ends With".equalsIgnoreCase(s) == true) {
+                	sLower[index].setToolTipText("Number of characters to match");
+                    sLower[index].setEnabled(true);
                     sHigher[index].setEnabled(false);
                 }
-                if("Similar-Any Word".equalsIgnoreCase(s)  == true ||
+                if("Exact Match".equalsIgnoreCase(s) == true||
+                		"Similar-Any Word".equalsIgnoreCase(s)  == true ||
                         "Similar-All Words".equalsIgnoreCase(s) == true	) {
-                    sSearch[index].setEnabled(true);
                     sLower[index].setEnabled(false);
                     sHigher[index].setEnabled(false);
 
                 }
-                if("Range Bound".equalsIgnoreCase(s)  == true ) {
-                    sSearch[index].setEnabled(false);
+                if(s.startsWith("Range Bound - Number")  == true ) {
+                	sLower[index].setToolTipText("Lower Bound in Number");
+                	sHigher[index].setToolTipText("Higher Bound in Number");
+                    sLower[index].setEnabled(true);
+                    sHigher[index].setEnabled(true);
+
+                }
+                if(s.startsWith("Range Bound - Date")  == true ) {
+                	sLower[index].setToolTipText("Lower Bound in Seconds");
+                	sHigher[index].setToolTipText("Higher Bound in Seconds");
                     sLower[index].setEnabled(true);
                     sHigher[index].setEnabled(true);
 
@@ -441,14 +351,6 @@ public class MultifacetPanel implements ActionListener, ItemListener {
     private boolean validateInput() {
         for (int j=0; j < colName.length; j++) {
 
-            if (sSearch[j].isEnabled() == true ) {
-                if (sSearch[j].getText() == null  || "".equals(sSearch[j].getText()) == true) {
-                    JOptionPane.showMessageDialog(null,
-                            "Search String can not be empty");
-                    return false;
-                }
-            }
-
             if (sLower[j].isEnabled() == true || sHigher[j].isEnabled() == true) {
                 if (sLower[j].getText() == null  || sHigher[j].getText() == null) {
 
@@ -458,14 +360,34 @@ public class MultifacetPanel implements ActionListener, ItemListener {
                 }
             }
         }
+        
+        // Now fill EntityResoution
+        mappingV = new Vector<EntityResolutionLucene.MappingClass>();
+        for (int i=0; i<colName.length; i++ ) {
+        	JComboBox<String> t = sType[i];
+        	int index = t.getSelectedIndex();
+        	if (index == 0) continue;
+        	
+        	EntityResolutionLucene.MappingClass mc = new EntityResolutionLucene.MappingClass(colName[i],mcolName[i].getSelectedItem().toString());
+        	mc.setMappingType(index);
+        	
+        	if (index == 4 || index == 7) { // range Bound
+        		mc.setLowerrange(sLower[i].getText());
+        		mc.setUpperrange(sHigher[i].getText());
+        	}
+        	if (index == 5)  { // starts with
+        		mc.setStartswith(sLower[i].getText());
+        	}
+        	if (index == 6) { // Ends with
+        		mc.setEndsswith(sLower[i].getText());
+        	}
+        	mappingV.add(mc);
+        }
         return true;
     }
-
-    public boolean isCancel() {
-        return isCancel;
-    }
-
-    public void setCancel(boolean isCancel) {
-        this.isCancel = isCancel;
+    
+    public EntityResolutionLucene.MappingClass[] getMappingValue() {
+    	EntityResolutionLucene.MappingClass[] a = new EntityResolutionLucene.MappingClass[mappingV.size()];
+    	return a = mappingV.toArray(a);
     }
 } // End of Multi Facet panel

@@ -13,7 +13,7 @@ package org.arrah.gui.swing;
 
 /* This file is used for getting info about 
  * comparing record tables for diff, merge
- * and linkage
+ * and linkage and entiry resolution
  * 
  *
  */

@@ -97,7 +97,7 @@ public class FileLoaderFrame {
 		*/
 		
 		String s = " Community License (LGPL). ";
-		s = "<html> <B> <I> <U> &copy; 2006-2016  Arrah Technology </U> <BR>"
+		s = "<html> <B> <I> <U> &copy; 2006-2017  Arrah Technology </U> <BR>"
 				+ s + "</I></B> </html>";
 		
 		jpanel.setLayout(new GridLayout(12, 1));
@@ -106,8 +106,8 @@ public class FileLoaderFrame {
 				"Welcome to Open Source Data Quality Project", 0);
 		jlabel1.setFont(new Font("Helvetica", 1, 16));
 		JLabel jlabel2 = new JLabel(
-				"http://sourceforge.net/projects/dataquality/", 0);
-		JLabel jlabel3 = new JLabel("arrah@users.sourceforge.net", 0);
+				"http://www.arrahtec.com", 0);
+		JLabel jlabel3 = new JLabel("support@arrahtec.com", 0);
 		
 		JLabel jlabel4 = new JLabel(s, 0);
 		jpanel.add(jlabel);

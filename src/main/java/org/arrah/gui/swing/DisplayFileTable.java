@@ -77,8 +77,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
+import org.arrah.framework.analytics.ChiSquareTest;
 import org.arrah.framework.analytics.MetadataMatcher;
 import org.arrah.framework.analytics.NormalizeCol;
+import org.arrah.framework.analytics.SetAnalysis;
+import org.arrah.framework.analytics.TabularReport;
 import org.arrah.framework.datagen.AggrCumRTM;
 import org.arrah.framework.datagen.RandomColGen;
 import org.arrah.framework.dataquality.FillCheck;
@@ -415,6 +418,54 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		correlation.addActionListener(this);
 		correlation.setActionCommand("pcorrelation");
 		analytics_m.add(correlation);
+		analytics_m.addSeparator();
+		
+		// Chi Square Correlation
+		JMenuItem chisquare = new JMenuItem("Chi-Square Independence Test");
+		chisquare.addActionListener(this);
+		chisquare.setActionCommand("pchisquare");
+		analytics_m.add(chisquare);
+		analytics_m.addSeparator();
+		
+		// Set Analysis
+		JMenu setA = new JMenu("Set Analysis");
+		JMenuItem setU = new JMenuItem("Union Set");
+		setU.addActionListener(this);
+		setU.setActionCommand("setunion");
+		setA.add(setU);
+		
+		JMenuItem setI = new JMenuItem("Intersection Set");
+		setI.addActionListener(this);
+		setI.setActionCommand("setintersection");
+		setA.add(setI);
+		
+		JMenuItem setD = new JMenuItem("Difference Set");
+		setD.addActionListener(this);
+		setD.setActionCommand("setdifference");
+		setA.add(setD);
+		
+		analytics_m.add(setA);
+		analytics_m.addSeparator();
+		
+		// Fuzzy Set Analysis
+		JMenu fsetA = new JMenu("Fuzzy Set Analysis");
+		JMenuItem fsetU = new JMenuItem("Fuzzy Union Set");
+		fsetU.addActionListener(this);
+		fsetU.setActionCommand("fsetunion");
+		fsetA.add(fsetU);
+		
+		JMenuItem fsetI = new JMenuItem("Fuzzy Intersection Set");
+		fsetI.addActionListener(this);
+		fsetI.setActionCommand("fsetintersection");
+		fsetA.add(fsetI);
+		
+		JMenuItem fsetD = new JMenuItem("Fuzzy Difference Set");
+		fsetD.addActionListener(this);
+		fsetD.setActionCommand("fsetdifference");
+		fsetA.add(fsetD);
+		
+		analytics_m.add(fsetA);
+		
 
 		// Column Menu
 		JMenuItem addC_m = new JMenuItem("Add Column");
@@ -576,26 +627,59 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		option_m.add(lookup_m);
 		option_m.addSeparator();
 		
+		JMenu joinm = new JMenu("Joins");
 		JMenuItem diff_m = new JMenuItem("Diff Join");
 		diff_m.addActionListener(this);
 		diff_m.setActionCommand("diffjoin");
-		option_m.add(diff_m);
+		joinm.add(diff_m);
 		
 		JMenuItem join_m = new JMenuItem("Left Outer Join");
 		join_m.addActionListener(this);
 		join_m.setActionCommand("joinfile");
-		option_m.add(join_m);
+		joinm.add(join_m);
 		
 		JMenuItem inner_m = new JMenuItem("Inner Join");
 		inner_m.addActionListener(this);
 		inner_m.setActionCommand("innerjoin");
-		option_m.add(inner_m);
+		joinm.add(inner_m);
 		
 		JMenuItem cart_m = new JMenuItem("Cartesian Join");
 		cart_m.addActionListener(this);
 		cart_m.setActionCommand("cartjoin");
-		option_m.add(cart_m);
+		joinm.add(cart_m);
 		
+		option_m.add(joinm);
+		option_m.addSeparator();
+		
+		JMenu fjoinm = new JMenu("Fuzzy Joins");
+		JMenuItem fdiff_m = new JMenuItem("Fuzzy Diff Join");
+		fdiff_m.addActionListener(this);
+		fdiff_m.setActionCommand("fdiffjoin");
+		fjoinm.add(fdiff_m);
+		
+		JMenuItem fjoin_m = new JMenuItem("Fuzzy Left Outer Join");
+		fjoin_m.addActionListener(this);
+		fjoin_m.setActionCommand("fjoinfile");
+		fjoinm.add(fjoin_m);
+		
+		JMenuItem finner_m = new JMenuItem("Fuzzy Inner Join");
+		finner_m.addActionListener(this);
+		finner_m.setActionCommand("finnerjoin");
+		fjoinm.add(finner_m);
+		
+		option_m.add(fjoinm);
+		option_m.addSeparator();
+		
+		JMenuItem er_m = new JMenuItem("Entity Resolution 1:N");
+		er_m.addActionListener(this);
+		er_m.setActionCommand("ersearch");
+		option_m.add(er_m);
+
+		
+		JMenuItem er_m1 = new JMenuItem("Entity Resolution 1:1");
+		er_m1.addActionListener(this);
+		er_m1.setActionCommand("ersearch1");
+		option_m.add(er_m1);
 		option_m.addSeparator();
 
 		JMenuItem loadR_m = new JMenuItem("Load File into Rows");
@@ -807,6 +891,26 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				new MultifacetPanel(_rt);
 				return;
 			}
+			if (command.equals("ersearch")){
+				JOptionPane.showMessageDialog (null, "Choose the file for Entity Resolution");
+				
+				ImportFilePanel impF = new ImportFilePanel(false);
+				ReportTable rtable = impF.getTable();
+				if (rtable == null)
+					return;
+				new ERPanel(_rt,rtable);
+				return;
+			}
+			if (command.equals("ersearch1")){
+				JOptionPane.showMessageDialog (null, "Choose the file for Entity Resolution");
+				
+				ImportFilePanel impF = new ImportFilePanel(false);
+				ReportTable rtable = impF.getTable();
+				if (rtable == null)
+					return;
+				new ERPanel(_rt,rtable,true);
+				return;
+			}
 			if (command.equals("pcorrelation")) {
 				_rt.cancelSorting();
 				int index_a = selectedColIndex(_rt,"Select First Column");
@@ -823,6 +927,131 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				else
 					JOptionPane.showMessageDialog(null, "Corrleation is:" + corr);
 				
+				return;
+			}
+			if (command.equals("pchisquare")) {
+				_rt.cancelSorting();
+				int index_a = selectedColIndex(_rt,"Select Row Attribute");
+				if (index_a < 0)
+					return;
+				int index_b = selectedColIndex(_rt,"Select Column Attribute");
+				if (index_b < 0)
+					return;
+				Vector<Integer> _reportColV = new Vector<Integer>();
+				Vector<Integer> _reportFieldV = new Vector<Integer>();
+				_reportColV.add(index_a);_reportColV.add(index_b);_reportColV.add(index_a); // group by group by count
+				_reportFieldV.add(0);_reportFieldV.add(0);_reportFieldV.add(3); // group by group by count
+				ReportTableModel newRTM = TabularReport.showReport(_rt.getRTMModel(), _reportColV, _reportFieldV);
+				newRTM = RTMUtil.sortRTM(newRTM, true);
+				
+				// Now prepare for Cross Tab or contingency table
+				_reportFieldV.set(1,1); _reportFieldV.set(2,2);// increase by one for cross tab
+				ReportTableModel newRTMCross = TabularReport.tabToCrossTab(newRTM, _reportColV, _reportFieldV);
+				
+				ChiSquareTest chsq = new ChiSquareTest(newRTMCross);
+				double chsqV = chsq.getChiSquare();
+				int degofF = chsq.getDegreeOfFreedom();
+
+				JOptionPane.showMessageDialog(null, " Chi Square is :"+chsqV+ "\n Degree of Freedom is:"+degofF
+						+"\n To get p-Value look into chart at resource/chidistribution.txt");
+
+				
+				return;
+			}
+			if (command.equals("setunion")||command.equals("setintersection") ||
+					command.equals("setdifference")) {
+				_rt.cancelSorting();
+				int index_a = selectedColIndex(_rt,"Select First Column");
+				if (index_a < 0)
+					return;
+				int index_b = selectedColIndex(_rt,"Select Second Column");
+				if (index_b < 0)
+					return;
+				Vector<Object> inputData_a = _rt.getRTMModel().getColDataV(index_a);
+				Vector<Object> inputData_b = _rt.getRTMModel().getColDataV(index_b);
+				String dTitle="";
+				SetAnalysis sa = new SetAnalysis(inputData_a,inputData_b);
+				Vector<Object> res = new Vector<Object> ();
+				if (command.equals("setunion")) {
+					res = sa.getUnion();
+					dTitle = "Union";
+				}
+				else if (command.equals("setintersection")) {
+					res = sa.getIntersection();
+					dTitle = "Intersection";
+				}
+				else {
+					res = sa.getDifference(inputData_a, inputData_b);
+					dTitle = "Difference";
+				}
+				
+				if (res == null || res.size() == 0) {
+					JOptionPane.showMessageDialog(null, "Message:"+sa.getErrstr());
+					return;
+				} else {
+					ReportTable newRTFill = new ReportTable(new String[]{dTitle}, true, true);
+					Object[] newR = new Object[1];
+					for (Object o : res) {
+						newR[0] = o;
+						newRTFill.addFillRow(newR);
+					}
+					
+					JDialog d_fill = new JDialog();
+					d_fill.setModal(true);
+					d_fill.setTitle("Set Table Dialog");
+					d_fill.setLocation(250, 250);
+					d_fill.getContentPane().add(newRTFill);
+					d_fill.pack();
+					d_fill.setVisible(true);
+				}
+				return;
+			}
+			if (command.equals("fsetunion")||command.equals("fsetintersection") ||
+					command.equals("fsetdifference")) {
+				_rt.cancelSorting();
+				int index_a = selectedColIndex(_rt,"Select First Column");
+				if (index_a < 0)
+					return;
+				int index_b = selectedColIndex(_rt,"Select Second Column");
+				if (index_b < 0)
+					return;
+				Vector<Object> inputData_a = _rt.getRTMModel().getColDataV(index_a);
+				Vector<Object> inputData_b = _rt.getRTMModel().getColDataV(index_b);
+				String dTitle="";
+				SetAnalysis sa = new SetAnalysis(inputData_a,inputData_b);
+				Vector<Object> res = new Vector<Object> ();
+				if (command.equals("fsetunion")) {
+					res = sa.getUnion(0.8f);
+					dTitle = "Fuzzy Union";
+				}
+				else if (command.equals("fsetintersection")) {
+					res = sa.getIntersection(0.8f);
+					dTitle = "Fuzzy Intersection";
+				}
+				else {
+					res = sa.getDifference(inputData_a, inputData_b,0.8f);
+					dTitle = "Fuzzy Difference";
+				}
+				
+				if (res == null || res.size() == 0) {
+					JOptionPane.showMessageDialog(null, "Message:"+sa.getErrstr());
+					return;
+				} else {
+					ReportTable newRTFill = new ReportTable(new String[]{dTitle}, true, true);
+					Object[] newR = new Object[1];
+					for (Object o : res) {
+						newR[0] = o;
+						newRTFill.addFillRow(newR);
+					}
+					
+					JDialog d_fill = new JDialog();
+					d_fill.setModal(true);
+					d_fill.setTitle("Fuzzy Set Table Dialog");
+					d_fill.setLocation(250, 250);
+					d_fill.getContentPane().add(newRTFill);
+					d_fill.pack();
+					d_fill.setVisible(true);
+				}
 				return;
 			}
 			if (command.equals("filtercond")) {
@@ -1690,8 +1919,9 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				}
 				return;
 			}
-			if (command.equals("joinfile") || command.equals("innerjoin") || command.equals("diffjoin")
-					|| command.equals("cartjoin")) {
+			if (command.equals("joinfile") || command.equals("innerjoin") || command.equals("diffjoin") || command.equals("cartjoin") 
+					||
+					command.equals("fjoinfile") || command.equals("finnerjoin") || command.equals("fdiffjoin")) {
 				int lindex = selectedColIndex(_rt,"Select column to Join To:");
 				if (lindex < 0)
 					return;
@@ -1706,14 +1936,35 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				int rindex = selectedColIndex(rtable,"Select column to Join From:");
 				if (rindex < 0)
 					return;
+				
+				float distance = 1.1f;
+				if (command.equals("fjoinfile") || command.equals("finnerjoin") || command.equals("fdiffjoin")) {
+					String val= JOptionPane.showInputDialog("Please enetr fuzzy index 0.0 - no match 1.0 - exact match");
+					if (val == null ) {
+						JOptionPane.showMessageDialog(null,"Not valid input");
+						return;
+					}
+					try {
+						distance = Float.parseFloat(val);
+					} catch (Exception eformat) {
+						JOptionPane.showMessageDialog(null,"Not valid format:" + eformat.getLocalizedMessage());
+						return;
+					}
+				}
 				if( command.equals("joinfile") )
-					_rt = joinTables(_rt, lindex, rtable, rindex, 0); // Left Outer Join
+					_rt = joinTables(_rt, lindex, rtable, rindex, 0,1.1f); // Left Outer Join
 				else if( command.equals("innerjoin") )
-					_rt = joinTables(_rt, lindex, rtable, rindex, 1); // Inner Join
+					_rt = joinTables(_rt, lindex, rtable, rindex, 1,1.1f); // Inner Join
 				else if( command.equals("diffjoin") )
-					_rt = joinTables(_rt, lindex, rtable, rindex, 2); // Diff join
+					_rt = joinTables(_rt, lindex, rtable, rindex, 2,1.1f); // Diff join
+				else if( command.equals("fjoinfile") )
+					_rt = joinTables(_rt, lindex, rtable, rindex, 4,distance); // Fuzzy Left Outer Join
+				else if( command.equals("finnerjoin") )
+					_rt = joinTables(_rt, lindex, rtable, rindex, 5,distance); // Fuzzy Inner Join
+				else if( command.equals("fdiffjoin") )
+					_rt = joinTables(_rt, lindex, rtable, rindex, 6,distance); // Fuzzy Diff join
 				else 
-					_rt = joinTables(_rt, lindex, rtable, rindex, 3); // Cartesian join
+					_rt = joinTables(_rt, lindex, rtable, rindex, 3,1.1f); // Cartesian join
 				return;
 			}
 			if (command.equals("lookup") || command.equals("lookupadd")) {
@@ -2764,11 +3015,11 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 	}
 
 	public static ReportTable joinTables(ReportTable leftT, int indexL,
-			ReportTable rightT, int indexR, int joinType) {
+			ReportTable rightT, int indexR, int joinType, float distance) {
 		// Left table is table displayed
 		leftT.cancelSorting();
 		leftT = new ReportTable(RTMUtil.joinTables(leftT.getRTMModel(), indexL,
-				rightT.getRTMModel(), indexR, joinType));
+				rightT.getRTMModel(), indexR, joinType,distance));
 		return leftT;
 	}
 

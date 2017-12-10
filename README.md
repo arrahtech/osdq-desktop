@@ -1,6 +1,6 @@
-OSDQ Desktop V6.2.1
+OSDQ Desktop V6.2.4
 
-[![Build Status](https://drone.io/github.com/arrahtec/profiler/status.png)](https://drone.io/github.com/arrahtec/profiler/latest)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dm/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dw/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)
+[![Build Status](https://drone.io/github.com/arrahtech/profiler/status.png)](https://drone.io/github.com/arrahtech/profiler/latest)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dm/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dw/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)
 
 [![Download sub-keenes](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/dataquality/files/latest/download)
 
@@ -13,10 +13,10 @@ It also had Hadoop ( Big data ) support to move files to/from Hadoop Grid, Creat
 
 **Changes**
 
-6.2.1 Changes:
+6.2.4 Changes:
 
-a.) Added Filer and unfilter
-b.) Multi linear regression and cluserting added
+a.) Fuzzy SetAnalysis Added
+b.) Chi Sqaure Correlation Added
 c.) Unspecified bug fixes
 
 
@@ -50,13 +50,13 @@ Getting Started
 3. run `runprofiler.[sh][bat]`
 
 
-If you are a developer or you want to build the project yourself, you first need to build and install [osdq-core](https://github.com/arrahtec/osdq-core) into local maven repository of your machine.
+If you are a developer or you want to build the project yourself, you first need to build and install [osdq-core](https://github.com/arrahtech/osdq-core) into local maven repository of your machine.
 
-1. git clone https://github.com/arrahtec/osdq-core
+1. git clone https://github.com/arrahtech/osdq-core
 2. cd osdq-core
 3. mvn install
 4. cd ..
-5. git clone https://github.com/arrahtec/osdq-desktop
+5. git clone https://github.com/arrahtech/osdq-desktop
 6. cd osdq-desktop
 7. mvn package
 
