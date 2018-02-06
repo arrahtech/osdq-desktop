@@ -667,7 +667,7 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 			}
 			if("Connection Successful".equals(status)) {
 				ok_b.setEnabled(true);
-				if (jccon.getSelectedIndex() < 1 )
+				if (jccon.getSelectedIndex() < 1 && connectionType != 0) // Add is not supported for Default
 					add_b.setEnabled(true);
 			}
 			
