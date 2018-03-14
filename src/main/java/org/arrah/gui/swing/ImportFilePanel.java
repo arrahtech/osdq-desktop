@@ -53,6 +53,7 @@ import org.arrah.framework.ndtable.CSVtoReportTableModel;
 import org.arrah.framework.ndtable.ColumnAttr;
 import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.xls.XlsReader;
+import org.arrah.framework.xls.XlsxReader;
 import org.arrah.framework.xml.XmlReader;
 
 public class ImportFilePanel implements ItemListener, ActionListener {
@@ -90,6 +91,14 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 				}
 			} else if (f.getName().toLowerCase().endsWith(".xls")) {
 				final XlsReader xlsReader = new XlsReader();
+				showT = new ReportTable(xlsReader.read(f));
+				if (_showGUI == true) {
+					DisplayFileTable dft = new DisplayFileTable(showT,
+							f.toString());
+					dft.showGUI();
+				}
+			} else if (f.getName().toLowerCase().endsWith(".xlsx")) {
+				final XlsxReader xlsReader = new XlsxReader();
 				showT = new ReportTable(xlsReader.read(f));
 				if (_showGUI == true) {
 					DisplayFileTable dft = new DisplayFileTable(showT,
