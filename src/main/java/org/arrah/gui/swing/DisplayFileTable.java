@@ -42,6 +42,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -519,6 +521,12 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		splitC_m.addActionListener(this);
 		splitC_m.setActionCommand("splitcolumn");
 		column_m.add(splitC_m);
+		column_m.addSeparator();
+		
+		JMenuItem flatten_m = new JMenuItem("Flatten Columns (Json)");
+		flatten_m.addActionListener(this);
+		flatten_m.setActionCommand("flatcolumn");
+		column_m.add(flatten_m);
 		column_m.addSeparator();
 
 		JMenuItem searC_m = new JMenuItem("Standardisation Regex");
@@ -1242,6 +1250,31 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					return;
 				
 				new SplitColumnPanel(_rt,index);
+				return;
+			}
+			if (command.equals("flatcolumn")) {
+				String[] colNames = _rt.getRTMModel().getAllColNameStr();
+				List<String> flatCol = SplitRTM.getFlattableColumns(colNames);
+				if (flatCol.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "No Column to flatten");
+					return;
+				}
+				String input = (String) JOptionPane.showInputDialog(null,
+						"Select the column to faltten", "Column Selection Dialog",
+						JOptionPane.PLAIN_MESSAGE, null, flatCol.toArray(), flatCol.get(0));
+				if (input == null || input.equals(""))
+					return;
+				LinkedHashMap<String,List<Integer>> matI = SplitRTM.getMatchingColumns(input,colNames);
+				ReportTableModel rtm = SplitRTM.explodeRTM(_rt.getRTMModel(),matI);
+				
+				JDialog jd = new JDialog();
+				jd.setTitle("JSon Flat");
+				jd.setLocation(150, 150);
+				jd.getContentPane().add(new ReportTable(rtm));
+				jd.setModal(false);
+				jd.pack();
+				jd.setVisible(true);
+				
 				return;
 			}
 			if (command.equals("populatecolumn")) {
@@ -2125,7 +2158,17 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				 return;
 			}
 			if (command.equals("transrow")) {
-				_rt.transposeTable();
+				ReportTableModel rtm = ReportTableModel.copyTable(_rt.getRTMModel(), true, true);
+				ReportTable newRT = new ReportTable(rtm);
+				newRT.transposeTable();
+				
+				JDialog jd = new JDialog();
+				jd.setTitle("Transpose");
+				jd.setLocation(150, 150);
+				jd.getContentPane().add(newRT);
+				jd.setModal(false);
+				jd.pack();
+				jd.setVisible(true);
 				return;
 			}
 			if (command.equals("nomatchdiscreetrange")
