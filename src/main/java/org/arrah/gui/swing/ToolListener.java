@@ -69,7 +69,7 @@ public class ToolListener implements ActionListener {
 					new CreateTableDialog();
 					return;
 				}
-				if (source.equals("Text Format") || source.equals("XML Format") || source.equals("XLS Format")) {
+				if (source.equals("Text Format") || source.equals("XML Format") || source.equals("XLS Format") || source.equals("JSON Format")) {
 					new ImportFilePanel(true);
 					return;
 				}

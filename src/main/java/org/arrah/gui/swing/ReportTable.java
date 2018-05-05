@@ -686,7 +686,7 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 			popup.addSeparator();
 			
 			// Open this report table in analysis panel
-			JMenuItem analysisP = new JMenuItem("Open Analysis Panel");
+			JMenuItem analysisP = new JMenuItem("To Analysis Panel");
 			analysisP.addActionListener(new TableMenuListener(this));
 			popup.add(analysisP);
 			popup.addSeparator();
@@ -912,6 +912,10 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 
 	public ReportTableModel getRTMModel() {
 		return rpt_tabModel;
+	}
+	
+	public void setRTMModel(ReportTableModel rtm) {
+		 rpt_tabModel = rtm;;
 	}
 
 	private class DateCellEditor extends AbstractCellEditor implements

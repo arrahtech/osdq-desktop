@@ -30,7 +30,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractButton;
@@ -49,10 +54,12 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 
+import org.arrah.framework.json.FlattenJsonToCSV;
 import org.arrah.framework.ndtable.CSVtoReportTableModel;
 import org.arrah.framework.ndtable.ColumnAttr;
 import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.xls.XlsReader;
+import org.arrah.framework.xls.XlsxReader;
 import org.arrah.framework.xml.XmlReader;
 
 public class ImportFilePanel implements ItemListener, ActionListener {
@@ -96,9 +103,27 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 							f.toString());
 					dft.showGUI();
 				}
+			} else if (f.getName().toLowerCase().endsWith(".xlsx")) {
+				final XlsxReader xlsReader = new XlsxReader();
+				showT = new ReportTable(xlsReader.read(f));
+				if (_showGUI == true) {
+					DisplayFileTable dft = new DisplayFileTable(showT,
+							f.toString());
+					dft.showGUI();
+				}
 			} else if (f.getName().toLowerCase().endsWith(".csv")){
 				CSVtoReportTableModel csvReader = new CSVtoReportTableModel(f);
 				showT = new ReportTable(csvReader.loadOpenCSVIntoTable());
+				if (_showGUI == true) {
+					DisplayFileTable dft = new DisplayFileTable(showT,
+							f.toString());
+					dft.showGUI();
+				}
+			} else if (f.getName().toLowerCase().endsWith(".json")){
+				Path path = Paths.get(f.getPath());
+		    	String contents = new String(Files.readAllBytes(path),StandardCharsets.ISO_8859_1);
+		    	
+				showT = new ReportTable(new FlattenJsonToCSV().getRTM(contents));
 				if (_showGUI == true) {
 					DisplayFileTable dft = new DisplayFileTable(showT,
 							f.toString());

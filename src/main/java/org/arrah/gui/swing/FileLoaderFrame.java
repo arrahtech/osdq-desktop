@@ -144,6 +144,10 @@ public class FileLoaderFrame {
 		impFile.add(impXLS);
 		impXLS.addActionListener(new ToolListener(jmenubar));
 		
+		JMenuItem impJSON = new JMenuItem("JSON Format");
+		impFile.add(impJSON);
+		impJSON.addActionListener(new ToolListener(jmenubar));
+		
 		JMenuItem impMultiLine = new JMenuItem("Multi-Line Format");
 		impFile.add(impMultiLine);
 		impMultiLine.addActionListener(new ToolListener(jmenubar));
