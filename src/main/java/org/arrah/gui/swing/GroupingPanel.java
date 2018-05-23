@@ -46,7 +46,7 @@ import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
-import org.arrah.framework.datagen.TimeUtil;
+import org.arrah.framework.util.TimeUtil;
 
 
 public class GroupingPanel implements ActionListener, ItemListener {

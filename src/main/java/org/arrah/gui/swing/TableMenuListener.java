@@ -22,6 +22,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -191,7 +192,8 @@ public class TableMenuListener implements ActionListener, ItemListener {
 		d.setTitle("Regex Search Dialog");
 		d.addWindowListener(new WindowAdapter() {
 			public void windowDeactivated(WindowEvent evt) {
-				d.toFront();
+				//d.toFront();
+				d.setModal(false);
 			}
 		});
 		d.setLocation(200, 200);

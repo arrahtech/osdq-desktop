@@ -50,7 +50,7 @@ import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.arrah.framework.analytics.RTMDiffUtil;
+import org.arrah.framework.ndtable.RTMDiffUtil;
 import org.arrah.framework.ndtable.ReportTableModel;
 
 public class CompareFileFrame implements ActionListener {

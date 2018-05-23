@@ -56,9 +56,9 @@ import net.sourceforge.openforecast.models.MultipleLinearRegressionModel;
 
 import org.arrah.framework.analytics.LocationAnalysis;
 import org.arrah.framework.analytics.TabularReport;
-import org.arrah.framework.datagen.TimeUtil;
 import org.arrah.framework.ndtable.RTMUtil;
 import org.arrah.framework.ndtable.ReportTableModel;
+import org.arrah.framework.util.TimeUtil;
 import org.arrah.framework.util.ValueSorter;
 import org.jfree.data.statistics.Regression;
 import org.jfree.data.xy.XYSeries;

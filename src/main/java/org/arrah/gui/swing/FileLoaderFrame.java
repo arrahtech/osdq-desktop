@@ -97,7 +97,7 @@ public class FileLoaderFrame {
 		*/
 		
 		String s = " Community License (LGPL). ";
-		s = "<html> <B> <I> <U> &copy; 2006-2017  Arrah Technology </U> <BR>"
+		s = "<html> <B> <I> <U> &copy; 2006-2018  Arrah Technology </U> <BR>"
 				+ s + "</I></B> </html>";
 		
 		jpanel.setLayout(new GridLayout(12, 1));
@@ -220,6 +220,11 @@ public class FileLoaderFrame {
 		recordMergeMulti.addActionListener(new ToolListener(jmenubar));
 		recordMerge.add(recordMergeMulti);
 		jmenu6.add(recordMerge);
+		jmenu6.addSeparator();
+		JMenuItem recordReplace = new JMenuItem("Record Standardization");
+		recordReplace.addActionListener(new ToolListener(jmenubar));
+		jmenu6.add(recordReplace);
+	
 		
 		jmenubar.add(jmenu6);
 		

@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -57,6 +58,7 @@ public class CompareRecordDialog implements ActionListener {
 	private boolean _singleFile = false, _mapCancel = false;
 	private Integer[] _actionType;
 	private JButton refreshB,pushgoldenB;
+	private JCheckBox _nonmatchedRec;
 	
 	/* leftTable is must . rightTable only in multiple file or linkage option */
 	public CompareRecordDialog (ReportTable leftTable, ReportTable rightTable, int type) {
@@ -98,6 +100,12 @@ public class CompareRecordDialog implements ActionListener {
 		jscrollpane.setPreferredSize(new Dimension(1125, 525));
 		
 		JPanel bp = new JPanel();
+		
+		_nonmatchedRec = new JCheckBox("Show Non-Matched Records");
+		_nonmatchedRec.setSelected(false);
+		_nonmatchedRec.setToolTipText("Select if you want to see records which did not match");
+		bp.add(_nonmatchedRec);
+		
 		JButton ok = new JButton("Next");;
 		ok.setActionCommand("next");
 		ok.addActionListener(this);
@@ -137,7 +145,7 @@ public class CompareRecordDialog implements ActionListener {
 		String[] algoList = new String[]{"Levenshtein","JaroWinkler","Jaro",
 				"NeedlemanWunch","SmithWaterman","SmithWatermanGotoh","CosineSimilarity",
 				"DiceSimilarity","JaccardSimilarity","OverlapCoefficient","BlockDistance",
-				"EuclideanDistance","MatchingCoefficient","SimonWhite"};
+				"EuclideanDistance","MatchingCoefficient","SimonWhite","MongeElkan"};
 		
 		for (int i =0; i < colCount; i++ ){
 			_rColC[i] = new JComboBox<String>();
@@ -338,55 +346,54 @@ public class CompareRecordDialog implements ActionListener {
 			
 			// Send Information to record  comparison
 			try {
-			d_m.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
-			d_recHead.setVisible(false);
-			MultiColData m1 = diff.new MultiColData();
-			m1.setA(diffCols);
-			// m1.setAlgoName("LEVENSHTEIN"); not rquired at MultiCol level
-			RecordMatch.operator doDiff = diff.new operator();
-			
-			// Now I have to load tables into memory and do Match/Linkage
-			
-			List<List<String>> lRecordList = new ArrayList<List<String>>();
-			List<List<String>> rRecordList = new ArrayList<List<String>>();
-			for (int i=0; i < _lTab.getModel().getRowCount(); i++) {
-				Object[] rowObject = _lTab.getRow(i);
-				List<String> row = new ArrayList<String>();
-				for(Object a: rowObject) {
-					if (a !=null) {
-						String cell = a.toString();
-						row.add(cell);
-					} else {
-						row.add(""); // for null objects
+				d_recHead.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
+				MultiColData m1 = diff.new MultiColData();
+				m1.setA(diffCols);
+				// m1.setAlgoName("LEVENSHTEIN"); not rquired at MultiCol level
+				RecordMatch.operator doDiff = diff.new operator();
+				
+				// Now I have to load tables into memory and do Match/Linkage
+				
+				List<List<String>> lRecordList = new ArrayList<List<String>>();
+				List<List<String>> rRecordList = new ArrayList<List<String>>();
+				for (int i=0; i < _lTab.getModel().getRowCount(); i++) {
+					Object[] rowObject = _lTab.getRow(i);
+					List<String> row = new ArrayList<String>();
+					for(Object a: rowObject) {
+						if (a !=null) {
+							String cell = a.toString();
+							row.add(cell);
+						} else {
+							row.add(""); // for null objects
+						}
+						
 					}
-					
+					lRecordList.add(row);
 				}
-				lRecordList.add(row);
-			}
-			
-			for (int i=0; i < _rTab.getModel().getRowCount(); i++) {
-				Object[] rowObject = _rTab.getRow(i);
-				List<String> row = new ArrayList<String>();
-				for(Object a: rowObject) {
-					if (a !=null) {
-						String cell = a.toString();
-						row.add(cell);
-					} else {
-						row.add(""); // for null objects
+				
+				for (int i=0; i < _rTab.getModel().getRowCount(); i++) {
+					Object[] rowObject = _rTab.getRow(i);
+					List<String> row = new ArrayList<String>();
+					for(Object a: rowObject) {
+						if (a !=null) {
+							String cell = a.toString();
+							row.add(cell);
+						} else {
+							row.add(""); // for null objects
+						}
+						
 					}
-					
+					rRecordList.add(row);
 				}
-				rRecordList.add(row);
-			}
-			
-			List<RecordMatch.Result> resultSet= doDiff.compare(lRecordList, rRecordList, m1, m1);
-			 _rt = displayRecord(resultSet , _type); // 0 for match
+				_mapCancel = false; //reset
+				List<RecordMatch.Result> resultSet= doDiff.compare(lRecordList, rRecordList, m1, m1);
+				 _rt = displayRecord(resultSet , _type); // 0 for match
 			
 			} catch (Exception ee) {
 				System.out.println("Exeption:"+ee.getMessage());
 				ee.printStackTrace();
 			} finally {
-				d_m.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+				d_recHead.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 				 if (_mapCancel == true) 
 				 		return; // cancel from Merge Map
 				d_recHead.dispose();
@@ -397,7 +404,7 @@ public class CompareRecordDialog implements ActionListener {
 				d_r = new JDialog();
 				d_r.setTitle("Record Match Dialog");
 				d_r.setLocation(250, 100);
-				if (_type == 2 ) // Merge Type
+				if (_type == 2 && _nonmatchedRec.isSelected() == false) // Merge Type
 					d_r.getContentPane().add(mergePanel());
 				else
 					d_r.getContentPane().add(_rt);
@@ -410,8 +417,33 @@ public class CompareRecordDialog implements ActionListener {
 	// This function will be used to display matched records in ReportTable
 	private ReportTable displayRecord(List<RecordMatch.Result> resultSet , int type) {
 		
+		boolean showNonmatched = _nonmatchedRec.isSelected();
+		if (showNonmatched == true) { //if true same table _lTab will be displayed with records not matching any records
+			_rt = new ReportTable(_lTab.getAllColNameAsString(), true, true);
+			Hashtable<Integer,Boolean> htNonMatched = new Hashtable<Integer,Boolean>();
+			
+			// get all the matched indexed then 
+			int rowCount = resultSet.size();
+			for (int i=0; i < rowCount ; i++) {
+				RecordMatch.Result  res = resultSet.get(i);
+				if (res.isMatch() == false)
+					continue; // Only displaying matched one
+				htNonMatched.put( res.getLeftMatchIndex(), true);
+			}
+			
+			// Find non matched and add to reportTable
+			
+			rowCount = _lTab.getModel().getRowCount();
+			for (int i=0; i < rowCount ; i++) {
+				if (htNonMatched.get(i) == null)
+					_rt.addFillRow(_lTab.getRow(i));
+			}
+			return _rt;
+		}
+		
+		
 		// Match create ReportTable with Master ( left table columns )
-		if (type == 0) {
+		if (type == 0) { // type 0 - match
 			String[] newColName;
 			if (_singleFile == true)
 			 newColName = new String[_lCols.size() + 1]; // 1 for Matched Indexed
@@ -571,6 +603,7 @@ public class CompareRecordDialog implements ActionListener {
 				nonMapCount = _lCols.size() - _leftMap.size(); // diff will be not mapped for merge
 			else
 				nonMapCount = _lCols.size() - _leftMap.size() + _rCols.size() - _rightMap.size();
+			
 			if (nonMapCount > 0) {
 				showNonMappedDialog();
 				
@@ -588,7 +621,31 @@ public class CompareRecordDialog implements ActionListener {
 			
 			// Now merge the records with old column 
 			mergeResultSet(resultSet, colName.length);
-		}
+			
+		} else if (type == 3) { // Record Standardization
+			
+			_rt = _lTab;
+			// Now fill the data
+			int rowCount = resultSet.size();
+			for (int i=0; i < rowCount ; i++) {
+				RecordMatch.Result  res = resultSet.get(i);
+				if (res.isMatch() == false)
+					continue; // Only displaying matched one
+				
+				// Fill left row values and replace with rightRow value for matched Index
+				List<String> rowR = res.getRightMatchedRow();
+				int lmatchedI = res.getLeftMatchIndex();
+				
+				for (int j =0; j < _leftMap.size(); j++) {
+					Object o = rowR.get(_rightMap.get(j));
+					Object o2 = _rt.getModel().getValueAt(lmatchedI, _leftMap.get(j));
+					if ( o == null || o2 == null || o.toString().equals(o2.toString()) == false) {
+						_rt.getModel().setValueAt(o, lmatchedI, _leftMap.get(j));
+						ConsoleFrame.addText("\n At Row:"+lmatchedI+" Column:"+_leftMap.get(j)+" '"+o+"' Replaced by '"+o2 +"'" );
+					}
+				}
+			}
+		} // End of Standardization
 		return _rt;
 	} // End of Display Record
 	
@@ -613,8 +670,11 @@ public class CompareRecordDialog implements ActionListener {
                 "Once merged results are displayed User can edit, add, remove records in cluster \n"+
                 "and Refresh the table. Golden values will be recalculated. \n\n",
                 "Record Mapping Input",JOptionPane.OK_OPTION,JOptionPane.INFORMATION_MESSAGE,null,
-                new String[] {"One Record in One Cluster","One Record in Many Cluster"},
+                new String[] {"One Record in One Cluster","One Record in Many Clusters"},
                 new String("One Record in One Cluster")) ;
+		
+		d_m.requestFocus();
+		d_m.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
 		
 		for (int i=0; i < rowCount ; i++) {
 			RecordMatch.Result  res = resultSet.get(i);
@@ -665,6 +725,7 @@ public class CompareRecordDialog implements ActionListener {
 				
 			}
 		}
+		d_m.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 	} // end of MergeResult
 	
 	// This function will return a set of matched record in the same
@@ -835,6 +896,9 @@ public class CompareRecordDialog implements ActionListener {
 		JPanel jp_p = new JPanel(new BorderLayout());
 		jp_p.add(jscrollpane1, BorderLayout.CENTER);
 		jp_p.add(bp, BorderLayout.PAGE_END);
+		
+		d_recHead.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+		d_recHead.dispose();
 
 		d_nonMap = new JDialog();
 		d_nonMap.setModal(true);

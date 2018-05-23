@@ -41,8 +41,8 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
-import org.arrah.framework.datagen.TimeUtil;
 import org.arrah.framework.util.StringCaseFormatUtil;
+import org.arrah.framework.util.TimeUtil;
 
 
 public class UtilFunctionPanel implements ActionListener, ItemListener {

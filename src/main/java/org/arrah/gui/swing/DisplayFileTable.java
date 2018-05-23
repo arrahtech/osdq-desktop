@@ -84,9 +84,10 @@ import org.arrah.framework.analytics.MetadataMatcher;
 import org.arrah.framework.analytics.NormalizeCol;
 import org.arrah.framework.analytics.SetAnalysis;
 import org.arrah.framework.analytics.TabularReport;
-import org.arrah.framework.datagen.AggrCumRTM;
+import org.arrah.framework.datagen.AggrCumColumnUtil;
 import org.arrah.framework.datagen.RandomColGen;
 import org.arrah.framework.datagen.SplitRTM;
+import org.arrah.framework.dataquality.AddressUtil;
 import org.arrah.framework.dataquality.FillCheck;
 import org.arrah.framework.dataquality.FormatCheck;
 import org.arrah.framework.dataquality.SimilarityCheckLucene;
@@ -230,10 +231,15 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		JMenu enrich_m = new JMenu("Enrichment");
 		preparation_m.add(enrich_m);
 		
-		JMenuItem geoencode_m = new JMenuItem("Geo Encoding");
+		JMenuItem geoencode_m = new JMenuItem("Geo Coding");
 		geoencode_m.addActionListener(this);
 		geoencode_m.setActionCommand("geocoding");
 		enrich_m.add(geoencode_m);
+		
+		JMenuItem addrcompletion_m = new JMenuItem("Address Completion");
+		addrcompletion_m.addActionListener(this);
+		addrcompletion_m.setActionCommand("addrcompletion");
+		enrich_m.add(addrcompletion_m);
 		
 		JMenu nullrep_m = new JMenu("Null Replace");
 		enrich_m.add(nullrep_m);
@@ -930,7 +936,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					return;
 				Vector<Double> inputData_a = _rt.getRTMModel().getColDataVD(index_a);
 				Vector<Double> inputData_b = _rt.getRTMModel().getColDataVD(index_b);
-				double corr = AggrCumRTM.getPCorrelation(inputData_a, inputData_b);
+				double corr = AggrCumColumnUtil.getPCorrelation(inputData_a, inputData_b);
 				if (Double.isNaN(corr) == true)
 					JOptionPane.showMessageDialog(null, "Could not get Correlation for dataset");
 				else
@@ -1442,7 +1448,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 						
 						for (int j = 0; j < valueTok.length; j++) {
 							try {
-								// needs to add case sensitive and word search replace
+							// needs to add case sensitive and word search replace
 							Matcher m = p.matcher(valueTok[j]);
 							if (options.charAt(3) == '1' ){ // Full sequence match
 								if (m.matches() == true ) {
@@ -2046,13 +2052,9 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 			}
 			if (command.equals("geocoding")) {
 				_rt.cancelSorting(); // Make sure it is not in sorting order
-				
-				int lindex = selectedColIndex(_rt,"Please Select Zip/Pincode column:");
-				if (lindex < 0)
-					return;
-				
+
 				JOptionPane.showMessageDialog (null, "Choose the Latitude/Longitude and Zip/Pin Mapping file \n"
-						+ "You can look at http://download.geonames.org/ if you don't have \n"
+						+ "like resource/zipcode_US.csv" +"\n You can look at http://download.geonames.org/ if you don't have \n"
 						+ "mapping file:");
 				
 				ImportFilePanel impF = new ImportFilePanel(false);
@@ -2060,17 +2062,18 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				if (rtable == null)
 					return;
 
-				int rindex = selectedColIndex(rtable,"Select Zip/Pin column in mapping file:");
-				if (rindex < 0)
-					return;
+				String [] tag = new String[] {"Zip/Pin","Latitude","Longitude"};
+				int [] tagactivation = new int[3];
+				tagactivation[0] = 0; tagactivation[1] = 2;tagactivation[2] = 2;
+				GeoEncodingPanel gep = new GeoEncodingPanel(tag,_rt.getAllColNameAsString(),rtable.getAllColNameAsString());
+				gep.set_tagActiveCode(tagactivation);
+				gep.createInputDialog(false);
+				if (gep.isCancel_clicked() == true) return;
 				
-				int rlat = selectedColIndex(rtable,"Select Latitude Column in mapping file:");
-				if (rlat < 0)
-					return;
-				
-				int rlon = selectedColIndex(rtable,"Select Longitude Column in mapping file:");
-				if (rlon < 0)
-					return;
+				int lindex = gep.firstSelIndex[0];
+				int rindex = gep.secondSelIndex[0];
+				int rlat = gep.secondSelIndex[1];
+				int rlon = gep.secondSelIndex[2];
 				
 				int rowc = _rt.getModel().getRowCount();
 				int colc = _rt.getModel().getColumnCount();
@@ -2087,6 +2090,44 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					_rt.getModel().setValueAt(lat,i,colc);
 					_rt.getModel().setValueAt(lon,i,colc+1);
 				}
+				
+				return;
+			}
+			if (command.equals("addrcompletion")) {
+				_rt.cancelSorting(); // Make sure it is not in sorting order
+
+				JOptionPane.showMessageDialog (null, "Choose Zip/Pin Mapping file like resource/IndianAddresswithPin.csv \n"
+						+ "You can look at http://download.geonames.org/ if you don't have \n"
+						+ "mapping file:");
+				
+				ImportFilePanel impF = new ImportFilePanel(false);
+				ReportTable rtable = impF.getTable();
+				if (rtable == null)
+					return;
+
+				String [] tag = new String[] {"Zip/Pin","Place","City","State","Community"};
+				
+				GeoEncodingPanel gep = new GeoEncodingPanel(tag,_rt.getAllColNameAsString(),rtable.getAllColNameAsString());
+				gep.createInputDialog(true);
+				if (gep.isCancel_clicked() == true) return;
+				
+				boolean[] selectedCh = gep.getSelCheckboxIndex();
+				if (selectedCh[0] == false) {
+					JOptionPane.showMessageDialog (null, "Zip/Pin code must be Selected");
+					
+					return;
+				}
+				
+				List<Integer> leftL = gep.getLeftActiveIndex();
+				Integer[] leftI = new Integer[leftL.size()];
+				leftI = leftL.toArray(leftI);
+				
+				List<Integer> rightL = gep.getRightActiveIndex();
+				Integer[] rightI = new Integer[rightL.size()];
+				rightI = rightL.toArray(leftI);
+
+				Hashtable<Object, Object> hlookup = RTMUtil.lookupIndex(rtable.getRTMModel(),rightI[0]);
+				AddressUtil.completeRTMCOls(_rt.getRTMModel(), leftI, leftI[0], hlookup, rtable.getRTMModel(), rightI);
 				
 				return;
 			}
@@ -2327,7 +2368,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				if (index < 0)
 					return;
 				Vector<Double> colD = _rt.getRTMModel().getColDataVD(index);
-				Double avg = AggrCumRTM.getAverage(colD);
+				Double avg = AggrCumColumnUtil.getAverage(colD);
 				int rowc = _rt.getModel().getRowCount();
 				
 				for (int i=0; i < rowc; i++) {
@@ -2421,7 +2462,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				if (index < 0)
 					return;
 				Vector<Double> colD = _rt.getRTMModel().getColDataVD(index);
-				double[] minMax = AggrCumRTM.getMinMax(colD);
+				double[] minMax = AggrCumColumnUtil.getMinMax(colD);
 				int rowc = _rt.getModel().getRowCount();
 				
 				for (int i=0; i < rowc; i++) {

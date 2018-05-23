@@ -523,7 +523,7 @@ public class FirPanel extends JPanel {
 		*/
 		
 		String s = " Community License (LGPL). ";
-		s = "<html> <B> <I> <U> &copy; 2006-2017  Arrah Technology </U> <BR>"
+		s = "<html> <B> <I> <U> &copy; 2006-2018  Arrah Technology </U> <BR>"
 				+ s + "</I></B> </html>";
 		
 		jpanel.setLayout(new GridLayout(12, 1));

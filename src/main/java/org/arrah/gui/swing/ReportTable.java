@@ -1161,14 +1161,14 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 			
 			for (int j = 0; j < columnCount; j++) 
 				colD[j] = table.getColumnName(j);
-			writer.writeNext(colD);
+			writer.writeNext(colD,true);
 			
 			// Get Column data
 			for (int i = 0; i < rowCount; i++) {
 				for (int j = 0; j < columnCount; j++) {
 					colD[j] = getTextValueAt(i, j);
 				}
-				writer.writeNext(colD);
+				writer.writeNext(colD,true);
 			}
 			writer.close();
 		} catch (IOException exp) {

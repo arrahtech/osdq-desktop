@@ -618,6 +618,10 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		recordMergeMulti.addActionListener(new ToolListener(jmenubar));
 		recordMerge.add(recordMergeMulti);
 		jmenu6.add(recordMerge);
+		jmenu6.addSeparator();
+		JMenuItem recordReplace = new JMenuItem("Record Standardization");
+		recordReplace.addActionListener(new ToolListener(jmenubar));
+		jmenu6.add(recordReplace);
 		
 		
 		JMenu jmenu7 = new JMenu("Data Quality");
