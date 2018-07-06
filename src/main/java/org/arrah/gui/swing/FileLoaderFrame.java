@@ -221,9 +221,13 @@ public class FileLoaderFrame {
 		recordMerge.add(recordMergeMulti);
 		jmenu6.add(recordMerge);
 		jmenu6.addSeparator();
-		JMenuItem recordReplace = new JMenuItem("Record Standardization");
+		JMenuItem recordReplace = new JMenuItem("Auto Standardization");
 		recordReplace.addActionListener(new ToolListener(jmenubar));
 		jmenu6.add(recordReplace);
+		jmenu6.addSeparator();
+		JMenuItem interReplace = new JMenuItem("Interactive Standardization");
+		interReplace.addActionListener(new ToolListener(jmenubar));
+		jmenu6.add(interReplace);
 	
 		
 		jmenubar.add(jmenu6);

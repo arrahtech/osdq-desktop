@@ -20,6 +20,7 @@ package org.arrah.gui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -40,7 +42,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SpringLayout;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.arrah.framework.dataquality.RecordMatch;
 import org.arrah.framework.dataquality.RecordMatch.MultiColData;
@@ -59,6 +63,8 @@ public class CompareRecordDialog implements ActionListener {
 	private Integer[] _actionType;
 	private JButton refreshB,pushgoldenB;
 	private JCheckBox _nonmatchedRec;
+	private HashMap<String,Boolean> uniqLKey, uniqRKey;
+	private HashMap<String,ArrayList<Integer>> uniqLIndex;
 	
 	/* leftTable is must . rightTable only in multiple file or linkage option */
 	public CompareRecordDialog (ReportTable leftTable, ReportTable rightTable, int type) {
@@ -145,7 +151,7 @@ public class CompareRecordDialog implements ActionListener {
 		String[] algoList = new String[]{"Levenshtein","JaroWinkler","Jaro",
 				"NeedlemanWunch","SmithWaterman","SmithWatermanGotoh","CosineSimilarity",
 				"DiceSimilarity","JaccardSimilarity","OverlapCoefficient","BlockDistance",
-				"EuclideanDistance","MatchingCoefficient","SimonWhite","MongeElkan"};
+				"EuclideanDistance","MatchingCoefficient","SimonWhite","MongeElkan","Soundex","qGramDistance","DoubleMetaPhone"};
 		
 		for (int i =0; i < colCount; i++ ){
 			_rColC[i] = new JComboBox<String>();
@@ -356,6 +362,11 @@ public class CompareRecordDialog implements ActionListener {
 				
 				List<List<String>> lRecordList = new ArrayList<List<String>>();
 				List<List<String>> rRecordList = new ArrayList<List<String>>();
+				
+				uniqLKey = new HashMap<String,Boolean>();
+				uniqRKey = new HashMap<String,Boolean>();
+				uniqLIndex = new HashMap<String,ArrayList<Integer>>();
+				
 				for (int i=0; i < _lTab.getModel().getRowCount(); i++) {
 					Object[] rowObject = _lTab.getRow(i);
 					List<String> row = new ArrayList<String>();
@@ -366,7 +377,24 @@ public class CompareRecordDialog implements ActionListener {
 						} else {
 							row.add(""); // for null objects
 						}
-						
+					}
+					String keyL = "";
+					for (int j=0; j < _leftMap.size(); j++) {
+						keyL = keyL+row.get(_leftMap.get(j))+",";// Separator
+					}
+					if (_type == 5) {// demo for Standardization
+						if (uniqLKey.get(keyL) == null) {
+							uniqLKey.put(keyL, false);
+							ArrayList<Integer> lIndex = new ArrayList<Integer>();
+							lIndex.add(i);
+							uniqLIndex.put(keyL, lIndex);
+						}
+						else {
+							ArrayList<Integer> lIndex = uniqLIndex.get(keyL);
+							lIndex.add(i);
+							uniqLIndex.put(keyL, lIndex);
+							continue; // no need to put duplicate value
+						}
 					}
 					lRecordList.add(row);
 				}
@@ -381,7 +409,16 @@ public class CompareRecordDialog implements ActionListener {
 						} else {
 							row.add(""); // for null objects
 						}
-						
+					}
+					String keyL = "";
+					for (int j=0; j < _rightMap.size(); j++) {
+						keyL = keyL+row.get(_rightMap.get(j));
+					}
+					if (_type == 5) {// demo for Standardization
+						if (uniqRKey.get(keyL) == null)
+							uniqRKey.put(keyL, false);
+						else 
+							continue; // no need to put duplicate value
 					}
 					rRecordList.add(row);
 				}
@@ -390,7 +427,7 @@ public class CompareRecordDialog implements ActionListener {
 				 _rt = displayRecord(resultSet , _type); // 0 for match
 			
 			} catch (Exception ee) {
-				System.out.println("Exeption:"+ee.getMessage());
+				System.out.println("Exception:"+ee.getMessage());
 				ee.printStackTrace();
 			} finally {
 				d_recHead.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -622,7 +659,7 @@ public class CompareRecordDialog implements ActionListener {
 			// Now merge the records with old column 
 			mergeResultSet(resultSet, colName.length);
 			
-		} else if (type == 3) { // Record Standardization
+		} else if (type == 3) { // Record Standardization - Auto
 			
 			_rt = _lTab;
 			// Now fill the data
@@ -645,7 +682,125 @@ public class CompareRecordDialog implements ActionListener {
 					}
 				}
 			}
-		} // End of Standardization
+		} // End of Standardization - Auto
+		else if (type == 5) { // Record Standardization - Interactive
+			int mapSize = _leftMap.size();
+			String [] oldColName = _lTab.getAllColNameAsString();
+			
+			// LDG_ , accept, algo 1, algo 2 4
+			_rt = new ReportTable(oldColName,true,true);
+			for (int i=0; i <mapSize; i++)
+				_rt.getRTMModel().addColumn("LDG_"+oldColName[_leftMap.get(i)]);
+			
+			_rt.getRTMModel().addColumn("Accept");
+			_rt.getRTMModel().addColumn("SelectedAlgo");
+			_rt.getRTMModel().addColumn("CosineDistanceAlgo");
+			
+			_rt.table.getColumnModel().getColumn(_rt.getModel().getColumnCount() - 4).setCellRenderer(new MyCellRenderer());
+			
+			// Now change the data
+			int rowCount = resultSet.size();
+			int prev_lmatchedI = -1; // initialize
+			ArrayList<Object[]> newRow = new ArrayList<Object[]> ();
+			ArrayList<Integer> prev_indexmatch = null;
+			
+			for (int i=0; i < rowCount ; i++) {
+				RecordMatch.Result  res = resultSet.get(i);
+				if (res.isMatch() == false)
+					continue; // Only displaying matched one
+				
+				// Fill left row values and replace with rightRow value for matched Index
+				List<String> rowL = res.getLeftMatchedRow();
+				List<String> rowR = res.getRightMatchedRow();
+				int lmatchedI = res.getLeftMatchIndex();
+				float matchValue=res.getSimMatchVal();
+				Object[] lrow = new Object[mapSize];
+				Object[] rrow = new Object[mapSize];
+				
+				String mapSearch ="";
+				for (int j =0; j < mapSize; j++) { // First Fill the values
+					rrow[j] = rowR.get(_rightMap.get(j));
+					lrow[j] = rowL.get(_leftMap.get(j));
+					mapSearch = mapSearch+lrow[j].toString()+",";
+				}
+				uniqLKey.put(mapSearch, true); // matched
+				ArrayList<Integer> indexmatch = uniqLIndex.get(mapSearch);
+				// get the new value
+				Object[] newmatchRow = new Object[mapSize+3];
+				for (int j=0; j< mapSize; j++)
+					newmatchRow[j] = rrow[j];
+				float cosineF = org.arrah.framework.wrappertoutil.StringUtil.cosineDistance(lrow[mapSize -1].toString(), rrow[mapSize -1].toString());
+				newmatchRow[mapSize+1] = new Float(matchValue*100);
+				newmatchRow[mapSize+2] = new Float(cosineF*100);
+				
+				if (prev_lmatchedI == lmatchedI ) {// new right value so add rows
+					//_rt.addRow();
+					
+					// if matched put into Arraylist new values
+					newRow.add(newmatchRow);
+					
+				} else {
+					if (i ==0) { // first row will not match previous row
+						newRow.add(newmatchRow);
+						// prev list = new list
+						prev_indexmatch = indexmatch;
+						prev_lmatchedI = lmatchedI;
+						continue;
+					}
+					// loop the list of rowIndexes it matches
+					// if previous value is not writen write into table
+					for (int j=0; j < prev_indexmatch.size(); j++) {
+						Object[] prevV = _lTab.getRow(prev_indexmatch.get(j));
+						for (int k =0 ; k < newRow.size(); k++) {
+							Object[] newV = newRow.get(k);
+							// add row
+							_rt.addFillRow(prevV, newV);
+						}
+						// if newRow.size() >  1 add an empty row
+						if (newRow.size() >  1)
+							_rt.addRow();
+					}
+					
+					// clean and now get the new value
+					newRow.clear();
+					newRow.add(newmatchRow);
+				}
+
+				prev_lmatchedI = lmatchedI;
+				// prev list = new list
+				prev_indexmatch = indexmatch;
+				
+			} // End of looping
+			
+			// If last value is same then put it back using previous list
+			// loop the list of rowIndexes it matches
+			// if previous value is not writen write into table
+			if (newRow.isEmpty() ==false) {
+				for (int j=0; j < prev_indexmatch.size(); j++) {
+					Object[] prevV = _lTab.getRow(prev_indexmatch.get(j));
+					for (int k =0 ; k < newRow.size(); k++) {
+						Object[] newV = newRow.get(k);
+						_rt.addFillRow(prevV, newV);
+					}
+				}
+			}
+			
+			// Now add the non matching columns if required
+			if (uniqLKey.containsValue(false) == true) {
+				Set<String> keySet = uniqLKey.keySet();
+				for (String key:keySet) {
+					if (uniqLKey.get(key) == false) {
+						ArrayList<Integer> indexmatch = uniqLIndex.get(key);
+						for (int j=0; j < indexmatch.size(); j++) {
+							Object[] prevV = _lTab.getRow(indexmatch.get(j));
+							Object [] nullV = new Object[mapSize+3];
+							_rt.addFillRow(prevV,nullV);
+						}
+					}
+				}
+			} // Non match filling
+			
+		} // End of Standardization - Interactive
 		return _rt;
 	} // End of Display Record
 	
@@ -1006,4 +1161,32 @@ public class CompareRecordDialog implements ActionListener {
 		
 		return jp;
 	}
+	
+	private class MyCellRenderer extends DefaultTableCellRenderer {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		
+
+		public MyCellRenderer( ) {
+		}
+
+
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
+			
+			Component c = super.getTableCellRendererComponent(table, value,
+					isSelected, hasFocus, row, column);
+			if (value == null) return c; // for null value
+			try{
+				c.setForeground(Color.RED.darker());
+			} catch (Exception e) {
+					return c;
+			}
+			return c;
+		}
+	} // End of MyCellRenderer
 }

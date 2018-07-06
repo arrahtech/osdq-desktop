@@ -81,7 +81,7 @@ public class ToolListener implements ActionListener {
 				if (source.equals("Single File Match") || source.equals("Multiple File Match") ||
 					source.equals("1:1 Record Linkage") ||	source.equals("1:N Record Linkage") ||
 					source.equals("Single File Merge") || source.equals("Multiple File Merge") ||
-					source.equals("Diff File") || source.equals("Record Standardization") ) {
+					source.equals("Diff File") || source.equals("Auto Standardization")  || source.equals("Interactive Standardization") ) {
 					
 					ReportTable firstRT = null, secondRT= null;
 					JOptionPane.showMessageDialog(null, "Select the First File");
@@ -95,8 +95,8 @@ public class ToolListener implements ActionListener {
 					}
 	
 					if ( source.equals("1:1 Record Linkage") || source.equals("1:N Record Linkage") || 
-							source.equals("Multiple File Match") || source.equals("Multiple File Merge") || source.equals("Record Standardization")
-							|| source.equals("Diff File") ) {
+							source.equals("Multiple File Match") || source.equals("Multiple File Merge") || source.equals("Auto Standardization")
+							|| source.equals("Diff File") || source.equals("Interactive Standardization")) {
 						JOptionPane.showMessageDialog(null, "Select the Second File");
 						ImportFilePanel secondFile = new ImportFilePanel(false);
 						if (secondFile != null ) 
@@ -120,8 +120,11 @@ public class ToolListener implements ActionListener {
 						crd = new CompareRecordDialog(firstRT, secondRT, 4); // 4 for Inner Join
 					else if ( source.equals("Single File Merge") || source.equals("Multiple File Merge") )
 						crd = new CompareRecordDialog(firstRT, secondRT, 2); // 2 for Merge
-					else if ( source.equals("Record Standardization") )
-						crd = new CompareRecordDialog(firstRT, secondRT, 3); // 3 for Merge
+					else if ( source.equals("Auto Standardization") )
+						crd = new CompareRecordDialog(firstRT, secondRT, 3); // 3 for Auto Standard
+					// 5 for interctive replacement
+					else if ( source.equals("Interactive Standardization"))
+						crd = new CompareRecordDialog(firstRT, secondRT, 5); // 3 for Auto Standard
 					
 					crd.createMapDialog();
 						

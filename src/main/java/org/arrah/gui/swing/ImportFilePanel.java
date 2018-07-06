@@ -57,7 +57,6 @@ import org.arrah.framework.json.FlattenJsonToCSV;
 import org.arrah.framework.ndtable.CSVtoReportTableModel;
 import org.arrah.framework.ndtable.ColumnAttr;
 import org.arrah.framework.ndtable.ReportTableModel;
-import org.arrah.framework.xls.XlsReader;
 import org.arrah.framework.xls.XlsxReader;
 import org.arrah.framework.xml.XmlReader;
 
@@ -94,7 +93,7 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 							f.toString());
 					dft.showGUI();
 				}
-			} else if (f.getName().toLowerCase().endsWith(".xls")) {
+			}/* else if (f.getName().toLowerCase().endsWith(".xls")) {
 				final XlsReader xlsReader = new XlsReader();
 				showT = new ReportTable(xlsReader.read(f));
 				if (_showGUI == true) {
@@ -102,8 +101,11 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 							f.toString());
 					dft.showGUI();
 				}
-			} else if (f.getName().toLowerCase().endsWith(".xlsx")) {
+			}*/ else if (f.getName().toLowerCase().endsWith(".xlsx") || f.getName().toLowerCase().endsWith(".xls")) {
 				final XlsxReader xlsReader = new XlsxReader();
+				int input = JOptionPane.showConfirmDialog(null,"Do you want to load all sheets ?","Load sheets",JOptionPane.YES_NO_OPTION);
+				if(input == JOptionPane.YES_OPTION)
+					xlsReader.readAllSheets(true);
 				showT = new ReportTable(xlsReader.read(f));
 				if (_showGUI == true) {
 					DisplayFileTable dft = new DisplayFileTable(showT,
