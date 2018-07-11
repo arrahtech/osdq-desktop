@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.util.LicenseManager;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -70,7 +71,7 @@ public class FileLoaderFrame {
 		});
 		
 		jframe.setLocation(50,50);
-		jframe.setPreferredSize(new Dimension(500,400));
+		jframe.setPreferredSize(new Dimension(700,700));
 		jframe.pack();
 		jframe.setVisible(true);
 
@@ -78,9 +79,9 @@ public class FileLoaderFrame {
 	
 	private JPanel createTopPanel() {
 		JPanel jpanel = new JPanel();
-		// String s = null;
+		String s = null;
 		
-		/* Under LGPL or Apache
+		/* If you have enterprise license */
 		LicenseManager licensemanager = new LicenseManager();
 		if (licensemanager.isValid()) {
 			if (licensemanager.isEval) {
@@ -88,17 +89,20 @@ public class FileLoaderFrame {
 				s = s + "<BR> Trial Days remaining - "
 						+ licensemanager.days_remaining;
 			} else {
-				s = "Licensed to: " + licensemanager.c_name;
+				s = "Licensed to: " + licensemanager.c_name +"<BR>";
+				s = s+"Approved User: " + licensemanager.user_name +"<BR>";
 			}
 		} else {
-			s = "Does not have Enterprise  License...<BR>";
-			s = "Community License (LGPL) used. ";
+			JOptionPane.showMessageDialog(null, "Do not have valid License. Contact Admininstrator");
+			System.exit(-1);
 		}
-		*/
 		
-		String s = " Community License (LGPL). ";
+		
+		if (s == null || "".equals(s)) 
+		s = " Community License (LGPL). ";
 		s = "<html> <B> <I> <U> &copy; 2006-2018  Arrah Technology </U> <BR>"
 				+ s + "</I></B> </html>";
+
 		
 		jpanel.setLayout(new GridLayout(12, 1));
 		JLabel jlabel = new JLabel();
@@ -107,7 +111,7 @@ public class FileLoaderFrame {
 		jlabel1.setFont(new Font("Helvetica", 1, 16));
 		JLabel jlabel2 = new JLabel(
 				"http://www.arrahtec.com", 0);
-		JLabel jlabel3 = new JLabel("support@arrahtec.com", 0);
+		JLabel jlabel3 = new JLabel("Support Email:support@arrahtec.com", 0);
 		
 		JLabel jlabel4 = new JLabel(s, 0);
 		jpanel.add(jlabel);
