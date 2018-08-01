@@ -507,7 +507,7 @@ public class FirPanel extends JPanel {
 		JPanel jpanel = new JPanel();
 		String s = null;
 		
-		/* If you have enterprise license */
+		/***** If you have enterprise license 
 		LicenseManager licensemanager = new LicenseManager();
 		if (licensemanager.isValid()) {
 			if (licensemanager.isEval) {
@@ -522,6 +522,8 @@ public class FirPanel extends JPanel {
 			JOptionPane.showMessageDialog(null, "Do not have valid License. Contact Admininstrator");
 			System.exit(-1);
 		}
+		****/
+		// Community License
 		
 		if (s == null || "".equals(s)) 
 		s = " Community License (LGPL). ";
@@ -534,8 +536,8 @@ public class FirPanel extends JPanel {
 				"Welcome to Open Source Data Quality Project", 0);
 		jlabel1.setFont(new Font("Helvetica", 1, 16));
 		JLabel jlabel2 = new JLabel(
-				"http://www.arrahtec.com/", 0);
-		JLabel jlabel3 = new JLabel("support@arrahtec.com", 0);
+				"http://www.arrahtech.com/", 0);
+		JLabel jlabel3 = new JLabel("support@arrahtech.com", 0);
 		
 		JLabel jlabel4 = new JLabel(s, 0);
 		jpanel.add(jlabel);

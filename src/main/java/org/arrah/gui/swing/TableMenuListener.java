@@ -630,7 +630,9 @@ public class TableMenuListener implements ActionListener, ItemListener {
 				6, 6,        //initX, initY                                        
 				6, 6);       //xPad, yPad          
 		
-
+		// Need Scollbar if no of columns is huge
+		JScrollPane scrollPane = new JScrollPane(p);
+		scrollPane.setPreferredSize(new Dimension(400,600));
 		JPanel bp = new JPanel();
 
 		JButton tstc = new JButton("Save");
@@ -645,7 +647,7 @@ public class TableMenuListener implements ActionListener, ItemListener {
 		cn_b.addActionListener(this);
 		bp.add(cn_b);
 		
-		dp.add(p, BorderLayout.CENTER);
+		dp.add(scrollPane, BorderLayout.CENTER);
 		dp.add(bp, BorderLayout.PAGE_END);
 		
 		jd = new JDialog ();
