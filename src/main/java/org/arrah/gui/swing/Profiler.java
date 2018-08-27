@@ -500,6 +500,10 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		// will become menu item
 		JMenu impFile = new JMenu("Open File");
 		
+		JMenuItem newFile = new JMenuItem("New File");
+		impFile.add(newFile);
+		newFile.addActionListener(new ToolListener(jmenubar));
+		
 		JMenuItem jmenuitem21 = new JMenuItem("Text Format");
 		impFile.add(jmenuitem21);
 		jmenuitem21.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, 10));

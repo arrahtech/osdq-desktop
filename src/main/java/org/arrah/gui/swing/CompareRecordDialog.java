@@ -39,6 +39,9 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -316,6 +319,19 @@ public class CompareRecordDialog implements ActionListener {
 				_dataActionNonMap.add(i,_dataActionC[i].getSelectedIndex());
 			d_nonMap.dispose();
 		}
+		if ("inputdialog".equals(e.getActionCommand())) {
+			d_r.dispose();
+			d_m.setVisible(true);
+		}
+		if ("analysispanel".equals(e.getActionCommand())) {
+			DisplayFileTable dt = new DisplayFileTable(_rt);
+			dt.setMatchRT(_rTab);
+			d_r.dispose();
+			d_m.dispose();
+			dt.showGUI();
+			return;
+		}
+
 		
 		if ("compare".equals(e.getActionCommand())) {
 			_leftMap = new Vector<Integer>();
@@ -433,9 +449,13 @@ public class CompareRecordDialog implements ActionListener {
 				d_recHead.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 				 if (_mapCancel == true) 
 				 		return; // cancel from Merge Map
-				d_recHead.dispose();
+				 
+					 d_recHead.dispose();
 			}
-			d_m.dispose();
+			if (_type == 5)
+				d_m.setVisible(false);
+			else
+				d_m.dispose();
 			
 			// Now pass the results for display
 				d_r = new JDialog();
@@ -443,6 +463,8 @@ public class CompareRecordDialog implements ActionListener {
 				d_r.setLocation(250, 100);
 				if (_type == 2 && _nonmatchedRec.isSelected() == false) // Merge Type
 					d_r.getContentPane().add(mergePanel());
+				else if (_type == 5)
+					d_r.getContentPane().add(iterPanel());
 				else
 					d_r.getContentPane().add(_rt);
 				d_r.pack();
@@ -687,14 +709,40 @@ public class CompareRecordDialog implements ActionListener {
 			int mapSize = _leftMap.size();
 			String [] oldColName = _lTab.getAllColNameAsString();
 			
-			// LDG_ , accept, algo 1, algo 2 4
+			// LDG_ , accept, algo 1, algo 2 4+columns
+			// Multiple interations will have same column name so add numbers
 			_rt = new ReportTable(oldColName,true,true);
-			for (int i=0; i <mapSize; i++)
-				_rt.getRTMModel().addColumn("LDG_"+oldColName[_leftMap.get(i)]);
+			int addindex=0;
+			String addString="";
+			boolean toploop=false;
 			
-			_rt.getRTMModel().addColumn("Accept");
-			_rt.getRTMModel().addColumn("SelectedAlgo");
-			_rt.getRTMModel().addColumn("CosineDistanceAlgo");
+			for (addindex=0;; addindex++) {
+				
+				if (addindex == 0)
+					addString="";
+				else
+					addString=""+addindex;
+				for (String s:oldColName) {
+					// System.out.println(s+":"+addString);
+					if ( s.equals("Accept"+addString) || s.equals("SelectedAlgo"+addString) || s.equals("CosineDistanceAlgo"+addString) ) {
+						toploop = true;
+						break;
+					}
+					else 
+						toploop= false;
+				}
+			if ( toploop == true)
+				continue;
+			
+				break;
+			} 
+			
+			for (int i=0; i <mapSize; i++)
+				_rt.getRTMModel().addColumn("LGD_"+oldColName[_leftMap.get(i)]+addString);
+			
+			_rt.getRTMModel().addColumn("Accept"+addString);
+			_rt.getRTMModel().addColumn("SelectedAlgo"+addString);
+			_rt.getRTMModel().addColumn("CosineDistanceAlgo"+addString);
 			
 			_rt.table.getColumnModel().getColumn(_rt.getModel().getColumnCount() - 4).setCellRenderer(new MyCellRenderer());
 			
@@ -1159,6 +1207,27 @@ public class CompareRecordDialog implements ActionListener {
 		
 		jp.add(bp,BorderLayout.PAGE_END);
 		
+		return jp;
+	}
+	private JPanel iterPanel() {
+		JPanel jp = new JPanel ( new BorderLayout() );
+		jp.add(_rt,BorderLayout.CENTER);
+		
+		JMenuBar b = new JMenuBar();
+		JMenu menu = new JMenu("Options");
+		b.add(menu);
+		
+		JMenuItem iteritem = new JMenuItem("Goto Previous Frame");
+		iteritem.addActionListener(this);
+		iteritem.setActionCommand("inputdialog");
+		menu.add(iteritem);
+		menu.addSeparator();
+		JMenuItem analitem = new JMenuItem("Open Analysis Panel");
+		analitem.addActionListener(this);
+		analitem.setActionCommand("analysispanel");
+		menu.add(analitem);
+
+		jp.add(b, BorderLayout.NORTH);
 		return jp;
 	}
 	

@@ -77,6 +77,14 @@ public class ToolListener implements ActionListener {
 					new ImportFilePanel(true,1 ); // 1 for OpenCSV
 					return;
 				}
+				if (source.equals("New File")) {
+					// open empty table
+					String[] colname= new String[]{"first"};
+					ReportTable rt = new ReportTable(colname,true,true);
+					DisplayFileTable dft = new DisplayFileTable(rt);
+					dft.showGUI();
+					return;
+				}
 				
 				if (source.equals("Single File Match") || source.equals("Multiple File Match") ||
 					source.equals("1:1 Record Linkage") ||	source.equals("1:N Record Linkage") ||
@@ -124,7 +132,7 @@ public class ToolListener implements ActionListener {
 						crd = new CompareRecordDialog(firstRT, secondRT, 3); // 3 for Auto Standard
 					// 5 for interctive replacement
 					else if ( source.equals("Interactive Standardization"))
-						crd = new CompareRecordDialog(firstRT, secondRT, 5); // 3 for Auto Standard
+						crd = new CompareRecordDialog(firstRT, secondRT, 5); // 5 for Interactive Standard
 					
 					crd.createMapDialog();
 						

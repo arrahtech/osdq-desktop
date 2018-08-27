@@ -81,7 +81,7 @@ public class FileLoaderFrame {
 		JPanel jpanel = new JPanel();
 		String s = null;
 		
-		/*** If you have enterprise license 
+		/*** If you have enterprise license ***/
 		LicenseManager licensemanager = new LicenseManager();
 		if (licensemanager.isValid()) {
 			if (licensemanager.isEval) {
@@ -96,7 +96,7 @@ public class FileLoaderFrame {
 			JOptionPane.showMessageDialog(null, "Do not have valid License. Contact Admininstrator");
 			System.exit(-1);
 		}
-		******/
+		//
 		// Community License
 		
 		if (s == null || "".equals(s)) 
@@ -131,6 +131,10 @@ public class FileLoaderFrame {
 		JMenu jmenu6 = new JMenu("File Loader");
 		
 		JMenu impFile = new JMenu("Open File");
+		
+		JMenuItem newFile = new JMenuItem("New File");
+		impFile.add(newFile);
+		newFile.addActionListener(new ToolListener(jmenubar));
 		
 		JMenuItem jmenuitem21 = new JMenuItem("Text Format");
 		impFile.add(jmenuitem21);

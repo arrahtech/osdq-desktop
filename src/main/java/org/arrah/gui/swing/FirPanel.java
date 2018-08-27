@@ -507,7 +507,7 @@ public class FirPanel extends JPanel {
 		JPanel jpanel = new JPanel();
 		String s = null;
 		
-		/***** If you have enterprise license 
+		/***** If you have enterprise license ****/
 		LicenseManager licensemanager = new LicenseManager();
 		if (licensemanager.isValid()) {
 			if (licensemanager.isEval) {
@@ -522,7 +522,7 @@ public class FirPanel extends JPanel {
 			JOptionPane.showMessageDialog(null, "Do not have valid License. Contact Admininstrator");
 			System.exit(-1);
 		}
-		****/
+		//
 		// Community License
 		
 		if (s == null || "".equals(s)) 

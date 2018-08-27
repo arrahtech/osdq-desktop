@@ -112,6 +112,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	private ReportTable _rt;
+	private ReportTable _rtRight = null;
 	private JRadioButton rb1, rb2;
 	private JFormattedTextField tf, rn;
 	private int actionType;
@@ -814,6 +815,13 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		syncDB_m.addActionListener(this);
 		syncDB_m.setActionCommand("fromdb");
 		option_m.add(syncDB_m);
+		
+		option_m.addSeparator();
+		
+		JMenuItem standIn_m = new JMenuItem("Interactive Standardization");
+		standIn_m.addActionListener(this);
+		standIn_m.setActionCommand("interactivestd");
+		option_m.add(standIn_m);
 
 		frame.pack();
 		frame.setVisible(true);
@@ -2515,6 +2523,33 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				
 				return;
 			}
+			if (command.equals("interactivestd")) {
+				ReportTable secondRT = getMatchRT();
+				int option=-1;
+				if (secondRT != null) {
+					 option = JOptionPane.showConfirmDialog(null, "Do you want to load a new file ?", "Match File option", JOptionPane.YES_NO_OPTION);
+				}
+				if (option == JOptionPane.YES_OPTION  || secondRT == null) { // load new file
+					JOptionPane.showMessageDialog(null, "Select the Match File");
+					ImportFilePanel secondFile = new ImportFilePanel(false);
+					if (secondFile != null ) 
+						secondRT = secondFile.getTable();
+					if (secondRT == null) {
+						JOptionPane.showMessageDialog(null, "File has no data", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+						ConsoleFrame.addText("\n Invalid File Format");
+						return;
+					}
+					
+				}
+				CompareRecordDialog crd = new CompareRecordDialog(_rt, secondRT, 5); // 5 for Interactive Standard
+				option = JOptionPane.showConfirmDialog(null, "Do you want to keep parent frame ?", "Keep File option", JOptionPane.YES_NO_OPTION);
+				if (option == JOptionPane.NO_OPTION)
+					frame.dispose();
+				crd.createMapDialog();
+				
+				return;
+			}
+			
 			
 		} catch (Exception e1) {
       ConsoleFrame.addText("\n Exception:" + e1.getLocalizedMessage());
@@ -2644,6 +2679,10 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 	private JDialog mapDialog(boolean toDb) throws IOException {
 		init = false;
 		JPanel jp_p = null;
+		if (Rdbms_conn.class == null || Rdbms_conn.getHValue("Database_Type") == null) {
+			ConsoleFrame.addText("\n Database connection not found.");
+			return null;
+		}
 		if (Rdbms_conn.getHValue("Database_Type").compareToIgnoreCase("hive") == 0 && toDb == true ) {
 			jp_p = hiveLoadPanel();
 			jp_p.setPreferredSize(new Dimension(500,300));
@@ -3322,5 +3361,12 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		}
 		ConsoleFrame.addText("\n Load successful to Table:"+table);
 		return true;
+	}
+	
+	public void setMatchRT(ReportTable rtRight) {
+		_rtRight = rtRight;
+	}
+	private ReportTable getMatchRT() {
+		return _rtRight ;
 	}
 }
