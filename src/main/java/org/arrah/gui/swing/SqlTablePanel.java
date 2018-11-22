@@ -28,10 +28,10 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URISyntaxException;
@@ -401,15 +401,13 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 			return;
 		}
 			
-		  URL url = SqlTablePanel.class.getClassLoader().getResource(fileName);
-		  File file = new File(url.toURI().getPath());
-			FileOutputStream fileOut = new FileOutputStream(file);
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(stored_query);
-			out.close();
-			fileOut.close();
-			//System.out.print(file.getAbsolutePath() + stored_query );
-		} catch (IOException | URISyntaxException e) {
+		FileOutputStream fileOut = new FileOutputStream(new File(fileName));
+		ObjectOutputStream out = new ObjectOutputStream(fileOut);
+		out.writeObject(stored_query);
+		out.close();
+		fileOut.close();
+		//System.out.print(file.getAbsolutePath() + stored_query );
+		} catch (Exception  e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(),
 					"Error Message", JOptionPane.ERROR_MESSAGE);
 		} 
@@ -418,7 +416,9 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 	private static void loadSQLFile(String fileName) {
 		try {
 			// Open the file and load Hashtable
-			InputStream fileIn = SqlTablePanel.class.getClassLoader().getResourceAsStream(fileName);
+			//InputStream fileIn = SqlTablePanel.class.getClassLoader().getResourceAsStream(fileName);
+			
+			FileInputStream fileIn = new FileInputStream(new File(fileName)) ;
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			stored_query = (Hashtable<String, String>) in.readObject();
 			in.close();
@@ -444,5 +444,4 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 		ReportTable rt = new ReportTable(ResultsetToRTM.getSQLValue(rs, format));
 		return rt;
 	}
-
 }
