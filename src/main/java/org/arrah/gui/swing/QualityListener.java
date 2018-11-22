@@ -230,6 +230,11 @@ public class QualityListener implements ActionListener {
 				createDialog();
 				return;
 			}
+			if (source.equals("Auto Format Detection")) {
+				menuSel = 25;
+				createDialog();
+				return;
+			}
 		}// End of Menu Item
 		else {
 			String command = e.getActionCommand();
@@ -307,6 +312,7 @@ public class QualityListener implements ActionListener {
 						Hashtable<String, String> filterHash = KeyValueParser.parseFile(f
 								.toString());
 						String options = sd.getSelectedOption();
+						d_f.setVisible(false);
 						searchAction(selTP.getTable(), vc, filterHash,options); // Pass options
 
 					} catch (SQLException sqle) {
@@ -482,6 +488,7 @@ public class QualityListener implements ActionListener {
 						ConsoleFrame.addText("\n Selected File:" + f.toString());
 						Hashtable<String, String> filterHash = KeyValueParser.parseFile(f
 								.toString());
+						d_f.setVisible(false);
 						searchAction(selTP.getTable(), vc, filterHash,null); // No options
 
 					} catch (SQLException sqle) {
@@ -496,6 +503,24 @@ public class QualityListener implements ActionListener {
 					d_f.dispose();
 					break;
 					
+				case 25: // Auto Format detection
+					try {
+						Hashtable<String, String> filterHash = KeyValueParser.parseFile("resource/autodetection.txt");
+						d_f.setVisible(false);
+						searchAction(selTP.getTable(), vc, filterHash,""); // No options
+
+					} catch (SQLException sqle) {
+						JOptionPane.showMessageDialog(null, sqle.getMessage(),
+								"SQL Exception Dialog",
+								JOptionPane.ERROR_MESSAGE);
+					} finally  {
+						d_f.setCursor(java.awt.Cursor
+								.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+						
+					}
+					d_f.dispose();
+					
+					break;
 				default:
 					d_f.dispose();
 				}
@@ -667,7 +692,20 @@ public class QualityListener implements ActionListener {
 		QualityCheck qc = new QualityCheck();
 		if (options == null)
 			rt = new ReportTable(qc.searchReplaceFuzzy(rows, col.get(0).toString(),filter));
-		else
+		else if ("".equals(options) == true) { // empty mean auto format detection
+			ReportTableModel rtm = qc.autoFormatDetection(rows, col.get(0).toString(),filter);
+			
+			ReportTable rt__ = new ReportTable(rtm);
+			JDialog jd = new JDialog();
+			jd.setTitle("Auto Format Information");
+			jd.setLocation(150, 150);
+			jd.getContentPane().add(rt__);
+			jd.setModal(true);
+			jd.pack();
+			jd.setVisible(true);
+			return;
+			
+		} else
 			rt = new ReportTable(qc.searchReplace(rows, col.get(0).toString(),filter,options));
 		
 		mrowI = qc.getrowIndex();

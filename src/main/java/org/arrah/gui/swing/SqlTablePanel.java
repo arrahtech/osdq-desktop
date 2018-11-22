@@ -348,8 +348,10 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 		}
 		if (command.compareTo("Open") == 0) {
 			int size = stored_query.size();
-			if (size == 0)
+			if (size == 0) {
+				ConsoleFrame.addText("\n No query to show");
 				return; // Nothing to open
+			}
 			String[] query_key = new String[size];
 			int index = 0;
 
@@ -367,8 +369,10 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 		}
 		if (command.compareTo("Delete") == 0) {
 			int size = stored_query.size();
-			if (size == 0)
+			if (size == 0) {
+				ConsoleFrame.addText("\n No query to delete");
 				return; // Nothing to open
+			}
 			String[] query_key = new String[size];
 			int index = 0;
 
@@ -392,6 +396,11 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 	private static void saveSQLFile(String fileName) {
 		try {
 		  
+		if (stored_query == null || "".equals(stored_query)) {
+			ConsoleFrame.addText("\n no query to save " );
+			return;
+		}
+			
 		  URL url = SqlTablePanel.class.getClassLoader().getResource(fileName);
 		  File file = new File(url.toURI().getPath());
 			FileOutputStream fileOut = new FileOutputStream(file);
@@ -399,6 +408,7 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 			out.writeObject(stored_query);
 			out.close();
 			fileOut.close();
+			//System.out.print(file.getAbsolutePath() + stored_query );
 		} catch (IOException | URISyntaxException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(),
 					"Error Message", JOptionPane.ERROR_MESSAGE);

@@ -90,6 +90,7 @@ import org.arrah.framework.datagen.SplitRTM;
 import org.arrah.framework.dataquality.AddressUtil;
 import org.arrah.framework.dataquality.FillCheck;
 import org.arrah.framework.dataquality.FormatCheck;
+import org.arrah.framework.dataquality.AutoFormatCheck;
 import org.arrah.framework.dataquality.SimilarityCheckLucene;
 import org.arrah.framework.hadooputil.HiveQueryBuilder;
 import org.arrah.framework.ndtable.RTMUtil;
@@ -586,6 +587,12 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		piiC_m.addActionListener(this);
 		piiC_m.setActionCommand("piinfo");
 		column_m.add(piiC_m);
+		column_m.addSeparator();
+		
+		JMenuItem autoFC_m = new JMenuItem("Auto Format Dectection");
+		autoFC_m.addActionListener(this);
+		autoFC_m.setActionCommand("autodetection");
+		column_m.add(autoFC_m);
 
 		//Options menu
 		JMenuItem addR_m = new JMenuItem("Insert Rows");
@@ -1509,6 +1516,34 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 						}
 					}
 				}
+				return;
+			}
+			if (command.equals("autodetection")) {
+				int index = selectedColIndex(_rt);
+				if (index < 0)
+					return;
+				
+				 Hashtable<String,String> filterHash = KeyValueParser.parseFile("resource/autodetection.txt");
+				 if (filterHash == null || filterHash.isEmpty() == true) {
+					 ConsoleFrame.addText("\n could not find resource/autodetection.txt or it is empty");
+					 return;
+				 }
+		
+				_rt.cancelSorting();
+				Object[] colObject = _rt.getRTMModel().getColData(index);
+				AutoFormatCheck afc = new AutoFormatCheck(filterHash);
+				ReportTableModel rtm = afc.getCountintoRTM (colObject);
+				
+				ReportTable rt__ = new ReportTable(rtm);
+				JDialog jd = new JDialog();
+				jd.setTitle("Auto Format Information");
+				jd.setLocation(150, 150);
+				jd.getContentPane().add(rt__);
+				jd.setModal(true);
+				jd.pack();
+				jd.setVisible(true);
+			
+				
 				return;
 			}
 			if (command.equals("seareplacefuzzy")) {

@@ -742,6 +742,12 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		kMean.addActionListener(new QualityListener());
 		jmenu7.add(kMean);
 		
+		jmenu7.addSeparator();
+		JMenuItem autoformat = new JMenuItem("Auto Format Detection");
+		autoformat.addActionListener(new QualityListener());
+		jmenu7.add(autoformat);
+		
+		
 		// Business Rule Menu
 		// Testing needs to be done for business rules
 		

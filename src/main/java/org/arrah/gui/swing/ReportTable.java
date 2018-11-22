@@ -1065,7 +1065,7 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 	 */
 	private void saveAsCsv(int type) {
 		Object[] possible = { "Comma(,)", "Tab(\\t)", "Colon(:)",
-				"Semi Colon(;)", "Space( )" };
+				"Semi Colon(;)", "Space( )","Custom"};
 		String des_input = (String) JOptionPane.showInputDialog(null,
 				"Choose the Field Separator", "Field Separation Dialog",
 				JOptionPane.QUESTION_MESSAGE, null, possible, possible[0]);
@@ -1083,6 +1083,11 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 		}
 		if (des_input.compareTo((String) possible[4]) == 0) {
 			setFieldSep(" ");
+		}
+		if (des_input.compareTo((String) possible[5]) == 0) {
+			String sep = JOptionPane.showInputDialog(null,"Enter your field separator");
+			if (sep != null || "".equals(sep) ==false)
+			setFieldSep(sep);
 		}
 		File file = FileSelectionUtil.promptForFilename("");
 		if (file == null) {
