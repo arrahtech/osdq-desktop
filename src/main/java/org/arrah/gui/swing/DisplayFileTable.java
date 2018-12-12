@@ -88,6 +88,7 @@ import org.arrah.framework.datagen.AggrCumColumnUtil;
 import org.arrah.framework.datagen.RandomColGen;
 import org.arrah.framework.datagen.SplitRTM;
 import org.arrah.framework.dataquality.AddressUtil;
+import org.arrah.framework.dataquality.BusinessPIIFormatCheck;
 import org.arrah.framework.dataquality.FillCheck;
 import org.arrah.framework.dataquality.FormatCheck;
 import org.arrah.framework.dataquality.AutoFormatCheck;
@@ -96,6 +97,7 @@ import org.arrah.framework.hadooputil.HiveQueryBuilder;
 import org.arrah.framework.ndtable.RTMUtil;
 import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.ndtable.ResultsetToRTM;
+import org.arrah.framework.nlp.WordAnalysis;
 import org.arrah.framework.profile.FileProfile;
 import org.arrah.framework.profile.InterTableInfo;
 import org.arrah.framework.profile.TableMetaInfo;
@@ -323,6 +325,27 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		nearzero_m.addActionListener(this);
 		nearzero_m.setActionCommand("nearestzero");
 		normal_m.add(nearzero_m);
+		
+		JMenu nlp_m = new JMenu("NLP");
+		preparation_m.add(nlp_m);
+		JMenuItem wordc_m = new JMenuItem("Word Count");
+		wordc_m.addActionListener(this);
+		wordc_m.setActionCommand("wordcount");
+		nlp_m.add(wordc_m);
+		nlp_m.addSeparator();
+		
+		JMenuItem dropWords_m = new JMenuItem("Stop Words");
+		dropWords_m.addActionListener(this);
+		dropWords_m.setActionCommand("stopwords");
+		nlp_m.add(dropWords_m);
+		nlp_m.addSeparator();
+		
+		JMenuItem wordAnal_m = new JMenuItem("Word Analysis");
+		wordAnal_m.addActionListener(this);
+		wordAnal_m.setActionCommand("wordanalysis");
+		nlp_m.add(wordAnal_m);
+		
+		
 		
 		// Analytics Menu
 		JMenu analytics_m = new JMenu("Analytics");
@@ -593,6 +616,27 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		autoFC_m.addActionListener(this);
 		autoFC_m.setActionCommand("autodetection");
 		column_m.add(autoFC_m);
+		column_m.addSeparator();
+		
+		JMenu validationMenu_m = new JMenu("Validate Objects");
+		JMenuItem creditcardC_m = new JMenuItem("Credit Card");
+		creditcardC_m.addActionListener(this);
+		creditcardC_m.setActionCommand("iscreditcard");
+		validationMenu_m.add(creditcardC_m);
+		
+		JMenuItem pancardC_m = new JMenuItem("PAN Card");
+		pancardC_m.addActionListener(this);
+		pancardC_m.setActionCommand("ispancard");
+		validationMenu_m.add(pancardC_m);
+		
+		JMenuItem gstinC_m = new JMenuItem("GSTIN Number");
+		gstinC_m.addActionListener(this);
+		gstinC_m.setActionCommand("isgstin");
+		validationMenu_m.add(gstinC_m);
+		
+		column_m.add(validationMenu_m);
+		
+		
 
 		//Options menu
 		JMenuItem addR_m = new JMenuItem("Insert Rows");
@@ -1546,6 +1590,36 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				
 				return;
 			}
+			if (command.equals("iscreditcard")) {
+				int index = selectedColIndex(_rt);
+				if (index < 0)
+					return;
+				_rt.cancelSorting();
+				
+				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
+				bpii.isCCmatch(_rt.getRTMModel(), index);
+				return;
+			}
+			if (command.equals("ispancard")) {
+				int index = selectedColIndex(_rt);
+				if (index < 0)
+					return;
+				_rt.cancelSorting();
+				
+				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
+				bpii.isPANmatch(_rt.getRTMModel(), index);
+				return;
+			}
+			if (command.equals("isgstin")) {
+				int index = selectedColIndex(_rt);
+				if (index < 0)
+					return;
+				_rt.cancelSorting();
+				
+				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
+				bpii.isGSTINmatch(_rt.getRTMModel(), index);
+				return;
+			}
 			if (command.equals("seareplacefuzzy")) {
 				int index = selectedColIndex(_rt);
 				if (index < 0)
@@ -2477,6 +2551,52 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					NormalizeCol.meanStdNormal(_rt.getRTMModel(), outputindex, popindex,1);
 				else
 					NormalizeCol.meanStdNormal(_rt.getRTMModel(), outputindex, popindex,2);
+				return;
+			}
+			if (command.equals("wordanalysis") ) {
+				_rt.cancelSorting(); // No sorting 
+				int outputindex = selectedColIndex(_rt, "Select the Column for word Analysis");
+				if (outputindex < 0)
+					return;
+				String regex = JOptionPane.showInputDialog(null, "Please enter Word delimiter");
+				if  ("".equals(regex) ) return;
+				
+				ReportTableModel rtm = WordAnalysis.analyseWord(_rt.getRTMModel(),outputindex,regex);
+				/* Now Open Dialog to show */
+				JDialog showDia = new JDialog();
+				showDia.setModal(true);
+				showDia.setTitle("WordAnalysis Dialog");
+				showDia.setLocation(250, 100);
+				showDia.getContentPane().add(new ReportTable(rtm));
+				showDia.pack();
+				showDia.setVisible(true);
+				
+				return;
+			}
+			if (command.equals("wordcount") ) {
+				_rt.cancelSorting(); // No sorting 
+				int inputtindex = selectedColIndex(_rt, "Select the Column for word count");
+				if (inputtindex < 0)
+					return;
+				String regex = JOptionPane.showInputDialog(null, "Please enter Word delimiter");
+				if  ("".equals(regex) ) return;
+				int outputindex = selectedColIndex(_rt, "Select Column to populate");
+				if (outputindex < 0)
+					return;
+				
+				WordAnalysis.countWord(_rt.getRTMModel(),inputtindex,regex,outputindex);
+				return;
+			}
+			if (command.equals("stopwords") ) {
+				_rt.cancelSorting(); // No sorting 
+				int inputtindex = selectedColIndex(_rt, "Select the Column for dropping stop words");
+				if (inputtindex < 0)
+					return;
+				int outputindex = selectedColIndex(_rt, "Select Column to populate after drop words");
+				if (outputindex < 0)
+					return;
+				
+				WordAnalysis.dropwords(_rt.getRTMModel(),inputtindex,outputindex);
 				return;
 			}
 			if (command.equals("rounding") || command.equals("flooring") || command.equals("ceiling")

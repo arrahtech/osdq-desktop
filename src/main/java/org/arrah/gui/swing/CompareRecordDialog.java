@@ -154,7 +154,7 @@ public class CompareRecordDialog implements ActionListener {
 		String[] algoList = new String[]{"Levenshtein","JaroWinkler","Jaro",
 				"NeedlemanWunch","SmithWaterman","SmithWatermanGotoh","CosineSimilarity",
 				"DiceSimilarity","JaccardSimilarity","OverlapCoefficient","BlockDistance",
-				"EuclideanDistance","MatchingCoefficient","SimonWhite","MongeElkan","Soundex","qGramDistance","DoubleMetaPhone"};
+				"EuclideanDistance","MatchingCoefficient","SimonWhite","MongeElkan","Soundex","qGramDistance","DoubleMetaPhone","CustomNames"};
 		
 		for (int i =0; i < colCount; i++ ){
 			_rColC[i] = new JComboBox<String>();
