@@ -69,7 +69,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 	private int _rowC = 0;
 	private int _colC = 0;
 	private String[] col_n;
-	private Hashtable<String, Double> _map;
+	private Hashtable<Object, Double> _map;
 	private Vector<Integer> _reportColV, _reportFieldV;
 	private JComboBox<String> comboX, comboY, comboT, comboLat, comboLon;
 	private JComboBox<String> comboAggr;
@@ -852,7 +852,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 			_title = tf.getText();
 			jd.dispose();
 			cancel_clicked = false;
-			_map = new Hashtable<String, Double>();
+			_map = new Hashtable<Object, Double>();
 
 			int xs = comboX.getSelectedIndex();
 			int ys = comboY.getSelectedIndex();
@@ -864,18 +864,21 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 			HashMap<String,Vector<Object>> uniqMap = new HashMap<String,Vector<Object>>();
 			
 			for (int i = 0; i < _rowC; i++) {
-				String key;
+				Object key;
 				Object obj = _rt.table.getValueAt(i, xs);
 				
 				if (obj == null)
 					key = OTHER;
-				else
-					key = obj.toString();
-
-				if (obj instanceof Date) {
+				else if (obj instanceof Date) {
 					isDate = true;
 					key = TimeUtil.timeKey((Date) obj, comboT.getSelectedIndex());
 				}
+				else if (obj instanceof Number) {
+					key = obj;
+				} else
+					key = obj.toString();
+
+
 
 				Object value = _rt.table.getValueAt(i, ys);
 				if (value == null) continue;
@@ -916,7 +919,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 							if (uniqMap.containsKey(key) == false) { // new entry
 								Vector<Object> keyVec = new Vector<Object>();
 								keyVec.add(value);
-								uniqMap.put(key, keyVec);
+								uniqMap.put(key.toString(), keyVec);
 								_map.put(key, (double)uniqMap.get(key).size());
 								break;
 							} else { //if key is found
@@ -937,8 +940,8 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 							if (uniqMap.containsKey(key) == false) { // new entry
 								Vector<Object> keyVec = new Vector<Object>();
 								keyVec.add(value);
-								uniqMap.put(key, keyVec);
-								_map.put(key, (double)uniqMap.get(key).size());
+								uniqMap.put(key.toString(), keyVec);
+								_map.put(key, (double)uniqMap.get(key.toString()).size());
 							} else { //if key is found
 								Vector<Object> keyVec = uniqMap.get(key);
 								if (keyVec.indexOf(value) == -1)  {//this value not there
@@ -1144,7 +1147,7 @@ public class FileAnalyticsListener implements ActionListener, ItemListener {
 	}
 
 
-	private Object[] sortKey(Hashtable<String, Double> map) {
+	private Object[] sortKey(Hashtable<Object, Double> map) {
 		if (asc.isSelected() == true ) {
 			return ValueSorter.sortOnValue(map,false); // desc is false
 		} else if ( desc.isSelected() == true ) {

@@ -527,7 +527,7 @@ public class FirPanel extends JPanel {
 		
 		if (s == null || "".equals(s)) 
 		s = " Community License (LGPL). ";
-		s = "<html> <B> <I> <U> &copy; 2006-2018  Arrah Technology </U> <BR>"
+		s = "<html> <B> <I> <U> &copy; 2006-2019  Arrah Technology </U> <BR>"
 				+ s + "</I></B> </html>";
 		
 		jpanel.setLayout(new GridLayout(12, 1));
@@ -538,6 +538,12 @@ public class FirPanel extends JPanel {
 		JLabel jlabel2 = new JLabel(
 				"http://www.arrahtech.com/", 0);
 		JLabel jlabel3 = new JLabel("support@arrahtech.com", 0);
+		
+		/**** For Compegence only ****/
+		jlabel1.setText("Compegence  Data Quality");
+		jlabel2.setText("http://www.compegence.com");
+		jlabel3.setText("Support Email:osdq@compegence.com");
+		/**** For Compegence only ****/
 		
 		JLabel jlabel4 = new JLabel(s, 0);
 		jpanel.add(jlabel);

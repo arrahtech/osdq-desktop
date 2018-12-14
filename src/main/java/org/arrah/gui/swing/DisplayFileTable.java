@@ -634,6 +634,16 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		gstinC_m.setActionCommand("isgstin");
 		validationMenu_m.add(gstinC_m);
 		
+		JMenuItem aadharC_m = new JMenuItem("AADHAR Number");
+		aadharC_m.addActionListener(this);
+		aadharC_m.setActionCommand("isaadhar");
+		validationMenu_m.add(aadharC_m);
+		
+		JMenuItem mobileC_m = new JMenuItem("Mobile Number");
+		mobileC_m.addActionListener(this);
+		mobileC_m.setActionCommand("ismobile");
+		validationMenu_m.add(mobileC_m);
+		
 		column_m.add(validationMenu_m);
 		
 		
@@ -1618,6 +1628,26 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				
 				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
 				bpii.isGSTINmatch(_rt.getRTMModel(), index);
+				return;
+			}
+			if (command.equals("isaadhar")) {
+				int index = selectedColIndex(_rt);
+				if (index < 0)
+					return;
+				_rt.cancelSorting();
+				
+				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
+				bpii.isAADHARmatch(_rt.getRTMModel(), index);
+				return;
+			}
+			if (command.equals("ismobile")) {
+				int index = selectedColIndex(_rt);
+				if (index < 0)
+					return;
+				_rt.cancelSorting();
+				
+				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
+				bpii.isMobiematch(_rt.getRTMModel(), index);
 				return;
 			}
 			if (command.equals("seareplacefuzzy")) {
