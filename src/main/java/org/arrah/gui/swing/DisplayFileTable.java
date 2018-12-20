@@ -1383,7 +1383,8 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 						}
 					}
 					for (int j = 0; j < row_c; j++) {
-						_rt.table.setValueAt(i++, j, index);
+						//_rt.table.setValueAt(i++, j, index); // takes long time to render
+						_rt.getModel().setValueAt(i++, j, index);
 					}
 				} else if ("Expression Builder".equals(input)) {
 					new ExpressionBuilderPanel(_rt,index);
