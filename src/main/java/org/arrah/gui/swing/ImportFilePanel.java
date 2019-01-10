@@ -35,6 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractButton;
@@ -82,9 +83,10 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 		_showGUI = isGUI;
 
 		try {
-			f = FileSelectionUtil.chooseFile("ATD Open File");
+			f = FileSelectionUtil.chooseFile("Arrah Technology Open File");
 			if (f == null)
 				return;
+			
 			if (f.getName().toLowerCase().endsWith(".xml")) {
 				final XmlReader xmlReader = new XmlReader();
 				showT = new ReportTable(xmlReader.read(f));
@@ -103,10 +105,19 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 				}
 			}*/ else if (f.getName().toLowerCase().endsWith(".xlsx") || f.getName().toLowerCase().endsWith(".xls")) {
 				final XlsxReader xlsReader = new XlsxReader();
-				int input = JOptionPane.showConfirmDialog(null,"Do you want to load all sheets ?","Load sheets",JOptionPane.YES_NO_OPTION);
-				if(input == JOptionPane.YES_OPTION)
-					xlsReader.readAllSheets(true);
-				showT = new ReportTable(xlsReader.read(f));
+				List<String> sheetname = xlsReader.showSheets(f);
+				if (sheetname == null || sheetname.isEmpty() == true) {
+					JOptionPane.showMessageDialog(null, "No XLS Sheet to load");
+					return;
+				}
+				if (sheetname.size() == 1)
+					showT = new ReportTable(xlsReader.read(sheetname));
+				else {
+					MultiInputDialog mid = new MultiInputDialog(sheetname,true); // all selected
+					sheetname = mid.getSelected();
+					//System.out.println(sheetname);
+					showT = new ReportTable(xlsReader.read(sheetname));
+				}
 				if (_showGUI == true) {
 					DisplayFileTable dft = new DisplayFileTable(showT,
 							f.toString());
@@ -148,7 +159,7 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 		_showGUI = isGUI;
 
 		try {
-			f = FileSelectionUtil.chooseFile("ATD Open File");
+			f = FileSelectionUtil.chooseFile("Arrah Technologies Open File");
 			if (f == null)
 				return;
 			

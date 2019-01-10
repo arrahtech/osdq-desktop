@@ -54,11 +54,12 @@ public class ToolListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() instanceof JMenuItem) {
 			try {
-				if (_parentC != null)
-					_parentC.getTopLevelAncestor()
-							.setCursor(
-									java.awt.Cursor
+				if (_parentC != null) {
+					_parentC.getTopLevelAncestor().setCursor(java.awt.Cursor
 											.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
+					
+					//System.out.println("Cursor Set");
+				}
 
 				String source = ((JMenuItem) (e.getSource())).getText();
 				if (source.equals("SQL Interface")) {
@@ -209,11 +210,13 @@ public class ToolListener implements ActionListener {
 					return;
 				}
 			} finally {
-				if (_parentC != null)
+				if (_parentC != null) {
 					_parentC.getTopLevelAncestor()
 							.setCursor(
 									java.awt.Cursor
 											.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+				//System.out.println("Cursor UnSet");
+				}
 			}
 		}// End of Menu Item
 		else {

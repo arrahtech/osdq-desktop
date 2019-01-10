@@ -357,7 +357,7 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		JMenu jmenu = new JMenu("File");
 		jmenu.setMnemonic('F');
 		jmenubar.add(jmenu);
-		JMenuItem jmenuitem = new JMenuItem("Open");
+		JMenuItem jmenuitem = new JMenuItem("Open ATD format");
 		jmenuitem.setAccelerator(KeyStroke.getKeyStroke(79, 2));
 		jmenuitem.addActionListener(new FileActionListener());
 		jmenu.add(jmenuitem);

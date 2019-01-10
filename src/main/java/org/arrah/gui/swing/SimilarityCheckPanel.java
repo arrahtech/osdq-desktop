@@ -432,7 +432,7 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
             if ( colI < 0 || rowI.length == 0)
                 return;
             for (int i=0; i  < rowI.length; i++)
-                outputRT.table.setValueAt(replace, rowI[i], colI);
+                outputRT.getModel().setValueAt(replace, rowI[i], colI);
 
             return;
         }

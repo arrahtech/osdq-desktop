@@ -50,7 +50,7 @@ public class MultiLineInputPanel implements ActionListener {
 	
 	public MultiLineInputPanel() {
 		try {
-			f = FileSelectionUtil.chooseFile("ATD Open File");
+			f = FileSelectionUtil.chooseFile("Arrah Technologies Open File");
 			if (f == null)
 				return;
 			 else 

@@ -1255,7 +1255,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					return;
 				int row_c = _rt.table.getRowCount();
 				for (int i = 0; i < row_c; i++) {
-					_rt.table.setValueAt(null,i, index); // set to null
+					_rt.getModel().setValueAt(null,i, index); // set to null
 				}
 				return;
 			}
@@ -1302,7 +1302,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				int row_c = _rt.table.getRowCount();
 				int vec_c = copy_v.size();
 				for (int i = 0; (i < row_c) && (i < vec_c); i++) {
-					_rt.table.setValueAt(copy_v.get(i), i, index);
+					_rt.getModel().setValueAt(copy_v.get(i), i, index);
 				}
 
 				return;
@@ -1383,7 +1383,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 						}
 					}
 					for (int j = 0; j < row_c; j++) {
-						//_rt.table.setValueAt(i++, j, index); // takes long time to render
+						//_rt.getModel().setValueAt(i++, j, index); // takes long time to render
 						_rt.getModel().setValueAt(i++, j, index);
 					}
 				} else if ("Expression Builder".equals(input)) {
@@ -1566,7 +1566,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 										.addText("\n WANING: Could not Parse Input String:"
 												+ newValue);
 							}
-							_rt.table.setValueAt(replace, i, index);
+							_rt.getModel().setValueAt(replace, i, index);
 							_rt.table.addRowSelectionInterval(i, i);
 						}
 					}
@@ -1713,7 +1713,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 										.addText("\n WANING: Could not Parse Input String:"
 												+ newValue);
 							}
-							_rt.table.setValueAt(replace, matchedIndexVal, index);
+							_rt.getModel().setValueAt(replace, matchedIndexVal, index);
 							_rt.table.addRowSelectionInterval(matchedIndexVal, matchedIndexVal);
 						}
 				}
@@ -1801,11 +1801,11 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					rt.addRow();
 					Object key = e1.nextElement();
 					if (key.toString().equals("Null-Arrah") == true )
-						rt.table.setValueAt("Null", rowI, 0);
+						rt.getModel().setValueAt("Null", rowI, 0);
 					else
-						rt.table.setValueAt(key.toString(), rowI, 0);
+						rt.getModel().setValueAt(key.toString(), rowI, 0);
 					Object val = htableP.get(key);
-					rt.table.setValueAt(val.toString(), rowI, 1);
+					rt.getModel().setValueAt(val.toString(), rowI, 1);
 					rowI++;
 				}
 				
@@ -1973,9 +1973,9 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					Vector<Object> colV = _rt.getRTMModel().getColDataV(i);
 					Hashtable<Object,Integer> htable = DiscreetRange.getUniqueInclusive(colV);
 					Integer[] val = new FileProfile().getProfiledValue(htable);
-					rt.table.setValueAt(colName[i].toString(), i, 0); // First Col Name
+					rt.getModel().setValueAt(colName[i].toString(), i, 0); // First Col Name
 					for (int j=1; j < 5; j++)
-						rt.table.setValueAt(val[j -1].toString(), i, j); 
+						rt.getModel().setValueAt(val[j -1].toString(), i, j); 
 				}
 				JDialog jd = new JDialog();
 				jd.setTitle("Profile Info");
@@ -2089,7 +2089,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					for (int i = 0; i < rowC; i++) {
 						Object[] obj = rtable.copyRow(i);
 						for (int j = 0; j < colC; j++) {
-							_rt.table.setValueAt(obj[j], rowCE + i, j);
+							_rt.getModel().setValueAt(obj[j], rowCE + i, j);
 						}
 					}
 				} else {
@@ -2101,7 +2101,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					for (int i = 0; i < rowC; i++) {
 						Object[] obj = rtable.copyRow(i);
 						for (int j = 0; j < obj.length; j++) {
-							_rt.table.setValueAt(obj[j], i, colCE + j);
+							_rt.getModel().setValueAt(obj[j], i, colCE + j);
 						}
 					}
 				}
@@ -3381,7 +3381,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				break;
 			default:
 			}
-			_rt.table.setValueAt(prevC, i, index);
+			_rt.getModel().setValueAt(prevC, i, index);
 		}
 
 	}
