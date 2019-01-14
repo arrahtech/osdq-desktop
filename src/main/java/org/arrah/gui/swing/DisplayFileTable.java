@@ -624,25 +624,45 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		creditcardC_m.setActionCommand("iscreditcard");
 		validationMenu_m.add(creditcardC_m);
 		
-		JMenuItem pancardC_m = new JMenuItem("PAN Card");
+		JMenuItem pancardC_m = new JMenuItem("PAN");
 		pancardC_m.addActionListener(this);
 		pancardC_m.setActionCommand("ispancard");
 		validationMenu_m.add(pancardC_m);
 		
-		JMenuItem gstinC_m = new JMenuItem("GSTIN Number");
+		JMenuItem panNameC_m = new JMenuItem("PAN with Name");
+		panNameC_m.addActionListener(this);
+		panNameC_m.setActionCommand("ispanname");
+		validationMenu_m.add(panNameC_m);
+		
+		JMenuItem gstinC_m = new JMenuItem("GSTIN");
 		gstinC_m.addActionListener(this);
 		gstinC_m.setActionCommand("isgstin");
 		validationMenu_m.add(gstinC_m);
 		
-		JMenuItem aadharC_m = new JMenuItem("AADHAR Number");
+		JMenuItem gstNameC_m = new JMenuItem("GSTIN with Name");
+		gstNameC_m.addActionListener(this);
+		gstNameC_m.setActionCommand("isgstname");
+		validationMenu_m.add(gstNameC_m);
+		
+		JMenuItem aadharC_m = new JMenuItem("AADHAR");
 		aadharC_m.addActionListener(this);
 		aadharC_m.setActionCommand("isaadhar");
 		validationMenu_m.add(aadharC_m);
 		
-		JMenuItem mobileC_m = new JMenuItem("Mobile Number");
+		JMenuItem mobileC_m = new JMenuItem("Indian Mobile Number");
 		mobileC_m.addActionListener(this);
 		mobileC_m.setActionCommand("ismobile");
 		validationMenu_m.add(mobileC_m);
+		
+		JMenuItem emailC_m = new JMenuItem("Email");
+		emailC_m.addActionListener(this);
+		emailC_m.setActionCommand("isemail");
+		validationMenu_m.add(emailC_m);
+		
+		JMenuItem dobC_m = new JMenuItem("Date of Birth");
+		dobC_m.addActionListener(this);
+		dobC_m.setActionCommand("isdob");
+		validationMenu_m.add(dobC_m);
 		
 		column_m.add(validationMenu_m);
 		
@@ -1621,6 +1641,21 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				bpii.isPANmatch(_rt.getRTMModel(), index);
 				return;
 			}
+			if (command.equals("ispanname")) {
+				int index = selectedColIndex(_rt);
+				if (index < 0)
+					return;
+				_rt.cancelSorting();
+				
+				int index2 = selectedColIndex(_rt,"Choose the Name Column");
+				if (index2 < 0)
+					return;
+				_rt.cancelSorting();
+				
+				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
+				bpii.isPANNamematch(_rt.getRTMModel(), index,index2);
+				return;
+			}
 			if (command.equals("isgstin")) {
 				int index = selectedColIndex(_rt);
 				if (index < 0)
@@ -1629,6 +1664,21 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				
 				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
 				bpii.isGSTINmatch(_rt.getRTMModel(), index);
+				return;
+			}
+			if (command.equals("isgstname")) {
+				int index = selectedColIndex(_rt);
+				if (index < 0)
+					return;
+				_rt.cancelSorting();
+				
+				int index2 = selectedColIndex(_rt,"Choose the Name Column");
+				if (index2 < 0)
+					return;
+				_rt.cancelSorting();
+				
+				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
+				bpii.isGSTINNamematch(_rt.getRTMModel(), index,index2);
 				return;
 			}
 			if (command.equals("isaadhar")) {
@@ -1649,6 +1699,26 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				
 				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
 				bpii.isMobiematch(_rt.getRTMModel(), index);
+				return;
+			}
+			if (command.equals("isemail")) {
+				int index = selectedColIndex(_rt);
+				if (index < 0)
+					return;
+				_rt.cancelSorting();
+				
+				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
+				bpii.isEmailmatch(_rt.getRTMModel(), index);
+				return;
+			}
+			if (command.equals("isdob")) {
+				int index = selectedColIndex(_rt);
+				if (index < 0)
+					return;
+				_rt.cancelSorting();
+				
+				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
+				bpii.isDoBmatch(_rt.getRTMModel(), index);
 				return;
 			}
 			if (command.equals("seareplacefuzzy")) {
