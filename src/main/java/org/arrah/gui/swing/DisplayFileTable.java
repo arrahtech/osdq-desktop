@@ -2034,18 +2034,46 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				return;
 			}
 			if (command.equals("profile")) {
-				int colC = _rt.getModel().getColumnCount();
-				String[] colHeader = new String[]{"Column","Total","Unique","Pattern","Null"};
+				MultiInputDialog mid = new MultiInputDialog(_rt.getAllColNameAsString(),true,true);
+				List<String >selectedcol = mid.getSelected();
+				List<String >selectedtype = mid.getSelectedType();
+				if (selectedcol == null || selectedtype == null || selectedcol.isEmpty() == true) {
+					ConsoleFrame.addText("\n No column to profile");
+					return;
+				}
+				
+				String[] colHeader = new String[]{"Column","Type","Total","Unique","Pattern","Null","Empty","WhiteSpace","MetaCharacter","Aadhar"};
 				ReportTable rt = new ReportTable(colHeader);
-				Object[] colName = _rt.getRTMModel().getAllColName();
-				for (int i=0; i < colC; i++) {
-					rt.addRow();
-					Vector<Object> colV = _rt.getRTMModel().getColDataV(i);
+				for (int i=0; i < selectedcol.size(); i++) {
+					rt.addRow(); // even before column name matching
+					
+					int colI = _rt.getRTMModel().getColumnIndex(selectedcol.get(i));
+					if (colI < 0) {
+						ConsoleFrame.addText("\n could not find column:"+selectedcol.get(i));
+						continue;
+					} 
+					String type = selectedtype.get(i);
+					
+					Vector<Object> colV = _rt.getRTMModel().getColDataV(colI);
 					Hashtable<Object,Integer> htable = DiscreetRange.getUniqueInclusive(colV);
-					Integer[] val = new FileProfile().getProfiledValue(htable);
-					rt.getModel().setValueAt(colName[i].toString(), i, 0); // First Col Name
-					for (int j=1; j < 5; j++)
-						rt.getModel().setValueAt(val[j -1].toString(), i, j); 
+					FileProfile fp = new FileProfile();
+					Integer[] val = fp.getProfiledValue(htable);
+					rt.getModel().setValueAt(selectedcol.get(i).toString(), i, 0); // First Col Name
+					rt.getModel().setValueAt(type, i, 1); // 2nd Col Type
+					
+					for (int j=2; j < 7; j++) // attribute counts
+						rt.getModel().setValueAt(val[j -2].toString(), i, j);
+					
+					// Now based on type more columns would be populated
+					if (type.equalsIgnoreCase("string")) {
+						Integer[] valStr = fp.getStrProfiledValue(htable);
+						rt.getModel().setValueAt(valStr[0].toString(), i, 7);
+						rt.getModel().setValueAt(valStr[0].toString(), i, 8);
+					}
+					if (type.equalsIgnoreCase("aadhar")) {
+						Integer aadharval = fp.getAadhardValue(htable);
+						rt.getModel().setValueAt(aadharval.toString(), i, 9);
+					}
 				}
 				JDialog jd = new JDialog();
 				jd.setTitle("Profile Info");

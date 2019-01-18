@@ -23,8 +23,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -39,18 +41,27 @@ public class MultiInputDialog implements ActionListener {
 	private JDialog jd;
 	private JCheckBox selBox[];
 	private JLabel lvalue[];
-	private List<String> selectValue= null;
+	private List<String> selectedValue= null;
+	private List<String> selectedtype= null;
+	private JComboBox<String> tpyeSelection [];
+	private String[] typeStr = new String[] {"String","Aadhar"};
 	
 	public MultiInputDialog (String[] selectOption, boolean isSelect) {
-		multiselectDialog(selectOption, isSelect);
+		multiselectDialog(selectOption, isSelect, false);
 	}
+	
 	public MultiInputDialog (List<String> selectOption, boolean isSelect) {
 		String[] stra = new String[selectOption.size()];
-		multiselectDialog(selectOption.toArray(stra), isSelect);
+		multiselectDialog(selectOption.toArray(stra), isSelect, false);
+	}
+	
+	public MultiInputDialog (String[] selectOption, boolean isSelect, boolean showType) {
+		multiselectDialog(selectOption, isSelect, showType);
 	}
 	
 	
-	private void multiselectDialog(String[] selectOption, boolean isSelect) {
+	
+	private void multiselectDialog(String[] selectOption, boolean isSelect, boolean showType) {
 		JPanel dp = new JPanel();
 		dp.setLayout(new BorderLayout());
 		
@@ -61,22 +72,41 @@ public class MultiInputDialog implements ActionListener {
 		selBox = new JCheckBox[numPairs];
 		lvalue = new JLabel[numPairs];
 		
+		if (showType == true)
+			tpyeSelection = new JComboBox[numPairs];
+		
 		for (int i = 0; i < numPairs; i++) {
 			lvalue[i] = new JLabel(selectOption[i],JLabel.LEADING);
 			selBox[i] = new JCheckBox();
 			selBox[i].setSelected(isSelect);
 			p.add(selBox[i]);
 			p.add(lvalue[i]);
+			
+			if (showType == true) {
+				tpyeSelection[i] = new JComboBox<String>(typeStr);
+				p.add(tpyeSelection[i]);
+ 			}
 		}
 		
-		//Lay out the panel.        
-		SpringUtilities.makeCompactGrid(p,                                        
-				numPairs, 2, //rows, cols                                        
-				6, 6,        //initX, initY                                        
-				6, 6);       //xPad, yPad          
+		
+		//Lay out the panel.  
+		if (showType == false) {
+			SpringUtilities.makeCompactGrid(p,                                        
+					numPairs, 2, //rows, cols                                        
+					6, 6,        //initX, initY                                        
+					6, 6);       //xPad, yPad    
+		} else {
+			SpringUtilities.makeCompactGrid(p,                                        
+					numPairs, 3, //rows, cols                                        
+					6, 6,        //initX, initY                                        
+					6, 6);       //xPad, yPad   
+		}
 		
 		JScrollPane pane = new JScrollPane(p);
-		pane.setPreferredSize(new Dimension(650, 400));
+		if (showType == false) 
+			pane.setPreferredSize(new Dimension(650, 400));
+		else
+			pane.setPreferredSize(new Dimension(700, 400));
 		
 		JPanel bp = new JPanel();
 		JButton tstc = new JButton("Select");
@@ -113,10 +143,13 @@ public class MultiInputDialog implements ActionListener {
 			}
 			if (action_c.compareToIgnoreCase("select") == 0) {
 				int colC = lvalue.length;
-				selectValue = new ArrayList<String>();
+				selectedValue = new ArrayList<String>();
+				selectedtype = new ArrayList<String>();
 				for (int i = 0; i < colC; i++) {
-					if (selBox[i].isSelected() == true) // only selected one
-						selectValue.add(lvalue[i].getText());
+					if (selBox[i].isSelected() == true)  {// only selected one
+						selectedValue.add(lvalue[i].getText());
+						selectedtype.add(tpyeSelection[i].getSelectedItem().toString());
+					}
 				}
 				return;
 			}
@@ -129,6 +162,9 @@ public class MultiInputDialog implements ActionListener {
 	}
 	
 	public List<String> getSelected() {
-		return selectValue;
+		return selectedValue;
+	}
+	public List<String> getSelectedType() {
+		return selectedtype;
 	}
 }

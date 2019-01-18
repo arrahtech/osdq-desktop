@@ -116,6 +116,10 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 					MultiInputDialog mid = new MultiInputDialog(sheetname,true); // all selected
 					sheetname = mid.getSelected();
 					//System.out.println(sheetname);
+					if (sheetname == null || sheetname.isEmpty() == true) {
+						ConsoleFrame.addText("\n No sheet to load");
+						return;
+					}
 					showT = new ReportTable(xlsReader.read(sheetname));
 				}
 				if (_showGUI == true) {
