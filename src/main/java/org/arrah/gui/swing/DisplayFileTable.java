@@ -2042,7 +2042,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					return;
 				}
 				
-				String[] colHeader = new String[]{"Column","Type","Total","Unique","Pattern","Null","Empty","WhiteSpace","MetaCharacter","Aadhar"};
+				String[] colHeader = new String[]{"Column","Type","Total","Unique","Pattern","Null","Empty","WhiteSpace","MetaCharacter","Valid"};
 				ReportTable rt = new ReportTable(colHeader);
 				for (int i=0; i < selectedcol.size(); i++) {
 					rt.addRow(); // even before column name matching
@@ -2073,6 +2073,14 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					if (type.equalsIgnoreCase("aadhar")) {
 						Integer aadharval = fp.getAadhardValue(htable);
 						rt.getModel().setValueAt(aadharval.toString(), i, 9);
+					}
+					if (type.equalsIgnoreCase("PAN")) {
+						Integer panval = fp.getPANValue(htable);
+						rt.getModel().setValueAt(panval.toString(), i, 9);
+					}
+					if (type.equalsIgnoreCase("GST")) {
+						Integer gstval = fp.getGSTValue(htable);
+						rt.getModel().setValueAt(gstval.toString(), i, 9);
 					}
 				}
 				JDialog jd = new JDialog();
