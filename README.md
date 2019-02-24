@@ -1,4 +1,4 @@
-OSDQ Desktop V6.2.6
+OSDQ Desktop V6.2.7
 
 [![Build Status](https://drone.io/github.com/arrahtech/profiler/status.png)](https://drone.io/github.com/arrahtech/profiler/latest)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dm/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dw/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)
 
@@ -13,11 +13,12 @@ It also had Hadoop ( Big data ) support to move files to/from Hadoop Grid, Creat
 
 **Changes**
 
-6.2.6 Changes:
+6.2.7 Changes:
 
-a.) udf support added
-b.) entity resolution added
-c.) Unspecified bug fixes
+a.) PII  verification added
+b.) SavePoint and Undo added
+c.) Profiling enhanced
+d.) Unspecified bug fixes
 
 
 **Features**

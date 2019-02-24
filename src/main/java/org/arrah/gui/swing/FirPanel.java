@@ -507,7 +507,7 @@ public class FirPanel extends JPanel {
 		JPanel jpanel = new JPanel();
 		String s = null;
 		
-		/***** If you have enterprise license ****/
+		/***** If you have enterprise license ****
 		LicenseManager licensemanager = new LicenseManager();
 		if (licensemanager.isValid()) {
 			if (licensemanager.isEval) {
@@ -522,6 +522,7 @@ public class FirPanel extends JPanel {
 			JOptionPane.showMessageDialog(null, "Do not have valid License. Contact Admininstrator");
 			System.exit(-1);
 		}
+		********/
 		//
 		// Community License
 		
@@ -539,11 +540,11 @@ public class FirPanel extends JPanel {
 				"http://www.arrahtech.com/", 0);
 		JLabel jlabel3 = new JLabel("support@arrahtech.com", 0);
 		
-		/**** For Compegence only ****/
+		/**** For Compegence only ****
 		jlabel1.setText("Compegence  Data Quality");
 		jlabel2.setText("http://www.compegence.com");
 		jlabel3.setText("Support Email:osdq@compegence.com");
-		/**** For Compegence only ****/
+		**** For Compegence only ****/
 		
 		JLabel jlabel4 = new JLabel(s, 0);
 		jpanel.add(jlabel);

@@ -267,7 +267,7 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 									+ " Row Affected.."));
 						else
 							bot_scroll.setViewportView(new JLabel(
-									"Query Successfull.."));
+									"Query Successful.."));
 
 						Rdbms_conn.closeConn();
 						diff = q_e_t - q_s_t;
@@ -279,7 +279,7 @@ public class SqlTablePanel extends JPanel implements ActionListener {
 					q_e_t = System.currentTimeMillis();
 					if (rs == null) {
 						bot_scroll.setViewportView(new JLabel(
-								"Query Successfull.."));
+								"Query Successful.."));
 						Rdbms_conn.closeConn();
 						diff = q_e_t - q_s_t;
 						q_time.setText(Long.toString(diff) + " ms");

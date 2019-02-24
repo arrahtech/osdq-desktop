@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.arrahtec</groupId>
     <artifactId>osdq-desktop</artifactId>
-    <version>6.2.6-SNAPSHOT</version>
+    <version>6.2.7-SNAPSHOT</version>
     <name>osdq-desktop</name>
     <url>http://www.arrahtech.com</url>
     <properties>
@@ -401,7 +401,7 @@
         <dependency>
             <groupId>org.arrahtec</groupId>
             <artifactId>osdq-core</artifactId>
-            <version>6.2.6</version>
+            <version>6.2.7</version>
         </dependency>
     </dependencies>
 	<profiles>
