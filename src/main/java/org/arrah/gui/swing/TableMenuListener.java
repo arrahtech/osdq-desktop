@@ -410,7 +410,7 @@ public class TableMenuListener implements ActionListener, ItemListener {
 		}
 		
 		// For conditioning coloring
-		if (action_c.compareToIgnoreCase("render") == 0) {
+		if (action_c.compareToIgnoreCase("render") == 0 || action_c.compareToIgnoreCase("renderstrlen") == 0) {
 			double dgt = (double) gt.getValue();
 			double lgt = (double) lt.getValue();
 			double egt = (double) et.getValue();
@@ -421,7 +421,10 @@ public class TableMenuListener implements ActionListener, ItemListener {
 			int colet = c_combo2.getSelectedIndex();
 			
 			// Set Display on first pattern
-			table.getColumnModel().getColumn(index).setCellRenderer(new MyCellRenderer(dgt,colgt,lgt,collt,egt,colet));
+			if (action_c.compareToIgnoreCase("render") == 0)
+				table.getColumnModel().getColumn(index).setCellRenderer(new MyCellRenderer(dgt,colgt,lgt,collt,egt,colet));
+			else
+				table.getColumnModel().getColumn(index).setCellRenderer(new MyCellRenderer(dgt,colgt,lgt,collt,egt,colet,1)); // one for strlen
 			jdc.dispose();
 			table.repaint();
 			return;
@@ -490,7 +493,14 @@ public class TableMenuListener implements ActionListener, ItemListener {
 			int i = selectedColIndex(table);
 			if (i < 0 ) return;
 			columnSearchIndex = i;
-			conditonalDialog();
+			conditonalDialog(true);
+			return;
+		}
+		if (source.getText().compareTo("String Length Rendering") == 0) {
+			int i = selectedColIndex(table);
+			if (i < 0 ) return;
+			columnSearchIndex = i;
+			conditonalDialog(false);
 			return;
 		}
 		if (source.getText().compareTo("Unique Records") == 0) {
@@ -659,7 +669,7 @@ public class TableMenuListener implements ActionListener, ItemListener {
 
 	}
 	
-	private void conditonalDialog() {
+	private void conditonalDialog(boolean isNumber) {
 		JPanel dp = new JPanel();
 		dp.setLayout(new BorderLayout());
 		
@@ -669,7 +679,10 @@ public class TableMenuListener implements ActionListener, ItemListener {
 		
 			JLabel gl = new JLabel("Greater Than",JLabel.TRAILING);
 			p.add(gl);
-			gt = new JFormattedTextField(new Double(100.00D));
+			if (isNumber == true)
+				gt = new JFormattedTextField(new Double(100.00D));
+			else
+				gt = new JFormattedTextField(new Double(10));
 			p.add(gt);
 		
 			c_combo = new JComboBox<String>(new String[] { "Red", "Green",
@@ -680,7 +693,10 @@ public class TableMenuListener implements ActionListener, ItemListener {
 
 			JLabel el = new JLabel("Equal To",JLabel.TRAILING);
 			p.add(el);
-			et = new JFormattedTextField(new Double(100.00D));
+			if (isNumber == true)
+				et = new JFormattedTextField(new Double(100.00D));
+			else
+				et = new JFormattedTextField(new Double(10));
 			p.add(et);
 		
 			c_combo2 = new JComboBox<String>(new String[] { "Red", "Green",
@@ -691,7 +707,10 @@ public class TableMenuListener implements ActionListener, ItemListener {
 			
 			JLabel ll = new JLabel("Less Than",JLabel.TRAILING);
 			p.add(ll);
-			lt = new JFormattedTextField(new Double(100.00D));
+			if (isNumber == true)
+				lt = new JFormattedTextField(new Double(100.00D));
+			else
+				lt = new JFormattedTextField(new Double(10));
 			p.add(lt);
 		
 			c_combo1 = new JComboBox<String>(new String[] { "Red", "Green",
@@ -711,9 +730,15 @@ public class TableMenuListener implements ActionListener, ItemListener {
 		JPanel bp = new JPanel();
 
 		JButton tstc = new JButton("Render");
-		tstc.setActionCommand("render");
-		tstc.addKeyListener(new KeyBoardListener());
-		tstc.addActionListener(this);
+		if (isNumber == true) {
+			tstc.setActionCommand("render");
+			tstc.addKeyListener(new KeyBoardListener());
+			tstc.addActionListener(this);
+		} else {
+			tstc.setActionCommand("renderstrlen");
+			tstc.addKeyListener(new KeyBoardListener());
+			tstc.addActionListener(this);
+		}
 		bp.add(tstc);
 		
 		JButton cn_b = new JButton("Cancel");
@@ -726,7 +751,7 @@ public class TableMenuListener implements ActionListener, ItemListener {
 		dp.add(bp, BorderLayout.PAGE_END);
 		
 		jdc = new JDialog ();
-		jdc.setTitle("Conditioning Rendering Dialog");
+		jdc.setTitle("Conditional Rendering Dialog");
 		jdc.setModal(true);
 		jdc.setLocation(200, 200);
 		jdc.setPreferredSize(new Dimension(400, 200));
@@ -810,6 +835,7 @@ public class TableMenuListener implements ActionListener, ItemListener {
 		private int _colorgt,_colorlt,_coloret;
 		private boolean whitespacerender = false;
 		private Pattern p;
+		private int _rendorType =0; // 1 for strlen rendering
 		
 
 		public MyCellRenderer(double gt, int colorgt, double lt, int colorlt,double et, int coloret ) {
@@ -820,6 +846,17 @@ public class TableMenuListener implements ActionListener, ItemListener {
 			_colorlt = colorlt;
 			_coloret = coloret;
 		}
+		
+		public MyCellRenderer(double gt, int colorgt, double lt, int colorlt,double et, int coloret, int rendorType ) {
+			_gt = gt;
+			_lt = lt;
+			_et = et;
+			_colorgt = colorgt;
+			_colorlt = colorlt;
+			_coloret = coloret;
+			_rendorType = rendorType;
+		}
+		
 		public MyCellRenderer(boolean whitespace ) {
 			whitespacerender = true;
 			if ( whitespace == true )
@@ -849,7 +886,11 @@ public class TableMenuListener implements ActionListener, ItemListener {
 			}
 			
 			try{
-				double din = Double.parseDouble(value.toString());
+				double din = 0.0d;
+				if ( _rendorType == 1 ) // strlen
+					din = value.toString().length();
+				else
+					din = Double.parseDouble(value.toString());
 			
 				if (din > _gt) {
 					if (_colorgt == 0 )

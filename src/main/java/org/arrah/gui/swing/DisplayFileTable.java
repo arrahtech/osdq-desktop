@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.MediaTracker;
 import java.awt.event.ActionEvent;
@@ -70,10 +71,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SpinnerDateModel;
 import javax.swing.SpringLayout;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -663,6 +666,11 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		dobC_m.addActionListener(this);
 		dobC_m.setActionCommand("isdob");
 		validationMenu_m.add(dobC_m);
+		
+		JMenuItem dobCR_m = new JMenuItem("Date of Birth Range Bound");
+		dobCR_m.addActionListener(this);
+		dobCR_m.setActionCommand("isdobrange");
+		validationMenu_m.add(dobCR_m);
 		
 		column_m.add(validationMenu_m);
 		
@@ -1719,6 +1727,31 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				
 				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
 				bpii.isDoBmatch(_rt.getRTMModel(), index);
+				return;
+			}
+			if (command.equals("isdobrange")) {
+				int index = selectedColIndex(_rt);
+				if (index < 0)
+					return;
+				_rt.cancelSorting();
+
+					JPanel datejp = new JPanel(new FlowLayout(FlowLayout.LEADING));
+					JSpinner jsp_low = new JSpinner(new SpinnerDateModel());
+					JSpinner jsp_high = new JSpinner(new SpinnerDateModel());
+					jsp_low.setEditor(new JSpinner.DateEditor(jsp_low, "dd/MM/yyyy"));
+					jsp_high.setEditor(new JSpinner.DateEditor(jsp_high, "dd/MM/yyyy"));
+					JLabel lrange = new JLabel("  From:", JLabel.LEADING);
+					JLabel toRange = new JLabel("  To:", JLabel.LEADING);
+					datejp.add(lrange);
+					datejp.add(jsp_low);
+					datejp.add(toRange);
+					datejp.add(jsp_high);
+					
+					int option = JOptionPane.showOptionDialog(null, datejp, "Please choose DoB range", JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE, null, null, null);
+					if (option == JOptionPane.CANCEL_OPTION) return;
+				
+				BusinessPIIFormatCheck bpii = new BusinessPIIFormatCheck();
+				bpii.isDoBmatch(_rt.getRTMModel(), index,(Date)jsp_low.getValue(), (Date)jsp_high.getValue());
 				return;
 			}
 			if (command.equals("seareplacefuzzy")) {

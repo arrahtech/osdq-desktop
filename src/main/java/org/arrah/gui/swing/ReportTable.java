@@ -89,6 +89,7 @@ import org.arrah.framework.ndtable.TableSorter;
 import org.arrah.framework.rdbms.DataDictionaryPDF;
 import org.arrah.framework.rdbms.Rdbms_conn;
 import org.arrah.framework.xls.XlsReader;
+import org.arrah.framework.xls.XlsxReader;
 import org.arrah.framework.xml.DTDGenerator;
 import org.arrah.framework.xml.XmlWriter;
 
@@ -708,6 +709,11 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 			popup.add(menu5);
 			popup.addSeparator();
 			
+			JMenuItem strlenrender = new JMenuItem("String Length Rendering");
+			strlenrender.addActionListener(new TableMenuListener(table));
+			popup.add(strlenrender);
+			popup.addSeparator();
+			
 			JMenuItem menu6 = new JMenuItem("WhiteSpace Rendering");
 			menu6.addActionListener(new TableMenuListener(table));
 			popup.add(menu6);
@@ -807,7 +813,7 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 			//_clone.displayTableOutput();
 		}
 		else if (but_c.compareTo("Save as..") == 0) {
-			Object[] saveTypes = { "XML", "XLS", "CSV", "PDF","Screen Render as TextFile","Screen Render as OpenCSV"};
+			Object[] saveTypes = { "XML", "XLS", "XLSX","CSV", "PDF","Screen Render as TextFile","Screen Render as OpenCSV"};
 			String saveFormat = (String) JOptionPane
 					.showInputDialog(null, "Save as XML,XLS, CSV or PDF",
 							"Save Format", JOptionPane.QUESTION_MESSAGE, null,
@@ -818,6 +824,8 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 				saveAsXml();
 			} else if (saveFormat.equals("XLS")) {
 				saveAsXls();
+			} else if (saveFormat.equals("XLSX")) {
+				saveAsXlsX();
 			} else if (saveFormat.equals("PDF")) {
 				saveAsPdf();
 			} else if (saveFormat.equals("Screen Render as TextFile")) {
@@ -1125,6 +1133,24 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 		XlsReader xlsreader = new XlsReader();
 		xlsreader.write(this.getRTMModel(), xlsFile);
 	}
+	
+	/**
+	 * save the table as XLSX
+	 */
+	private void saveAsXlsX() {
+		File xlsFile = FileSelectionUtil.promptForFilename("");
+		if (xlsFile == null) {
+			return;
+		}
+		if (xlsFile.getName().toLowerCase().endsWith(".xlsx") == false) {
+			File renameF = new File(xlsFile.getAbsolutePath() + ".xlsx");
+			xlsFile = renameF;
+		}
+
+		XlsxReader xlsreader = new XlsxReader();
+		xlsreader.saveXlsxFile(this.getRTMModel(), xlsFile);
+	}
+
 
 	/**
 	 * save the table as XML
