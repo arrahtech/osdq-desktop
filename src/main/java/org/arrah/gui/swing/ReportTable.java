@@ -1180,6 +1180,7 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 		} catch (TransformerException exp) {
 			ConsoleFrame
 					.addText("\n Error saving DTD file:" + exp.getMessage());
+			exp.printStackTrace();
 		} catch (FileNotFoundException exp) {
 			ConsoleFrame
 					.addText("\n Error saving DTD file:" + exp.getMessage());

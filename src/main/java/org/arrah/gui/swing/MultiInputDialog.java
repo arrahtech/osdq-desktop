@@ -44,7 +44,7 @@ public class MultiInputDialog implements ActionListener {
 	private List<String> selectedValue= null;
 	private List<String> selectedtype= null;
 	private JComboBox<String> tpyeSelection [];
-	private String[] typeStr = new String[] {"String","Aadhar","PAN","GST"};
+	private String[] typeStr = new String[] {"String","Number","Aadhar","PAN","GST","Creditcard","Mobile","Email"};
 	
 	public MultiInputDialog (String[] selectOption, boolean isSelect) {
 		multiselectDialog(selectOption, isSelect, false);

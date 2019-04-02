@@ -96,6 +96,7 @@ import org.arrah.framework.dataquality.FillCheck;
 import org.arrah.framework.dataquality.FormatCheck;
 import org.arrah.framework.dataquality.AutoFormatCheck;
 import org.arrah.framework.dataquality.SimilarityCheckLucene;
+import org.arrah.framework.dataquality.SimmetricsUtil;
 import org.arrah.framework.hadooputil.HiveQueryBuilder;
 import org.arrah.framework.ndtable.RTMUtil;
 import org.arrah.framework.ndtable.ReportTableModel;
@@ -348,7 +349,10 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		wordAnal_m.setActionCommand("wordanalysis");
 		nlp_m.add(wordAnal_m);
 		
-		
+		JMenuItem similarity_m = new JMenuItem("Similarity Comparison");
+		preparation_m.add(similarity_m);
+		similarity_m.addActionListener(this);
+		similarity_m.setActionCommand("simcomp");
 		
 		// Analytics Menu
 		JMenu analytics_m = new JMenu("Analytics");
@@ -2075,10 +2079,16 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					return;
 				}
 				
-				String[] colHeader = new String[]{"Column","Type","Total","Unique","Pattern","Null","Empty","WhiteSpace","MetaCharacter","Valid"};
+				String[] colHeader = new String[]{"Column","Type","Total","Unique","Pattern","Null","Empty","WhiteSpace","MetaCharacter","Valid",
+						"Sum","Avg","Min","Max","Std_Dev"};
 				ReportTable rt = new ReportTable(colHeader);
+				
+				JOptionPane.showMessageDialog(null, "If column type is String then Sum,Avg,Min,Max,Std_Dev \n is of String length else"
+						+ " for Numerical values ");
+				
+				
 				for (int i=0; i < selectedcol.size(); i++) {
-					rt.addRow(); // even before column name matching
+					rt.addNullRow(); // even before column name matching
 					
 					int colI = _rt.getRTMModel().getColumnIndex(selectedcol.get(i));
 					if (colI < 0) {
@@ -2101,7 +2111,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					if (type.equalsIgnoreCase("string")) {
 						Integer[] valStr = fp.getStrProfiledValue(htable);
 						rt.getModel().setValueAt(valStr[0].toString(), i, 7);
-						rt.getModel().setValueAt(valStr[0].toString(), i, 8);
+						rt.getModel().setValueAt(valStr[1].toString(), i, 8);
 					}
 					if (type.equalsIgnoreCase("aadhar")) {
 						Integer aadharval = fp.getAadhardValue(htable);
@@ -2115,7 +2125,29 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 						Integer gstval = fp.getGSTValue(htable);
 						rt.getModel().setValueAt(gstval.toString(), i, 9);
 					}
-				}
+					if (type.equalsIgnoreCase("Creditcard")) {
+						Integer gstval = fp.getCreditCardValue(htable);
+						rt.getModel().setValueAt(gstval.toString(), i, 9);
+					}
+					if (type.equalsIgnoreCase("Mobile")) {
+						Integer gstval = fp.getMobileNValue(htable);
+						rt.getModel().setValueAt(gstval.toString(), i, 9);
+					}
+					if (type.equalsIgnoreCase("Email")) {
+						Integer gstval = fp.getEmailValue(htable);
+						rt.getModel().setValueAt(gstval.toString(), i, 9);
+					}
+					if (type.equalsIgnoreCase("Number")) {
+						Double[] numprofile = fp.getNumberProfiledValue(colV.toArray());
+						for (int j=10; j < 15; j++) // attribute counts
+							rt.getModel().setValueAt(numprofile[j - 10].toString(), i, j);
+					}
+					if (type.equalsIgnoreCase("String")) {
+						Double[] numprofile = fp.getStrLengthProfiledValue(colV.toArray());
+						for (int j=10; j < 15; j++) // attribute counts
+							rt.getModel().setValueAt(numprofile[j - 10].toString(), i, j);
+					}
+				} // end of For loop
 				JDialog jd = new JDialog();
 				jd.setTitle("Profile Info");
 				jd.setLocation(150, 150);
@@ -2197,50 +2229,51 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				return;
 			}
 			if (command.equals("filerow") || command.equals("filecol")) {
-				ImportFilePanel impF = new ImportFilePanel(false);
-				ReportTable rtable = impF.getTable();
-				if (rtable == null)
+				ImportFilePanel impF = new ImportFilePanel(false,true); // multiselect
+				ReportTable[] rtables = impF.getTables();
+				if (rtables == null || rtables.length == 0)
 					return;
-
-				int colC = rtable.table.getColumnCount();
-				int colCE = _rt.table.getColumnCount();
-				if (command.equals("filerow")) {
-					if (colC != colCE) {
-						JOptionPane
-								.showMessageDialog(
-										null,
-										"Column Count not Matching "
-												+ colC
-												+ " Columns and "
-												+ colCE
-												+ " Columns \n Will adjust Accordingly",
-										"Error Message",
-										JOptionPane.INFORMATION_MESSAGE);
-					}
-				}
-				int rowC = rtable.table.getRowCount();
-				int rowCE = _rt.table.getRowCount();
-				if (command.equals("filerow")) {
-					_rt.addRows(rowCE, rowC);
-					for (int i = 0; i < colC - colCE; i++)
-						_rt.getModel().addColumn(rtable.table.getColumnName(colCE + i));
-
-					for (int i = 0; i < rowC; i++) {
-						Object[] obj = rtable.copyRow(i);
-						for (int j = 0; j < colC; j++) {
-							_rt.getModel().setValueAt(obj[j], rowCE + i, j);
+				for (ReportTable rtable:rtables) {
+					int colC = rtable.table.getColumnCount();
+					int colCE = _rt.table.getColumnCount();
+					if (command.equals("filerow")) {
+						if (colC != colCE) {
+							JOptionPane
+									.showMessageDialog(
+											null,
+											"Column Count not Matching "
+													+ colC
+													+ " Columns and "
+													+ colCE
+													+ " Columns \n Will adjust Accordingly",
+											"Error Message",
+											JOptionPane.INFORMATION_MESSAGE);
 						}
 					}
-				} else {
-					if (rowC > rowCE)
-						_rt.addRows(rowCE, rowC - rowCE);
-					for (int i = 0; i < colC; i++) {
-						_rt.getModel().addColumn(rtable.table.getColumnName(i));
-					}
-					for (int i = 0; i < rowC; i++) {
-						Object[] obj = rtable.copyRow(i);
-						for (int j = 0; j < obj.length; j++) {
-							_rt.getModel().setValueAt(obj[j], i, colCE + j);
+					int rowC = rtable.table.getRowCount();
+					int rowCE = _rt.table.getRowCount();
+					if (command.equals("filerow")) {
+						_rt.addRows(rowCE, rowC);
+						for (int i = 0; i < colC - colCE; i++)
+							_rt.getModel().addColumn(rtable.table.getColumnName(colCE + i));
+	
+						for (int i = 0; i < rowC; i++) {
+							Object[] obj = rtable.copyRow(i);
+							for (int j = 0; j < colC; j++) {
+								_rt.getModel().setValueAt(obj[j], rowCE + i, j);
+							}
+						}
+					} else {
+						if (rowC > rowCE)
+							_rt.addRows(rowCE, rowC - rowCE);
+						for (int i = 0; i < colC; i++) {
+							_rt.getModel().addColumn(rtable.table.getColumnName(i));
+						}
+						for (int i = 0; i < rowC; i++) {
+							Object[] obj = rtable.copyRow(i);
+							for (int j = 0; j < obj.length; j++) {
+								_rt.getModel().setValueAt(obj[j], i, colCE + j);
+							}
 						}
 					}
 				}
@@ -2767,6 +2800,32 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 					return;
 				
 				WordAnalysis.dropwords(_rt.getRTMModel(),inputtindex,outputindex);
+				return;
+			}
+			if (command.equals("simcomp") ) {
+				_rt.cancelSorting(); // No sorting 
+				int inputtindex = selectedColIndex(_rt, "Select the First Column String match");
+				if (inputtindex < 0)
+					return;
+				int outputindex = selectedColIndex(_rt, "Select the Second Column String match");
+				if (outputindex < 0)
+					return;
+				Object[] first = _rt.getRTMModel().getColData(inputtindex);
+				Object[] second = _rt.getRTMModel().getColData(outputindex);
+				
+				try {
+					ReportTableModel rtm = SimmetricsUtil.runSimForAll(first, second);
+					/* Now Open Dialog to show */
+					JDialog showDia = new JDialog();
+					showDia.setModal(true);
+					showDia.setTitle("Similarity Comparison Dialog");
+					showDia.setLocation(250, 100);
+					showDia.getContentPane().add(new ReportTable(rtm));
+					showDia.pack();
+					showDia.setVisible(true);
+				} finally {
+					_rt.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+				}
 				return;
 			}
 			if (command.equals("rounding") || command.equals("flooring") || command.equals("ceiling")

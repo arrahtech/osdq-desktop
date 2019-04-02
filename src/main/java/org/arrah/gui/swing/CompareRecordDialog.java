@@ -738,7 +738,7 @@ public class CompareRecordDialog implements ActionListener {
 			} 
 			
 			for (int i=0; i <mapSize; i++)
-				_rt.getRTMModel().addColumn("LGD_"+oldColName[_leftMap.get(i)]+addString);
+				_rt.getRTMModel().addColumn("MATCHED_"+oldColName[_leftMap.get(i)]+addString);
 			
 			_rt.getRTMModel().addColumn("Accept"+addString);
 			_rt.getRTMModel().addColumn("SelectedAlgo"+addString);
