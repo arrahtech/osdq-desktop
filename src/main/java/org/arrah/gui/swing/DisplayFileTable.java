@@ -2929,7 +2929,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 				option = JOptionPane.showConfirmDialog(null, "Do you want to keep parent frame ?", "Keep File option", JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.NO_OPTION)
 					frame.dispose();
-				crd.createMapDialog();
+				crd.createMapDialog(true);
 				
 				return;
 			}

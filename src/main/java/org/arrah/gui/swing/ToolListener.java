@@ -135,7 +135,7 @@ public class ToolListener implements ActionListener {
 					else if ( source.equals("Interactive Standardization"))
 						crd = new CompareRecordDialog(firstRT, secondRT, 5); // 5 for Interactive Standard
 					
-					crd.createMapDialog();
+					crd.createMapDialog(true);
 						
 					return;
 				}

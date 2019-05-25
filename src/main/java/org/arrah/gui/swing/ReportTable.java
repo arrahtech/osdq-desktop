@@ -93,6 +93,10 @@ import org.arrah.framework.xls.XlsxReader;
 import org.arrah.framework.xml.DTDGenerator;
 import org.arrah.framework.xml.XmlWriter;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.itextpdf.text.DocumentException;
 import com.opencsv.CSVWriter;
 
@@ -813,9 +817,9 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 			//_clone.displayTableOutput();
 		}
 		else if (but_c.compareTo("Save as..") == 0) {
-			Object[] saveTypes = { "XML", "XLS", "XLSX","CSV", "PDF","Screen Render as TextFile","Screen Render as OpenCSV"};
+			Object[] saveTypes = { "XML", "XLS", "XLSX","CSV", "PDF","JSON","Screen Render as TextFile","Screen Render as OpenCSV"};
 			String saveFormat = (String) JOptionPane
-					.showInputDialog(null, "Save as XML,XLS, CSV or PDF",
+					.showInputDialog(null, "Save as XML,XLS, JSON, CSV or PDF",
 							"Save Format", JOptionPane.QUESTION_MESSAGE, null,
 							saveTypes, saveTypes[0]);
 			if (saveFormat == null) {
@@ -832,6 +836,8 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 				saveAsCsv(1);
 			} else if (saveFormat.equals("CSV")){
 				saveAsCsv(0);
+			}  else if (saveFormat.equals("JSON")){
+				saveAsJSON();
 			} else { // openCSV
 				saveAsOpenCsv();
 			}
@@ -1305,6 +1311,52 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 			writer.close();
 		} catch (IOException exp) {
 			ConsoleFrame.addText("\n SAVE FILE ERROR:" + exp.getMessage());
+
+		}
+	}
+	
+	/**
+	 * save the table as JSON format 
+	 */
+	private void saveAsJSON() {
+		
+		File file = FileSelectionUtil.promptForFilename("");
+		if (file == null) {
+			return;
+		}
+		if (file.getName().toLowerCase().endsWith(".json") == false) {
+			File renameF = new File(file.getAbsolutePath() + ".json");
+			file = renameF;
+		}
+		// Get Row and Column count
+		int rowCount = table.getRowCount();
+		int columnCount = table.getColumnCount();
+		String[] colD = new String[columnCount];
+
+		try {
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			
+			// Get Column header
+			for (int j = 0; j < columnCount; j++) 
+				colD[j] = table.getColumnName(j);
+			
+			JsonArray rowA = new JsonArray(rowCount);
+			// Get Column data
+			for (int i = 0; i < rowCount; i++) {
+				JsonObject writer = new JsonObject();
+				for (int j = 0; j < columnCount; j++) {
+					//writer.add(colD[j], writer.get(getTextValueAt(i, j)));
+					writer.addProperty(colD[j], getTextValueAt(i, j));
+					
+				}
+				rowA.add(writer);
+			}
+			FileWriter fw = new FileWriter(file);
+			fw.write(gson.toJson(rowA));
+			fw.close();
+		
+		} catch (IOException exp) {
+			ConsoleFrame.addText("\n JSON  SAVE FILE ERROR:" + exp.getMessage());
 
 		}
 	}

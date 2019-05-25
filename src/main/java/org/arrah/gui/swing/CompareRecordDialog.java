@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -44,6 +45,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
@@ -52,6 +54,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.arrah.framework.dataquality.RecordMatch;
 import org.arrah.framework.dataquality.RecordMatch.MultiColData;
 import org.arrah.framework.dataquality.StringMergeUtil;
+import org.arrah.framework.wrappertoutil.StringUtil;
 
 public class CompareRecordDialog implements ActionListener {
 	private ReportTable _lTab, _rTab, _rt;
@@ -59,15 +62,18 @@ public class CompareRecordDialog implements ActionListener {
 	private JComboBox<String>[] _rColC, _algoC , _dataActionC = null;
 	private JCheckBox[] _checkB;
 	private JFormattedTextField[] _simIndex;
-	private JDialog d_m, d_recHead, d_nonMap ,d_r;
+	private JDialog d_m = null, d_recHead, d_nonMap ,d_r;
 	private int _type;
 	private Vector<Integer> _leftMap, _rightMap, _dataActionNonMap = null;
 	private boolean _singleFile = false, _mapCancel = false;
 	private Integer[] _actionType;
 	private JButton refreshB,pushgoldenB;
-	private JCheckBox _nonmatchedRec;
+	private JCheckBox _nonmatchedRec = null;
 	private HashMap<String,Boolean> uniqLKey, uniqRKey;
 	private HashMap<String,ArrayList<Integer>> uniqLIndex;
+	
+	private JRadioButton rd1, rd2;
+	private Boolean _noMatch=null,_rightSelection=null;
 	
 	/* leftTable is must . rightTable only in multiple file or linkage option */
 	public CompareRecordDialog (ReportTable leftTable, ReportTable rightTable, int type) {
@@ -93,9 +99,16 @@ public class CompareRecordDialog implements ActionListener {
 		for (int i=0 ; i <_rTab.getModel().getColumnCount(); i++ )
 			_rCols.add(_rTab.getModel().getColumnName(i));
 	}
+	
+	/* This constrcutor is there to help parameter during chain comparison*/
+	public CompareRecordDialog (ReportTable leftTable, ReportTable rightTable, int type, boolean noMatch, boolean rightSelection) {
+		this(leftTable,rightTable, type);
+		_noMatch = noMatch;
+		_rightSelection = rightSelection;
+	}
 
 	// Create GUI and show both table
-	public JDialog createMapDialog() {
+	public JDialog createMapDialog(boolean isVisible) {
 		
 		JPanel tp = new JPanel();
 		tp.setPreferredSize(new Dimension (1100,500));
@@ -106,16 +119,33 @@ public class CompareRecordDialog implements ActionListener {
 			tp.add(_rTab);
 		
 		JScrollPane jscrollpane = new JScrollPane(tp);
-		jscrollpane.setPreferredSize(new Dimension(1125, 525));
+		jscrollpane.setPreferredSize(new Dimension(1350, 525));
 		
 		JPanel bp = new JPanel();
 		
+		
+		JLabel jl = new JLabel("Reference File is:");
+		bp.add(jl);
+		ButtonGroup bg = new ButtonGroup();
+		rd1 = new JRadioButton("Left Tab");
+		rd2 = new JRadioButton("Right Tab");
+		if(_rightSelection == null || _rightSelection == true)
+			rd2.setSelected(true);
+		else
+			rd1.setSelected(true);
+		bg.add(rd1);bg.add(rd2);
+		bp.add(rd1);bp.add(rd2);
+		
+		
 		_nonmatchedRec = new JCheckBox("Show Non-Matched Records");
-		_nonmatchedRec.setSelected(false);
+		if(_noMatch == null || _noMatch == true)
+			_nonmatchedRec.setSelected(false);
+		else
+			_nonmatchedRec.setSelected(true);
 		_nonmatchedRec.setToolTipText("Select if you want to see records which did not match");
 		bp.add(_nonmatchedRec);
 		
-		JButton ok = new JButton("Next");;
+		JButton ok = new JButton("Next");
 		ok.setActionCommand("next");
 		ok.addActionListener(this);
 		ok.addKeyListener(new KeyBoardListener());
@@ -136,8 +166,12 @@ public class CompareRecordDialog implements ActionListener {
 		d_m.setTitle("Record Display Dialog");
 		d_m.setLocation(50, 50);
 		d_m.getContentPane().add(jp_p);
-		d_m.pack();
-		d_m.setVisible(true);
+		
+		if (isVisible) {
+			d_m.pack();
+			d_m.setVisible(true);
+		} else 
+			ok.doClick();
 
 		return d_m;
 	}
@@ -170,6 +204,10 @@ public class CompareRecordDialog implements ActionListener {
 			JLabel mapA = new JLabel("   Matches:   ",JLabel.TRAILING);
 			mapA.setForeground(Color.BLUE);
 			jp.add(mapA);
+			// map to matching value
+			int mindex = StringUtil.bestmatchIndex(_lCols.get(i), _rCols);
+			_rColC[i].setSelectedIndex(mindex);
+			
 			jp.add(_rColC[i]);
 			_algoC[i] = new JComboBox<String>(algoList);
 			jp.add(_algoC[i]);
@@ -320,8 +358,16 @@ public class CompareRecordDialog implements ActionListener {
 			d_nonMap.dispose();
 		}
 		if ("inputdialog".equals(e.getActionCommand())) {
-			d_r.dispose();
-			d_m.setVisible(true);
+			if(d_r != null)
+				d_r.dispose();
+			if (d_m != null) {
+				d_m.setLocation(100, 100);
+				d_m.setPreferredSize(new Dimension(1375,550));
+				d_m.pack();
+				d_m.setVisible(true);
+			} else {
+				ConsoleFrame.addText("\n WARNING: empty dialog ");
+			}
 		}
 		if ("analysispanel".equals(e.getActionCommand())) {
 			DisplayFileTable dt = new DisplayFileTable(_rt);
@@ -329,6 +375,38 @@ public class CompareRecordDialog implements ActionListener {
 			d_r.dispose();
 			d_m.dispose();
 			dt.showGUI();
+			return;
+		}
+		if ("standardization".equals(e.getActionCommand())) {
+			if (d_r != null)
+				d_r.dispose();
+			if (d_m != null)
+				d_m.dispose();
+
+			
+			if (rd2.isSelected() == true )
+				_rightSelection = true;
+			else
+				_rightSelection = false;
+			
+			if (_nonmatchedRec.isSelected() == false)
+				_noMatch = true;
+			else
+				_noMatch = false;
+			// here we have to take input about record match & master file
+			CompareRecordDialog crd = null;
+			
+//			System.out.println("rd2:"+rd2.isSelected());
+//			System.out.println("noMatch:"+_nonmatchedRec.isSelected());
+//			System.out.println("_rightSelection:"+_rightSelection);
+//			System.out.println("_noMatch"+_noMatch);
+			
+			if ( _rightSelection == true)
+				crd = new CompareRecordDialog(_rt,_rTab,5,_noMatch,_rightSelection);
+			else
+				crd = new CompareRecordDialog(_rt,_lTab,5,_noMatch,_rightSelection);
+			//crd.showHeaderMap();
+			crd.createMapDialog(false);
 			return;
 		}
 
@@ -452,10 +530,12 @@ public class CompareRecordDialog implements ActionListener {
 				 
 					 d_recHead.dispose();
 			}
-			if (_type == 5)
-				d_m.setVisible(false);
-			else
-				d_m.dispose();
+			if ( d_m != null ) {
+				if (_type == 5 )
+					d_m.setVisible(false);
+				else
+					d_m.dispose();
+			}
 			
 			// Now pass the results for display
 				d_r = new JDialog();
@@ -475,8 +555,10 @@ public class CompareRecordDialog implements ActionListener {
 	
 	// This function will be used to display matched records in ReportTable
 	private ReportTable displayRecord(List<RecordMatch.Result> resultSet , int type) {
+		boolean showNonmatched = false;
+		if (_nonmatchedRec != null) // only if not null
+			showNonmatched = _nonmatchedRec.isSelected();
 		
-		boolean showNonmatched = _nonmatchedRec.isSelected();
 		if (showNonmatched == true) { //if true same table _lTab will be displayed with records not matching any records
 			_rt = new ReportTable(_lTab.getAllColNameAsString(), true, true);
 			Hashtable<Integer,Boolean> htNonMatched = new Hashtable<Integer,Boolean>();
@@ -1226,6 +1308,11 @@ public class CompareRecordDialog implements ActionListener {
 		analitem.addActionListener(this);
 		analitem.setActionCommand("analysispanel");
 		menu.add(analitem);
+		menu.addSeparator();
+		JMenuItem runstandization = new JMenuItem("Run Standardization");
+		runstandization.addActionListener(this);
+		runstandization.setActionCommand("standardization");
+		menu.add(runstandization);
 
 		jp.add(b, BorderLayout.NORTH);
 		return jp;

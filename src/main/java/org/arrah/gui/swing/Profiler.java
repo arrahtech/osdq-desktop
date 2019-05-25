@@ -784,7 +784,9 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 					}
 					; // do nothing
 					jframe.dispose();
-					System.exit(0);
+					System.gc(); // garbage collection
+					runGUI(false);
+					//System.exit(0);
 				}
 			}
 		});
@@ -863,10 +865,26 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 			}
 		}
 	}
+	
+	private static void runGUI(boolean success) {
+		boolean fileLoad = false;
+		// If configFile fails
+		if ( success == false){
+			TestConnectionDialog tcd = new TestConnectionDialog(0); // Default main connection
+			tcd.createGUI();
+			_fileParse = tcd.getDBParam();
+			fileLoad = tcd.isFileLoad();
+		}
+		
+		if (fileLoad == false)
+			createAndShowGUI();
+		else { // Show FileMenu
+			new FileLoaderFrame();
+		}
+	}
 
 	public static void main(String args[]) {
 		boolean success = false;
-		boolean fileLoad = false;
 		
 		if ((args.length > 0) && ( args[0] != null && !"".equals(args[0]) 
 		    && !"\r".equals(args[0]) && !"\n".equals(args[0]))) { // open the confileFile.txt
@@ -892,24 +910,12 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 				System.out.println(" Exception:"+e.getMessage());
 			}
 		} 
-		// If configFile fails
-		if ( success == false){
-			TestConnectionDialog tcd = new TestConnectionDialog(0); // Default main connection
-			tcd.createGUI();
-			_fileParse = tcd.getDBParam();
-			fileLoad = tcd.isFileLoad();
-		}
-		
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				ConsoleFrame.createGUI();
 			}
 		});
 		t.start();
-		if (fileLoad == false)
-			createAndShowGUI();
-		else { // Show FileMenu
-			new FileLoaderFrame();
-		}
+		runGUI(success);
 	}
 }
