@@ -67,7 +67,7 @@ public class ConsoleFrame {
 		JFrame.setDefaultLookAndFeelDecorated(true);
 
 		// Create and set up the window.
-		frame = new JFrame("Aggregate Profiler Console");
+		frame = new JFrame("osDQ Console");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		frame.getContentPane().add(sp, BorderLayout.CENTER);

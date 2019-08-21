@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.arrahtec</groupId>
     <artifactId>osdq-desktop</artifactId>
-    <version>6.2.7-SNAPSHOT</version>
+    <version>6.2.8-SNAPSHOT</version>
     <name>osdq-desktop</name>
     <url>http://www.arrahtech.com</url>
     <properties>
@@ -476,7 +476,7 @@
     </ciManagement>
     <organization>
         <name>Arrah Technology</name>
-        <url>>http://www.arrahtech.com</url>
+        <url>http://www.arrahtech.com</url>
     </organization>
     <licenses>
         <license>

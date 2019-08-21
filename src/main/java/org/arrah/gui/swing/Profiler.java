@@ -347,7 +347,7 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		Profiler profiler = new Profiler();
 		final JFrame jframe = new JFrame(
-				"Aggregate Profiler : Provided by Arrah Technology");
+				"osDQ : Provided by Arrah Technology");
 		jframe.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		profiler.setOpaque(true);
 		jframe.setContentPane(profiler);
