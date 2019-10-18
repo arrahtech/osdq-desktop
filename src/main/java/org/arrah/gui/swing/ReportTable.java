@@ -591,11 +591,20 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 				javax.swing.table.TableColumn colN = table.getColumnModel().getColumn(i);
 				int len = colN.getHeaderValue().toString().length();
 				
+				// in case rowcount is 0
+				if (rowCount < 1) {
+					len = len* 12 + 20;
+					colN.setPreferredWidth(len);
+					return;
+				}
+				
 				int datalen =0;
 				Random rd = new java.util.Random();
 				
 				for (int j=0; j < 5 ; j++) {
-					int randomint = rd.nextInt(rowCount);
+					int randomint = 1; // in case rowcount is 0
+					if (rowCount > 1)
+						randomint = rd.nextInt(rowCount);
 					Object o = table.getValueAt(randomint, i);
 					if (o != null) {
 					 datalen = o.toString().length();
