@@ -17,7 +17,7 @@ It also had Hadoop ( Big data ) support to move files to/from Hadoop Grid, Creat
 
 a.) Save as XLSX, JSON added
 b.) Profiling enhanced
-d.) Unspecified bug fixes
+c.) Unspecified bug fixes
 
 
 **Features**
