@@ -90,7 +90,8 @@ public class ToolListener implements ActionListener {
 				if (source.equals("Single File Match") || source.equals("Multiple File Match") ||
 					source.equals("1:1 Record Linkage") ||	source.equals("1:N Record Linkage") ||
 					source.equals("Single File Merge") || source.equals("Multiple File Merge") ||
-					source.equals("Diff File") || source.equals("Auto Standardization")  || source.equals("Interactive Standardization") ) {
+					source.equals("Compare File") || source.equals("Compare Report") || 
+					source.equals("Auto Standardization")  || source.equals("Interactive Standardization") ) {
 					
 					ReportTable firstRT = null, secondRT= null;
 					JOptionPane.showMessageDialog(null, "Select the First File");
@@ -105,7 +106,7 @@ public class ToolListener implements ActionListener {
 	
 					if ( source.equals("1:1 Record Linkage") || source.equals("1:N Record Linkage") || 
 							source.equals("Multiple File Match") || source.equals("Multiple File Merge") || source.equals("Auto Standardization")
-							|| source.equals("Diff File") || source.equals("Interactive Standardization")) {
+							|| source.equals("Compare File") || source.equals("Compare Report")|| source.equals("Interactive Standardization")) {
 						JOptionPane.showMessageDialog(null, "Select the Second File");
 						ImportFilePanel secondFile = new ImportFilePanel(false);
 						if (secondFile != null ) 
@@ -116,8 +117,12 @@ public class ToolListener implements ActionListener {
 							return;
 						}
 					}
-					if (source.equals("Diff File")) {
+					if (source.equals("Compare File")) {
 						new CompareFileFrame(firstRT.getRTMModel(), secondRT.getRTMModel());
+						return;
+					}
+					if (source.equals("Compare Report")) {
+						new CompareReportFrame(firstRT.getRTMModel(), secondRT.getRTMModel());
 						return;
 					}
 					CompareRecordDialog crd=null;

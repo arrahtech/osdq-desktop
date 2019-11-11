@@ -549,10 +549,15 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		jmenu6.add(copyFile);
 		jmenu6.addSeparator(); // end of import file
 		
-		JMenuItem diffFile = new JMenuItem("Diff File");
+		JMenuItem diffFile = new JMenuItem("Compare File");
 		diffFile.addActionListener(new ToolListener(jmenubar));
 		jmenu6.add(diffFile);
 		jmenu6.addSeparator(); // end of diff file
+		
+		JMenuItem diffReport= new JMenuItem("Compare Report");
+		diffReport.addActionListener(new ToolListener(jmenubar));
+		jmenu6.add(diffReport);
+		jmenu6.addSeparator(); // end of diff report
 		
 		
 		JMenuItem jmenuitem22 = new JMenuItem("Create Format");
@@ -896,7 +901,17 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 			
 			
 			_fileParse = KeyValueParser.parseFile(args[0]);
+			
 			try {
+				// This file may not have passwd stored so if it is not stored ask for it
+				String passwd = (String) _fileParse.get("Database_Passwd");
+				String dsn = (String) _fileParse.get("Database_DSN");
+				
+				if ((dsn != null && ("".equals(dsn) == false)) && (passwd == null || "".equals(passwd) || passwd.matches("\\*.*") == true)) {
+					passwd = JOptionPane.showInputDialog("Enter Password to Connect DB:"+ dsn);
+					 _fileParse.put("Database_Passwd",passwd);
+				}
+			
 				Rdbms_conn.init(_fileParse);
 				String status = Rdbms_conn.testConn();
 				if ("Connection Successful".equals(status)) {

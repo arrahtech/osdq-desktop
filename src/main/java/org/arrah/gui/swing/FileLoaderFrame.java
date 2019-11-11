@@ -191,10 +191,15 @@ public class FileLoaderFrame {
 		jmenu6.add(copyFile);
 		jmenu6.addSeparator(); // end of import file
 		
-		JMenuItem diffFile = new JMenuItem("Diff File");
+		JMenuItem diffFile = new JMenuItem("Compare File");
 		diffFile.addActionListener(new ToolListener(jmenubar));
 		jmenu6.add(diffFile);
 		jmenu6.addSeparator(); // end of diff file
+		
+		JMenuItem diffReport = new JMenuItem("Compare Report");
+		diffReport.addActionListener(new ToolListener(jmenubar));
+		jmenu6.add(diffReport);
+		jmenu6.addSeparator(); // end of diff report
 		
 		
 		JMenuItem jmenuitem22 = new JMenuItem("Create Format");

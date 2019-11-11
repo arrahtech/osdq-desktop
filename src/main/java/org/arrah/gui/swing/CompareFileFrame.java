@@ -190,13 +190,6 @@ public class CompareFileFrame implements ActionListener {
 		rtmdiff = new RTMDiffWithData(rtmL,leftKey,datatypeCols.toArray(dataTypeA),leftCols.toArray(leftColA),
 					rtmR,rightKey,datatypeCols.toArray(dataTypeA),rightCols.toArray(rightColA));
 	
-		Object[][] result = rtmdiff.compareData();
-		String[][] keydata = rtmdiff.getkeydata();
-		
-//		for (int i = 0; i < result.length; i++) {
-//			System.out.print(Arrays.toString(keydata[i]));
-//			System.out.println(Arrays.toString(result[i]));
-//		}
 	
 		// Create header Report Table Model
 		ArrayList<String> colNames = new ArrayList<String>();
@@ -216,28 +209,43 @@ public class CompareFileFrame implements ActionListener {
 		ReportTableModel rtm = new ReportTableModel(colNamesA,true,true);
 		
 		int nomatchIndex = 0;
-		ArrayList<String[]> nomatchData = rtmdiff.getNomatchKeyData();
 		
-		for (int i=0; i < result.length ; i++ ) {
-			String[] doubleKey = new String[keydata[0].length * 2]; // for left key and right key
+		try {
+			Object[][] result = rtmdiff.compareData();
+			String[][] keydata = rtmdiff.getmatchedKeyData();
 			
-			if (keydata[i]!= null) {
-				for (int j=0; j < keydata[0].length; j++) 
-					doubleKey[j] = keydata[i][j];
-				for (int j=keydata[0].length; j < keydata[0].length * 2; j++)
-					doubleKey[j] = keydata[i][j-keydata[0].length];
-			}
-			else { // null left outer join condition
-				if (nomatchIndex < nomatchData.size()) {
-					String[] nomatchKey = nomatchData.get(nomatchIndex++);
-					for (int k=0; k < nomatchKey.length; k++)
-					doubleKey[k] = nomatchKey[k];
+	//		for (int i = 0; i < result.length; i++) {
+	//			System.out.print(Arrays.toString(keydata[i]));
+	//			System.out.println(Arrays.toString(result[i]));
+	//		}
+			ArrayList<String[]> nomatchData = rtmdiff.getNomatchKeyData();
+			
+			for (int i=0; i < result.length ; i++ ) {
+				
+				// if there is no match keydata would be empty so better use keys itself
+				// String[]  = new String[keydata[0].length * 2]; // for left key and right key
+				String[]  doubleKey= new String[leftKey.length + rightKey.length];
+				
+				if (keydata[i]!= null) {
+					for (int j=0; j < keydata[0].length; j++) 
+						doubleKey[j] = keydata[i][j];
+					for (int j=keydata[0].length; j < keydata[0].length * 2; j++)
+						doubleKey[j] = keydata[i][j-keydata[0].length];
 				}
+				else { // null left outer join condition
+					if (nomatchIndex < nomatchData.size()) {
+						String[] nomatchKey = nomatchData.get(nomatchIndex++);
+						for (int k=0; k < nomatchKey.length; k++)
+						doubleKey[k] = nomatchKey[k];
+					}
+				}
+				
+	//			System.out.print(Arrays.toString(doubleKey));
+	//			System.out.println(Arrays.toString(result[i]));
+				rtm.addFillRow(doubleKey, result[i]);
 			}
-			
-//			System.out.print(Arrays.toString(doubleKey));
-//			System.out.println(Arrays.toString(result[i]));
-			rtm.addFillRow(doubleKey, result[i]);
+		} catch (Exception e) {
+			ConsoleFrame.addText("Compare File error:" +  e.getLocalizedMessage());
 		}
 		
 		// Make existing report to go

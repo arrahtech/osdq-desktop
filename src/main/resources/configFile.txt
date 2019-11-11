@@ -139,20 +139,19 @@ Database_ColumnPattern=""
 Database_TableType="TABLE"
 */
 
-/* MySQL Native JConnector DRIVER 
+/* MySQL Native JConnector DRIVER */
 Database_Type="MYSQL"
 Database_Driver="com.mysql.jdbc.Driver"
 Database_Protocol="jdbc:mysql"
 Database_DSN="//localhost/mysql"
 Database_User="root"
-Database_Passwd="root"
+Database_Passwd="*******"
 Database_Catalog=""
 Database_SchemaPattern=""
 Database_TablePattern=""
 Database_ColumnPattern=""
 Database_TableType="TABLE"
 
-*/
 
 
 /* Postgres Native JConnector DRIVER 

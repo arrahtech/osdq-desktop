@@ -127,6 +127,7 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 		jc.addActionListener(this);
 		
         jccon = new JComboBox<String>(cname);
+        jccon.addActionListener(new ConnectionAction());
 		
 		//Create and populate the panel which is enhanced by Advance button        
 		JPanel p = new JPanel(new SpringLayout());   
@@ -136,7 +137,7 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 		l.setLabelFor(jccon);             
 		p.add(jccon);
                 
-                l = new JLabel(labels[1], JLabel.TRAILING);             
+        l = new JLabel(labels[1], JLabel.TRAILING);             
 		p.add(l);             
 		coname = new JTextField(10);
 		l.setLabelFor(coname);             
@@ -326,6 +327,7 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() instanceof JComboBox ) {
+			
 			cleanText();
 			infoStatus="";
 			info.setText(infoStatus);
@@ -600,6 +602,7 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 			if (jccon.getSelectedIndex() > 1) { // new connection selected
 				String connectName = jccon.getSelectedItem().toString();
 				_dbparam = new XmlReader().getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", connectName);
+				populateField(_dbparam);
 			} else {
 				String dsn_s = dsn.getText();
 				String user_s = user.getText();
@@ -651,10 +654,10 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 			try {
 				
 				if (connectionType == 0 ) { // Default connection
-				Rdbms_conn.init(_dbparam);
-				status = Rdbms_conn.testConn();
-				info.setText(status);
-				Rdbms_conn.closeConn();
+					Rdbms_conn.init(_dbparam);
+					status = Rdbms_conn.testConn();
+					info.setText(status);
+					Rdbms_conn.closeConn();
 				} else { // New Connection
 					Rdbms_NewConn newConn = new Rdbms_NewConn(_dbparam);
 					status = newConn.testConn();
@@ -809,7 +812,6 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 	
 	// It is a utility function which clean all JTextfield except type and default values
 	private void cleanText() {
-        jccon.setSelectedIndex(0);
 		dsn.setText("");
 		user.setText("");
 		passfield.setText("");
@@ -818,6 +820,96 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 		tablePattern.setText("");
 		colPattern.setText("");
 		jdbc_cs.setText("");
+		coname.setText("");
+		ok_b.setEnabled(false);
+		
+	}
+	
+	// It is a utility function which clean all JTextfield except type and default values
+	// and populate the field with hashtable
+	private void populateField(Hashtable<String,String> dbparam) {
+		// cleanText(); Database Type will clean text
+		String val="";
+		String protval=dbparam.get("Database_Protocol");
+		if (protval == null) protval="";
+		
+		val = dbparam.get("Database_Type");
+		switch(val) {
+			case "ORACLE_NATIVE":
+				jc.setSelectedIndex(0);
+				break;
+			case "ORACLE_ODBC":
+				jc.setSelectedIndex(1);
+				break;
+			case "MYSQL":
+				if (protval.compareToIgnoreCase("jdbc:mysql") == 0)
+					jc.setSelectedIndex(2); // jdbc
+				else
+					jc.setSelectedIndex(3); //odbc
+				break;
+			case "SQL_SERVER":
+				if (protval.compareToIgnoreCase("jdbc:sqlserver") == 0)
+					jc.setSelectedIndex(4); // jdbc
+				else
+					jc.setSelectedIndex(5); //odbc
+				break;
+			case "MS_ACCESS_JDBC":
+				jc.setSelectedIndex(6);
+				break;
+			case "MS_ACCESS":
+				jc.setSelectedIndex(7);
+				break;
+			case "POSTGRES":
+				jc.setSelectedIndex(8);
+				break;
+			case "DB2":
+				jc.setSelectedIndex(9);
+				break;
+			case "HIVE":
+				if (protval.compareToIgnoreCase("jdbc:hive") == 0)
+					jc.setSelectedIndex(10); // hive
+				else
+					jc.setSelectedIndex(11);  // hive2
+				break;
+			case "INFORMIX":
+				jc.setSelectedIndex(12);
+				break;
+			case "SPLICE":
+				jc.setSelectedIndex(13);
+				break;
+			case "TEIID":
+				jc.setSelectedIndex(14);
+				break;
+			default:
+				jc.setSelectedIndex(15);
+				break;
+		}
+		
+		
+		if ( (val = dbparam.get("Database_DSN")) != null)
+			dsn.setText(val);
+		if ( (val = dbparam.get("Database_User")) != null)
+			user.setText(val);
+		if ( (val = dbparam.get("Database_Passwd")) != null)
+			passfield.setText(val);
+		if ( (val = dbparam.get("Database_Driver")) != null)
+			driver.setText(val);
+		if ( (val = dbparam.get("Database_Protocol")) != null)
+			protocol.setText(val);
+		if ( (val = dbparam.get("Database_Catalog")) != null)
+			catalog.setText(val);
+		if ( (val = dbparam.get("Database_SchemaPattern")) != null)
+			schemaPattern.setText(val);
+		if ( (val = dbparam.get("Database_TablePattern")) != null)
+			tablePattern.setText(val);
+		if ( (val = dbparam.get("Database_ColumnPattern")) != null)
+			colPattern.setText(val);
+		if ( (val = dbparam.get("Database_TableType")) != null)
+			type.setText(val);
+		if ( (val = dbparam.get("Database_JDBC")) != null)
+			jdbc_cs.setText(val);
+		if ( (val = dbparam.get("Database_ConnName")) != null)
+			coname.setText(val.trim());
 		
 	}
 
@@ -946,5 +1038,27 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 
 	public void setFileLoad(boolean isFileLoad) {
 		this.isFileLoad = isFileLoad;
+	}
+	
+	private class ConnectionAction implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			@SuppressWarnings("unchecked")
+			JComboBox<String> cb = (JComboBox<String>)e.getSource();
+	        int index = cb.getSelectedIndex();
+	        if (index < 2) {
+	        	jc.setEnabled(true);
+	        	jc.setSelectedIndex(0);
+	        	return; // nothing as new connection is selected
+	        }
+	        
+	        String connName = cb.getSelectedItem().toString();
+			_dbparam = new XmlReader().getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", connName);
+			populateField(_dbparam);
+			jc.setEnabled(false);
+			
+		}
+		
 	}
 }
