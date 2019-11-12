@@ -102,7 +102,7 @@ public class FileLoaderFrame {
 		
 		if (s == null || "".equals(s)) 
 		s = " Community License (GPL3.0). ";
-		s = "<html> <B> <I> <U> &copy; 2006-2019  Arrah Technology </U> <BR>"
+		s = "<html> <B> <I> <U> &copy; 2006-2020  Arrah Technology </U> <BR>"
 				+ s + "</I></B> </html>";
 
 		
@@ -113,7 +113,7 @@ public class FileLoaderFrame {
 		jlabel1.setFont(new Font("Helvetica", 1, 16));
 		JLabel jlabel2 = new JLabel(
 				"http://www.arrahtech.com", 0);
-		JLabel jlabel3 = new JLabel("Support Email:support@arrahtech.com", 0);
+		JLabel jlabel3 = new JLabel("Commercial Support: support@arrahtech.com", 0);
 		
 		/**** For Compegence only  
 		jlabel1.setText("Compegence  Data Quality");

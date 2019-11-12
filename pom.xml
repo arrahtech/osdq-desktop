@@ -3,9 +3,9 @@
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.arrahtec</groupId>
+    <groupId>org.arrahtech</groupId>
     <artifactId>osdq-desktop</artifactId>
-    <version>6.2.8-SNAPSHOT</version>
+    <version>6.2.9-SNAPSHOT</version>
     <name>osdq-desktop</name>
     <url>http://www.arrahtech.com</url>
     <properties>
@@ -399,9 +399,9 @@
           <systemPath>${project.build.directory}/../lib/rowset.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>org.arrahtec</groupId>
+            <groupId>org.arrahtech</groupId>
             <artifactId>osdq-core</artifactId>
-            <version>6.2.7</version>
+            <version>6.2.9</version>
         </dependency>
     </dependencies>
 	<profiles>
