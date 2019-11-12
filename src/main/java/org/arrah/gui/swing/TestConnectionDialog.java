@@ -571,7 +571,7 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
             if(db_name != null) _dbparam.put("Database_ConnectionName", db_name);
             if(dsn_s != null) _dbparam.put("Database_DSN", dsn_s);
             if(user_s != null)_dbparam.put("Database_User", user_s);
-            if(passwd != null)_dbparam.put("Database_Passwd", new String(passwd) );
+            //if(passwd != null)_dbparam.put("Database_Passwd", new String(passwd) );
             if(driver_s != null)_dbparam.put("Database_Driver", driver_s);
             if(protocol_s != null)_dbparam.put("Database_Protocol", protocol_s);
             if(catalog_s != null)_dbparam.put("Database_Catalog", catalog_s);
@@ -580,6 +580,15 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
             if(colPattern_s != null)_dbparam.put("Database_ColumnPattern", colPattern_s);
             if(type_s != null)_dbparam.put("Database_TableType", type_s);
             if(jdbc_cs_s != null)_dbparam.put("Database_JDBC", jdbc_cs_s);
+            
+            // Take use input whether to save passwd or not
+            int opt = JOptionPane.showConfirmDialog(null,  "Do you want to save Password in cleat text?", "Password Save Option", JOptionPane.YES_NO_OPTION);
+  
+            if (opt == JOptionPane.NO_OPTION)
+            	_dbparam.put("Database_Passwd", new String("") );
+            else
+            	if(passwd != null)_dbparam.put("Database_Passwd", new String(passwd) );
+            
             
             // Make sure Test connection is done before Add
             if(db_type != null)_dbparam.put("Database_Type", _dbparam.get("Database_Type"));
@@ -599,11 +608,11 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 			// Prompt here for null fields
 			String status="";
 			
-			if (jccon.getSelectedIndex() > 1) { // new connection selected
-				String connectName = jccon.getSelectedItem().toString();
-				_dbparam = new XmlReader().getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", connectName);
-				populateField(_dbparam);
-			} else {
+//			if (jccon.getSelectedIndex() > 1) { // new connection selected
+//				String connectName = jccon.getSelectedItem().toString();
+//				_dbparam = new XmlReader().getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", connectName);
+//				populateField(_dbparam);
+//			} else {
 				String dsn_s = dsn.getText();
 				String user_s = user.getText();
 				char[] passwd = passfield.getPassword();
@@ -649,7 +658,7 @@ public class TestConnectionDialog extends JDialog implements ActionListener, Ite
 				if(restype_s != null)_dbparam.put("Database_ResultsetType", restype_s);
 				if(resconcur_s != null)_dbparam.put("Database_ResultsetConcur", resconcur_s);
 				if(quote_s != null)_dbparam.put("Database_SupportQuote", quote_s);
-			}
+			// }
 			
 			try {
 				

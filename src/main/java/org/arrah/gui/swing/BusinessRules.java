@@ -100,9 +100,10 @@ public class BusinessRules extends javax.swing.JFrame {
                         xmlReader = new XmlReader();
                         hashRule = new Hashtable<>();
                         hashRule = xmlReader.getRuleDetails(new File(FilePaths.getFilePathRules()), "rule", jcbRule.getSelectedItem().toString());
-                        hashTable = new Hashtable<String, String>();
-                        hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
-                        hashRule.put("Database_Type", hashTable.get("Database_Type"));
+                        
+//                        hashTable = new Hashtable<String, String>();
+//                        hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
+//                        hashRule.put("Database_Type", hashTable.get("Database_Type"));
 
                         txtQuery.setText(hashRule.get("query_Text"));
                         comboModel = (DefaultComboBoxModel<String>) jcbConnection.getModel();
@@ -133,11 +134,22 @@ public class BusinessRules extends javax.swing.JFrame {
                             jcbTable.addItem("Show Tables");
 
                             xmlReader = new XmlReader();
+                            
                             hashTable = new Hashtable<String, String>();
                             hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", jcbConnection.getSelectedItem().toString());
+                            
+                         // This file may not have passwd stored so if it is not stored ask for it
+            				String passwd = (String) hashTable.get("Database_Passwd");
+            				String dsn = (String) hashTable.get("Database_DSN");
+            				
+            				if ((dsn != null && ("".equals(dsn) == false)) && (passwd == null || "".equals(passwd) || passwd.matches("\\*.*") == true)) {
+            					passwd = JOptionPane.showInputDialog("Enter Password to Connect DB:"+ dsn);
+            					hashTable.put("Database_Passwd",passwd);
+            				}
+            				
+                            // System.out.println(hashTable.toString());
                             db_tables = new ArrayList<String>();
                             q_b = new QueryBuilder();
-
                             db_tables = q_b.get_all_tables(hashTable);
 
                             for (int i = 0; i < db_tables.size(); i++) {
@@ -160,8 +172,8 @@ public class BusinessRules extends javax.swing.JFrame {
                         jcbColumn.removeAllItems();
                         jcbColumn.addItem("Show Columns");
                         xmlReader = new XmlReader();
-                        hashTable = new Hashtable<String, String>();
-                        hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", jcbConnection.getSelectedItem().toString());
+//                        hashTable = new Hashtable<String, String>();
+//                        hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", jcbConnection.getSelectedItem().toString());
                         db_cols = new ArrayList<String>();
                         db_cols = q_b.get_all_cols(hashTable, jcbTable.getSelectedItem().toString());
 
@@ -501,9 +513,9 @@ public class BusinessRules extends javax.swing.JFrame {
                 hashRule.put("rule_Description", txtDescription.getText().trim());
             }
 
-            hashTable = new Hashtable<>();
-            hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
-            hashRule.put("Database_Type", hashTable.get("Database_Type"));
+//            hashTable = new Hashtable<>();
+//            hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
+//            hashRule.put("Database_Type", hashTable.get("Database_Type"));
             
            // txtQuery.setText(new QueryBuilder().getJoinQuery(hashRule));
             txtQuery.setText(txtQuery.getText().trim());
@@ -540,7 +552,7 @@ public class BusinessRules extends javax.swing.JFrame {
     		JOptionPane.showMessageDialog(null, "Please Enter Query to Validate");
     		return;
     	}
-    	hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", jcbConnection.getSelectedItem().toString());
+//    	hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", jcbConnection.getSelectedItem().toString());
     	Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashTable);
         dbmsConn.openConn();
         System.out.println("Connected to " + hashTable.get("Database_ConnName"));
@@ -570,9 +582,9 @@ public class BusinessRules extends javax.swing.JFrame {
                 if (txtQuery.getText() != null)
                 	txtQuery.setText(txtQuery.getText().trim());
                 hashRule.put("query_Text", txtQuery.getText());
-                hashTable = new Hashtable<>();
-                hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
-                hashRule.put("Database_Type", hashTable.get("Database_Type"));
+//                hashTable = new Hashtable<>();
+//                hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
+//                hashRule.put("Database_Type", hashTable.get("Database_Type"));
                 if( txtDescription.getText().trim().equals("") ) {
                     hashRule.put("rule_Description", "");
                 } else {

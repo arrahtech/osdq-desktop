@@ -100,10 +100,10 @@ public class ExecuteBusiRule extends javax.swing.JFrame {
                         System.out.println(hashRule.get("rule_Name") + ":" + hashRule.get("database_ConnectionName") + ":" + hashRule.get("rule_Type") + ":" + hashRule.get("table_Names") + ":" + hashRule.get("column_Names") + ":" + hashRule.get("condition_Names"));
                         dbConnName = hashRule.get("database_ConnectionName");
                         
-                        hashTable = new Hashtable<>();
-                        hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
+//                        hashTable = new Hashtable<>();
+//                        hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
+//                        hashRule.put("Database_Type", hashTable.get("Database_Type"));
                         
-                        hashRule.put("Database_Type", hashTable.get("Database_Type"));
                         txtBusirule.setText(hashRule.get("query_Text"));
                     } else {
                         txtBusirule.setText("");
@@ -267,6 +267,15 @@ public class ExecuteBusiRule extends javax.swing.JFrame {
                 xmlReader = new XmlReader();
                 hashTable = new Hashtable<String, String>();
                 hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", dbConnName);
+                
+             // This file may not have passwd stored so if it is not stored ask for it
+				String passwd = (String) hashTable.get("Database_Passwd");
+				String dsn = (String) hashTable.get("Database_DSN");
+				
+				if ((dsn != null && ("".equals(dsn) == false)) && (passwd == null || "".equals(passwd) || passwd.matches("\\*.*") == true)) {
+					passwd = JOptionPane.showInputDialog("Enter Password to Connect DB:"+ dsn);
+					hashTable.put("Database_Passwd",passwd);
+				}
                 
                 Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashTable);
 
