@@ -370,7 +370,7 @@ public class CompareRecordDialog implements ActionListener {
 			}
 		}
 		if ("analysispanel".equals(e.getActionCommand())) {
-			DisplayFileTable dt = new DisplayFileTable(_rt);
+			DisplayFileAsTable dt = new DisplayFileAsTable(_rt);
 			dt.setMatchRT(_rTab);
 			d_r.dispose();
 			d_m.dispose();

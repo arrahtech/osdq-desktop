@@ -113,7 +113,7 @@ import org.arrah.framework.util.KeyValueParser;
 import org.arrah.framework.util.StringCaseFormatUtil;
 import org.arrah.framework.xml.XmlReader;
 
-public class DisplayFileTable extends JPanel implements ActionListener {
+public class DisplayFileAsTable extends JPanel implements ActionListener {
 	/**
 	 * 
 	 */
@@ -153,14 +153,14 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 	private JFrame frame;
 
 	// Constructor
-	public DisplayFileTable(ReportTable rt) {
+	public DisplayFileAsTable(ReportTable rt) {
 		_rt = rt;
 		
 		// call show GUI explicitly
 		// showGUI();
 	}
 
-	public DisplayFileTable(ReportTable rt, String fileN) {
+	public DisplayFileAsTable(ReportTable rt, String fileN) {
 		_rt = rt;
 		_fileN = fileN;
 		
@@ -3092,7 +3092,7 @@ public class DisplayFileTable extends JPanel implements ActionListener {
 		SpringLayout layout = new SpringLayout();
 		jp.setLayout(layout);
 
-      ImageIcon imageicon = new ImageIcon(DisplayFileTable.class
+      ImageIcon imageicon = new ImageIcon(DisplayFileAsTable.class
           .getClassLoader().getResource("image/Filter.gif"), "Query");
   		int imageLS = imageicon.getImageLoadStatus();
 

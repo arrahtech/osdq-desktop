@@ -130,7 +130,7 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 				CSVtoReportTableModel csvReader = new CSVtoReportTableModel(f);
 				showT = new ReportTable(csvReader.loadOpenCSVIntoTable());
 				if (_showGUI == true) {
-					DisplayFileTable dft = new DisplayFileTable(showT,
+					DisplayFileAsTable dft = new DisplayFileAsTable(showT,
 							f.toString());
 					dft.showGUI();
 				}
@@ -149,7 +149,7 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 			final XmlReader xmlReader = new XmlReader();
 			showT = new ReportTable(xmlReader.read(f));
 			if (_showGUI == true) {
-				DisplayFileTable dft = new DisplayFileTable(showT,
+				DisplayFileAsTable dft = new DisplayFileAsTable(showT,
 						f.toString());
 				dft.showGUI();
 			}
@@ -181,7 +181,7 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 				showT = new ReportTable(xlsReader.read(sheetname));
 			}
 			if (_showGUI == true) {
-				DisplayFileTable dft = new DisplayFileTable(showT,
+				DisplayFileAsTable dft = new DisplayFileAsTable(showT,
 						f.toString());
 				dft.showGUI();
 			}
@@ -189,7 +189,7 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 			CSVtoReportTableModel csvReader = new CSVtoReportTableModel(f);
 			showT = new ReportTable(csvReader.loadOpenCSVIntoTable());
 			if (_showGUI == true) {
-				DisplayFileTable dft = new DisplayFileTable(showT,
+				DisplayFileAsTable dft = new DisplayFileAsTable(showT,
 						f.toString());
 				dft.showGUI();
 			}
@@ -199,7 +199,7 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 	    	
 			showT = new ReportTable(new FlattenJsonToCSV().getRTM(contents));
 			if (_showGUI == true) {
-				DisplayFileTable dft = new DisplayFileTable(showT,
+				DisplayFileAsTable dft = new DisplayFileAsTable(showT,
 						f.toString());
 				dft.showGUI();
 			}
@@ -506,7 +506,7 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 				d_f.dispose();
 			}
 			if (_showGUI == true) {
-				DisplayFileTable dft = new DisplayFileTable(showT, f.toString());
+				DisplayFileAsTable dft = new DisplayFileAsTable(showT, f.toString());
 				dft.showGUI();
 			}
 			return;

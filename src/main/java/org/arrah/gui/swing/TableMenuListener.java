@@ -541,7 +541,7 @@ public class TableMenuListener implements ActionListener, ItemListener {
 			return;
 		}
 		if (source.getText().compareTo("To Analysis Panel") == 0) {
-			DisplayFileTable dt = new DisplayFileTable(_rt);
+			DisplayFileAsTable dt = new DisplayFileAsTable(_rt);
 			dt.showGUI();
 			return;
 		}

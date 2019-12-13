@@ -82,7 +82,7 @@ public class ToolListener implements ActionListener {
 					// open empty table
 					String[] colname= new String[]{"first"};
 					ReportTable rt = new ReportTable(colname,true,true);
-					DisplayFileTable dft = new DisplayFileTable(rt);
+					DisplayFileAsTable dft = new DisplayFileAsTable(rt);
 					dft.showGUI();
 					return;
 				}

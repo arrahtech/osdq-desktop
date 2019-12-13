@@ -223,7 +223,7 @@ public class MultiLineInputPanel implements ActionListener {
 			ReportTableModel rtm = AsciiParser.loadRecord(f,rcdInput,fldInput, colCountInput,true);
 			_rt = new ReportTable(rtm);
 			_dg.dispose();
-			DisplayFileTable dft = new DisplayFileTable(_rt, f.toString());
+			DisplayFileAsTable dft = new DisplayFileAsTable(_rt, f.toString());
 			dft.showGUI();
 			return;
 		}
