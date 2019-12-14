@@ -98,6 +98,7 @@ import org.arrah.framework.dataquality.AutoFormatCheck;
 import org.arrah.framework.dataquality.SimilarityCheckLucene;
 import org.arrah.framework.dataquality.SimmetricsUtil;
 import org.arrah.framework.hadooputil.HiveQueryBuilder;
+import org.arrah.framework.ndtable.DisplayFileAsTableCore;
 import org.arrah.framework.ndtable.RTMUtil;
 import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.ndtable.ResultsetToRTM;
@@ -1494,115 +1495,17 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				
 				String options = sd.getSelectedOption();
 		
-				int row_c = _rt.table.getRowCount();
 				_rt.cancelSorting();
 				_rt.table.clearSelection();
 				_rt.table.setColumnSelectionInterval(index, index);
-
-				// Take care of class type
-				Object replace = null;
-				Class<?> cclass = _rt.table.getColumnClass(index);
-
-				Enumeration<String> en = filterHash.keys();
-				while (en.hasMoreElements()) {
-					String key = en.nextElement().toString();
-					Pattern p= null;
-				/* We will compile the pattern here so that once compile it can match all rows.*/
-				try {
-					if (options.charAt(0) == '0' && options.charAt(2) == '1' )  // case insensitive and literal true
-						p =Pattern.compile(key, Pattern.LITERAL|Pattern.CASE_INSENSITIVE);
-					else if ( options.charAt(0) == '1' && options.charAt(2) == '1' ) // case sensitive and literal true
-						p = Pattern.compile(key, Pattern.LITERAL);
-					else if (options.charAt(0) == '0' && options.charAt(2) == '0') // case insensitive and literal false
-						p = Pattern.compile(key, Pattern.CASE_INSENSITIVE);
-					else // case sensitive and literal false
-						p = Pattern.compile(key); // no flag
-					
-				} catch (PatternSyntaxException pe) {
-					System.out.println("Pattern Compile Exception:"
-						+ pe.getMessage());
-					continue;
-				} catch (IllegalArgumentException ee) {
-					System.out.println("Illegal Argument Exception:"
-							+ ee.getMessage());
-						continue;
-				}
-				if (p== null ) {
-					System.out.println("Pattern is NULL");
-						continue;
-				}
 				
-				for (int i = 0; i < row_c; i++) {
-					Object obj = _rt.table.getValueAt(i, index);
-					if (obj == null)
-						continue;
-					
-					String value = obj.toString().trim()
-							.replaceAll("\\s+", " "); // Split for White Space
-					
-					String[] valueTok = new String[1];
-					valueTok[0] = value;
-					
-					if (options.charAt(1) == '0' ) // multi-word not chosen
-						 valueTok = value.split(" ");
-					
-						boolean matchFound = false;
-						
-						for (int j = 0; j < valueTok.length; j++) {
-							try {
-							// needs to add case sensitive and word search replace
-							Matcher m = p.matcher(valueTok[j]);
-							if (options.charAt(3) == '1' ){ // Full sequence match
-								if (m.matches() == true ) {
-									String newvalue = (String) filterHash
-											.get(key);
-									valueTok[j] = newvalue;
-									matchFound = true;
-									continue;
-								}
-							} else { // find
-								if (m.find() == true) {
-									String newvalue = (String) filterHash.get(key);
-									newvalue = m.replaceAll(newvalue);
-									valueTok[j] = newvalue;
-									matchFound = true;
-									continue;
-								}
-								
-							}
-							} catch (PatternSyntaxException pe) {
-								ConsoleFrame.addText("\n Pattern Compile Exception:"+ pe.getMessage());
-								break;
-							}
-						}
-						if (matchFound == true) {
-							String newValue = "";
-							for (int j = 0; j < valueTok.length; j++) {
-								if (newValue.equals("") == false)
-									newValue += " "; // Put space
-								newValue += valueTok[j];
-							}
-							try {
-								if (cclass.getName().toUpperCase()
-										.contains("DOUBLE")) {
-									replace = Double.parseDouble(newValue);
-								} else if (cclass.getName().toUpperCase()
-										.contains("DATE")) {
-									replace = new SimpleDateFormat("dd-MM-yyyy")
-											.parse(newValue);
-								} else {
-									replace = new String(newValue);
-								}
-							} catch (Exception exp) {
-								ConsoleFrame
-										.addText("\n WANING: Could not Parse Input String:"
-												+ newValue);
-							}
-							_rt.getModel().setValueAt(replace, i, index);
-							_rt.table.addRowSelectionInterval(i, i);
-						}
-					}
-				}
+				DisplayFileAsTableCore dfac = new DisplayFileAsTableCore();
+				List<Integer> matchedI = dfac.standardisationRegex( filterHash,  _rt.getRTMModel(),  options,  index);
+				
+				// For selection
+				for (int matchedRow:matchedI)
+				_rt.table.addRowSelectionInterval(matchedRow, matchedRow);
+
 				return;
 			}
 			if (command.equals("autodetection")) {
@@ -1773,57 +1676,15 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				_rt.cancelSorting();
 				_rt.table.clearSelection();
 				_rt.table.setColumnSelectionInterval(index, index);
-
-				// Take care of class type
-				Object replace = null;
-				Class<?> cclass = _rt.table.getColumnClass(index);
-				String colTitle = _rt.table.getColumnName(index);
 				
-				/* Build the index here and search in that index */
-				SimilarityCheckLucene _simcheck = new SimilarityCheckLucene(_rt.getRTMModel());
-				_simcheck.makeIndex();
+				DisplayFileAsTableCore dfac = new DisplayFileAsTableCore();
+				List<Integer> matchedI = dfac.standardisationFuzzy( filterHash,  _rt.getRTMModel(),  index);
+				
+				// For selection
+				for (int matchedRow:matchedI)
+				_rt.table.addRowSelectionInterval(matchedRow, matchedRow);
 
-				Enumeration<String> en = filterHash.keys();
-				while (en.hasMoreElements()) {
-					String key = en.nextElement().toString();
-					
-					if (key == null || "".equals(key) ) {
-						System.out.println("Key is NULL");
-							continue;
-					}
-					String fuzzyquery =  _simcheck.prepareLQuery(key, colTitle);
-					
-					Object[][] matchedrow = _simcheck.searchTableObject(fuzzyquery);
-					if (matchedrow == null) continue;
-					
-					Vector<Integer> matchedIndex = _simcheck.getMatchedRowIndex(); // matched Index for this set
-					if (matchedIndex == null || matchedIndex.size() == 0) continue;
-					
-					for (int i=0; i < matchedrow.length ; i++) {
-						int matchedIndexVal = matchedIndex.get(i);
-						
-						String newValue = filterHash.get(key);
-						if (newValue == null) break; // No value to replace
-							try {
-								if (cclass.getName().toUpperCase()
-										.contains("DOUBLE")) {
-									replace = Double.parseDouble(newValue);
-								} else if (cclass.getName().toUpperCase()
-										.contains("DATE")) {
-									replace = new SimpleDateFormat("dd-MM-yyyy")
-											.parse(newValue);
-								} else {
-									replace = new String(newValue);
-								}
-							} catch (Exception exp) {
-								ConsoleFrame
-										.addText("\n WANING: Could not Parse Input String:"
-												+ newValue);
-							}
-							_rt.getModel().setValueAt(replace, matchedIndexVal, index);
-							_rt.table.addRowSelectionInterval(matchedIndexVal, matchedIndexVal);
-						}
-				}
+
 				return;
 			}
 			if (command.equals("uppercase")) {
