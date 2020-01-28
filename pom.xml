@@ -396,7 +396,7 @@
           <artifactId>rowset</artifactId>
           <version>0.0.1</version>
           <scope>system</scope>
-          <systemPath>${project.build.directory}/../lib/rowset.jar</systemPath>
+          <systemPath>${project.basedir}/lib/rowset.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.arrahtech</groupId>
