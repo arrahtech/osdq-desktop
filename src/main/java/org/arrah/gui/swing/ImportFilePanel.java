@@ -58,7 +58,6 @@ import org.arrah.framework.json.FlattenJsonToCSV;
 import org.arrah.framework.ndtable.CSVtoReportTableModel;
 import org.arrah.framework.ndtable.ColumnAttr;
 import org.arrah.framework.ndtable.ReportTableModel;
-import org.arrah.framework.xls.XlsReader;
 import org.arrah.framework.xls.XlsxReader;
 import org.arrah.framework.xml.XmlReader;
 
@@ -79,66 +78,42 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 	private JDialog d, d_f;
 	private JRadioButton fw, vw, ws, cm, ot, ao;
 	private boolean _showGUI;
+	
+	private ReportTable[] showTMuliselect = null;
+	private File[] fA = null;
 
 	public ImportFilePanel(boolean isGUI) {
 		_showGUI = isGUI;
 
 		try {
-			f = FileSelectionUtil.chooseFile("ATD Open File");
+			f = FileSelectionUtil.chooseFile("Arrah Technology Open File");
 			if (f == null)
 				return;
-			if (f.getName().toLowerCase().endsWith(".xml")) {
-				final XmlReader xmlReader = new XmlReader();
-				showT = new ReportTable(xmlReader.read(f));
-				if (_showGUI == true) {
-					DisplayFileTable dft = new DisplayFileTable(showT,
-							f.toString());
-					dft.showGUI();
-				}
-			} else if (f.getName().toLowerCase().endsWith(".xls")) {
-				final XlsReader xlsReader = new XlsReader();
-				showT = new ReportTable(xlsReader.read(f));
-				if (_showGUI == true) {
-					DisplayFileTable dft = new DisplayFileTable(showT,
-							f.toString());
-					dft.showGUI();
-				}
-			} else if (f.getName().toLowerCase().endsWith(".xlsx")) {
-				final XlsxReader xlsReader = new XlsxReader();
-				showT = new ReportTable(xlsReader.read(f));
-				if (_showGUI == true) {
-					DisplayFileTable dft = new DisplayFileTable(showT,
-							f.toString());
-					dft.showGUI();
-				}
-			} else if (f.getName().toLowerCase().endsWith(".csv")){
-				CSVtoReportTableModel csvReader = new CSVtoReportTableModel(f);
-				showT = new ReportTable(csvReader.loadOpenCSVIntoTable());
-				if (_showGUI == true) {
-					DisplayFileTable dft = new DisplayFileTable(showT,
-							f.toString());
-					dft.showGUI();
-				}
-			} else if (f.getName().toLowerCase().endsWith(".json")){
-				Path path = Paths.get(f.getPath());
-		    	String contents = new String(Files.readAllBytes(path),StandardCharsets.ISO_8859_1);
-		    	
-				showT = new ReportTable(new FlattenJsonToCSV().getRTM(contents));
-				if (_showGUI == true) {
-					DisplayFileTable dft = new DisplayFileTable(showT,
-							f.toString());
-					dft.showGUI();
-				}
-			}
-			else {
-				takeOptions(f);
-				createIDialog();
-			}
-		} catch (FileNotFoundException file_e) {
+			loadTable();
+		} catch (Exception e) {
+			ConsoleFrame.addText("\n Exception:" + e.getLocalizedMessage());
+		}		
+	};
+	
+	// This constructor is for load many files in multiselect mode then then an array of tables
+	public ImportFilePanel(boolean isGUI, boolean isMultiSelect) {
+		_showGUI = isGUI;
 
-		} catch (IOException io_e) {
-		}
-
+		try {
+			fA = FileSelectionUtil.chooseFiles("Arrah Technology Open File");
+			int fileS = fA.length;
+			showTMuliselect  = new ReportTable[fileS];
+			
+			for (int i=0; i< fileS ; i++ ) {
+				f = fA[i];
+				if (f == null)
+					return;
+				loadTable();
+				showTMuliselect[i] = new ReportTable(showT.getRTMModel());
+			}
+		} catch (Exception e) {
+			ConsoleFrame.addText("\n Exception:" + e.getLocalizedMessage());
+		}		
 	};
 	// This constructor is for openCSV
 	// ideally it should be merged with above 
@@ -147,7 +122,7 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 		_showGUI = isGUI;
 
 		try {
-			f = FileSelectionUtil.chooseFile("ATD Open File");
+			f = FileSelectionUtil.chooseFile("Arrah Technologies Open File");
 			if (f == null)
 				return;
 			
@@ -155,7 +130,7 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 				CSVtoReportTableModel csvReader = new CSVtoReportTableModel(f);
 				showT = new ReportTable(csvReader.loadOpenCSVIntoTable());
 				if (_showGUI == true) {
-					DisplayFileTable dft = new DisplayFileTable(showT,
+					DisplayFileAsTable dft = new DisplayFileAsTable(showT,
 							f.toString());
 					dft.showGUI();
 				}
@@ -166,6 +141,79 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 		} 
 	}
 
+	// this function will support constructor call
+	private void loadTable() {
+		
+	try{
+		if (f.getName().toLowerCase().endsWith(".xml")) {
+			final XmlReader xmlReader = new XmlReader();
+			showT = new ReportTable(xmlReader.read(f));
+			if (_showGUI == true) {
+				DisplayFileAsTable dft = new DisplayFileAsTable(showT,
+						f.toString());
+				dft.showGUI();
+			}
+		}/* else if (f.getName().toLowerCase().endsWith(".xls")) {
+			final XlsReader xlsReader = new XlsReader();
+			showT = new ReportTable(xlsReader.read(f));
+			if (_showGUI == true) {
+				DisplayFileTable dft = new DisplayFileTable(showT,
+						f.toString());
+				dft.showGUI();
+			}
+		}*/ else if (f.getName().toLowerCase().endsWith(".xlsx") || f.getName().toLowerCase().endsWith(".xls")) {
+			final XlsxReader xlsReader = new XlsxReader();
+			List<String> sheetname = xlsReader.showSheets(f);
+			if (sheetname == null || sheetname.isEmpty() == true) {
+				JOptionPane.showMessageDialog(null, "No XLS Sheet to load");
+				return;
+			}
+			if (sheetname.size() == 1)
+				showT = new ReportTable(xlsReader.read(sheetname));
+			else {
+				MultiInputDialog mid = new MultiInputDialog(sheetname,true); // all selected
+				sheetname = mid.getSelected();
+				//System.out.println(sheetname);
+				if (sheetname == null || sheetname.isEmpty() == true) {
+					ConsoleFrame.addText("\n No sheet to load");
+					return;
+				}
+				showT = new ReportTable(xlsReader.read(sheetname));
+			}
+			if (_showGUI == true) {
+				DisplayFileAsTable dft = new DisplayFileAsTable(showT,
+						f.toString());
+				dft.showGUI();
+			}
+		} else if (f.getName().toLowerCase().endsWith(".csv")){
+			CSVtoReportTableModel csvReader = new CSVtoReportTableModel(f);
+			showT = new ReportTable(csvReader.loadOpenCSVIntoTable());
+			if (_showGUI == true) {
+				DisplayFileAsTable dft = new DisplayFileAsTable(showT,
+						f.toString());
+				dft.showGUI();
+			}
+		} else if (f.getName().toLowerCase().endsWith(".json")){
+			Path path = Paths.get(f.getPath());
+	    	String contents = new String(Files.readAllBytes(path),StandardCharsets.ISO_8859_1);
+	    	
+			showT = new ReportTable(new FlattenJsonToCSV().getRTM(contents));
+			if (_showGUI == true) {
+				DisplayFileAsTable dft = new DisplayFileAsTable(showT,
+						f.toString());
+				dft.showGUI();
+			}
+		} else {
+			takeOptions(f);
+			createIDialog();
+		}
+	} catch (FileNotFoundException file_e) {
+		ConsoleFrame.addText("\n Exception:" + file_e.getLocalizedMessage());
+	} catch (IOException io_e) {
+		ConsoleFrame.addText("\n Exception:" + io_e.getLocalizedMessage());
+	}
+		
+	}
 	private void takeOptions(File f) throws IOException {
 		if (f == null)
 			return;
@@ -458,7 +506,7 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 				d_f.dispose();
 			}
 			if (_showGUI == true) {
-				DisplayFileTable dft = new DisplayFileTable(showT, f.toString());
+				DisplayFileAsTable dft = new DisplayFileAsTable(showT, f.toString());
 				dft.showGUI();
 			}
 			return;
@@ -696,5 +744,9 @@ public class ImportFilePanel implements ItemListener, ActionListener {
 	public ReportTable getTable() {
 		return showT;
 	}
+	public ReportTable[] getTables() {
+		return showTMuliselect;
+	}
+	
 
 }

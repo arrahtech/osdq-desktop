@@ -3,11 +3,11 @@
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.arrahtec</groupId>
+    <groupId>org.arrahtech</groupId>
     <artifactId>osdq-desktop</artifactId>
-    <version>6.2.5-SNAPSHOT</version>
+    <version>6.2.9-SNAPSHOT</version>
     <name>osdq-desktop</name>
-    <url>http://www.arrahtec.org</url>
+    <url>http://www.arrahtech.com</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -396,12 +396,12 @@
           <artifactId>rowset</artifactId>
           <version>0.0.1</version>
           <scope>system</scope>
-          <systemPath>${project.build.directory}/../lib/rowset.jar</systemPath>
+          <systemPath>${project.basedir}/lib/rowset.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>org.arrahtec</groupId>
+            <groupId>org.arrahtech</groupId>
             <artifactId>osdq-core</artifactId>
-            <version>6.2.5</version>
+            <version>6.2.9</version>
         </dependency>
     </dependencies>
 	<profiles>
@@ -461,9 +461,9 @@
     <developers>
         <developer>
             <name>Arrah Technology</name>
-            <email>dev@arrahtec.org</email>
+            <email>support@arrahtech.com</email>
             <organization>Arrah Technology</organization>
-            <organizationUrl>http://www.arrahtec.org</organizationUrl>
+            <organizationUrl>http://www.arrahtech.com</organizationUrl>
         </developer>
     </developers>
     <issueManagement>
@@ -476,7 +476,7 @@
     </ciManagement>
     <organization>
         <name>Arrah Technology</name>
-        <url>>http://www.arrahtec.org</url>
+        <url>http://www.arrahtech.com</url>
     </organization>
     <licenses>
         <license>

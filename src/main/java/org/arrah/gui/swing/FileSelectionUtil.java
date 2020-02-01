@@ -31,6 +31,9 @@ public class FileSelectionUtil {
 	 * 
 	 * @return file to be saved
 	 */
+	public static File lastreadFile=null;
+	public static File lastsaveFile=null;
+	
 	public static File promptForFilename(String title) {
 		File file = null;
 		String _title = "Arrah Technology Save File";
@@ -39,11 +42,15 @@ public class FileSelectionUtil {
 		
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle(_title);
-		chooser.setCurrentDirectory(new File("."));
+		if (lastsaveFile == null)
+			chooser.setCurrentDirectory(new File("."));
+		else
+			chooser.setCurrentDirectory(lastsaveFile);
 
 		int returnVal = chooser.showSaveDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			file = chooser.getSelectedFile();
+			lastsaveFile = file;
 		} else {
 			return null;
 		}
@@ -63,11 +70,39 @@ public class FileSelectionUtil {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle(title);
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		chooser.setCurrentDirectory(new File("."));
+		if (lastreadFile == null)
+			chooser.setCurrentDirectory(new File("."));
+		else
+			chooser.setCurrentDirectory(lastreadFile);
 
 		int returnVal = chooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION)
-			return f = chooser.getSelectedFile();
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			f = chooser.getSelectedFile();
+			lastreadFile = f;
+			return  f;
+		}
+		else
+			return f;
+	}
+	
+	public static File[] chooseFiles(String title) throws FileNotFoundException {
+		File[] f = null;
+		JFileChooser chooser = new JFileChooser();
+		chooser.setDialogTitle(title);
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		if (lastreadFile == null)
+			chooser.setCurrentDirectory(new File("."));
+		else
+			chooser.setCurrentDirectory(lastreadFile);
+		
+		chooser.setMultiSelectionEnabled(true); // Multi Select
+
+		int returnVal = chooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			f = chooser.getSelectedFiles();
+			lastreadFile = f[0]; // first file select location
+			return  f;
+		}
 		else
 			return f;
 	}

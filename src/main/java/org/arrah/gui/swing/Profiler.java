@@ -347,7 +347,7 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		Profiler profiler = new Profiler();
 		final JFrame jframe = new JFrame(
-				"Aggregate Profiler : Provided by Arrah Technology");
+				"osDQ : Provided by Arrah Technology");
 		jframe.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		profiler.setOpaque(true);
 		jframe.setContentPane(profiler);
@@ -357,7 +357,7 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		JMenu jmenu = new JMenu("File");
 		jmenu.setMnemonic('F');
 		jmenubar.add(jmenu);
-		JMenuItem jmenuitem = new JMenuItem("Open");
+		JMenuItem jmenuitem = new JMenuItem("Open ATD format");
 		jmenuitem.setAccelerator(KeyStroke.getKeyStroke(79, 2));
 		jmenuitem.addActionListener(new FileActionListener());
 		jmenu.add(jmenuitem);
@@ -500,6 +500,10 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		// will become menu item
 		JMenu impFile = new JMenu("Open File");
 		
+		JMenuItem newFile = new JMenuItem("New File");
+		impFile.add(newFile);
+		newFile.addActionListener(new ToolListener(jmenubar));
+		
 		JMenuItem jmenuitem21 = new JMenuItem("Text Format");
 		impFile.add(jmenuitem21);
 		jmenuitem21.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, 10));
@@ -545,10 +549,15 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		jmenu6.add(copyFile);
 		jmenu6.addSeparator(); // end of import file
 		
-		JMenuItem diffFile = new JMenuItem("Diff File");
+		JMenuItem diffFile = new JMenuItem("Compare File");
 		diffFile.addActionListener(new ToolListener(jmenubar));
 		jmenu6.add(diffFile);
 		jmenu6.addSeparator(); // end of diff file
+		
+		JMenuItem diffReport= new JMenuItem("Compare Report");
+		diffReport.addActionListener(new ToolListener(jmenubar));
+		jmenu6.add(diffReport);
+		jmenu6.addSeparator(); // end of diff report
 		
 		
 		JMenuItem jmenuitem22 = new JMenuItem("Create Format");
@@ -618,7 +627,14 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		recordMergeMulti.addActionListener(new ToolListener(jmenubar));
 		recordMerge.add(recordMergeMulti);
 		jmenu6.add(recordMerge);
-		
+		jmenu6.addSeparator();
+		JMenuItem recordReplace = new JMenuItem("Auto Standardization");
+		recordReplace.addActionListener(new ToolListener(jmenubar));
+		jmenu6.add(recordReplace);
+		jmenu6.addSeparator();
+		JMenuItem interReplace = new JMenuItem("Interactive Standardization");
+		interReplace.addActionListener(new ToolListener(jmenubar));
+		jmenu6.add(interReplace);
 		
 		JMenu jmenu7 = new JMenu("Data Quality");
 		jmenu7.setMnemonic('Q');
@@ -731,6 +747,12 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 		kMean.addActionListener(new QualityListener());
 		jmenu7.add(kMean);
 		
+		jmenu7.addSeparator();
+		JMenuItem autoformat = new JMenuItem("Auto Format Detection");
+		autoformat.addActionListener(new QualityListener());
+		jmenu7.add(autoformat);
+		
+		
 		// Business Rule Menu
 		// Testing needs to be done for business rules
 		
@@ -767,7 +789,9 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 					}
 					; // do nothing
 					jframe.dispose();
-					System.exit(0);
+					System.gc(); // garbage collection
+					runGUI(false);
+					//System.exit(0);
 				}
 			}
 		});
@@ -846,10 +870,26 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 			}
 		}
 	}
+	
+	private static void runGUI(boolean success) {
+		boolean fileLoad = false;
+		// If configFile fails
+		if ( success == false){
+			TestConnectionDialog tcd = new TestConnectionDialog(0); // Default main connection
+			tcd.createGUI();
+			_fileParse = tcd.getDBParam();
+			fileLoad = tcd.isFileLoad();
+		}
+		
+		if (fileLoad == false)
+			createAndShowGUI();
+		else { // Show FileMenu
+			new FileLoaderFrame();
+		}
+	}
 
 	public static void main(String args[]) {
 		boolean success = false;
-		boolean fileLoad = false;
 		
 		if ((args.length > 0) && ( args[0] != null && !"".equals(args[0]) 
 		    && !"\r".equals(args[0]) && !"\n".equals(args[0]))) { // open the confileFile.txt
@@ -861,7 +901,17 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 			
 			
 			_fileParse = KeyValueParser.parseFile(args[0]);
+			
 			try {
+				// This file may not have passwd stored so if it is not stored ask for it
+				String passwd = (String) _fileParse.get("Database_Passwd");
+				String dsn = (String) _fileParse.get("Database_DSN");
+				
+				if ((dsn != null && ("".equals(dsn) == false)) && (passwd == null || "".equals(passwd) || passwd.matches("\\*.*") == true)) {
+					passwd = JOptionPane.showInputDialog("Enter Password to Connect DB:"+ dsn);
+					 _fileParse.put("Database_Passwd",passwd);
+				}
+			
 				Rdbms_conn.init(_fileParse);
 				String status = Rdbms_conn.testConn();
 				if ("Connection Successful".equals(status)) {
@@ -875,24 +925,12 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 				System.out.println(" Exception:"+e.getMessage());
 			}
 		} 
-		// If configFile fails
-		if ( success == false){
-			TestConnectionDialog tcd = new TestConnectionDialog(0); // Default main connection
-			tcd.createGUI();
-			_fileParse = tcd.getDBParam();
-			fileLoad = tcd.isFileLoad();
-		}
-		
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				ConsoleFrame.createGUI();
 			}
 		});
 		t.start();
-		if (fileLoad == false)
-			createAndShowGUI();
-		else { // Show FileMenu
-			new FileLoaderFrame();
-		}
+		runGUI(success);
 	}
 }

@@ -121,7 +121,8 @@ public class XmlWriter {
 			final DTDGenerator dtdGenerator = new DTDGenerator();
 			final File xmlFile = new File(xmlFilename);
 			final String dtdFilename = dtdGenerator.getDtdFilename(xmlFile);
-			transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "file:/"
+			//transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "file:/"
+			transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "file://" // As per file protocol file:///location
 					+ dtdFilename);
 			final Source source = new DOMSource(document);
 			final Result dest = new StreamResult(xmlFile.getAbsolutePath());

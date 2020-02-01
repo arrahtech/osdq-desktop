@@ -38,7 +38,7 @@ import net.sourceforge.openforecast.models.MovingAverageModel;
 import net.sourceforge.openforecast.models.PolynomialRegressionModel;
 import net.sourceforge.openforecast.models.RegressionModel;
 
-import org.arrah.framework.datagen.TimeUtil;
+import org.arrah.framework.util.TimeUtil;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;

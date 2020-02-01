@@ -45,7 +45,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
 
-import org.arrah.framework.analytics.RTMDiffUtil;
+
+import org.arrah.framework.ndtable.RTMDiffUtil;
 import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.profile.DBMetaInfo;
 import org.arrah.framework.profile.NewConnTableMetaInfo;

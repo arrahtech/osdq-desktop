@@ -37,12 +37,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
-import org.arrah.framework.datagen.TimeUtil;
 import org.arrah.framework.util.StringCaseFormatUtil;
+import org.arrah.framework.util.TimeUtil;
 
 
 public class UtilFunctionPanel implements ActionListener, ItemListener {
@@ -51,12 +52,12 @@ public class UtilFunctionPanel implements ActionListener, ItemListener {
 	private int _colIndex = 0;
 	private JDialog d_f;
 	private JFormattedTextField jrn_low, jrn_high,split_low,split_high,splitStringw;
-	private JRadioButton rd1, rd2, rd3, rd4, leftrd, rightrd, rd5, rd6, rd7, rd8, rd9, leftrdw,rightrdw;
+	private JRadioButton rd1, rd2, rd3, rd4, leftrd, rightrd, rd5, rd6, rd7, rd8, rd9, rd10,rd11,rd12,leftrdw,rightrdw;
 	private JComboBox<String> colSel;
 	private Border line_b;
 	private int beginIndex, endIndex;
 	private JLabel colType;
-	private JTextField splitString,splitString_sub,splitString_meta,splitString_char,searchString,replaceString;
+	private JTextField splitString,splitString_sub,splitString_meta,splitString_char,searchString,replaceString,keepchars;
 	private JCheckBox startM, endM, inBetweenM, startC, endC, inBetweenC;
 	private JRadioButton firstrd, allrd;
 
@@ -75,21 +76,27 @@ public class UtilFunctionPanel implements ActionListener, ItemListener {
 
 		rd1 = new JRadioButton("Split String");
 		rd5 = new JRadioButton("Split Into SubString");
-		rd4 = new JRadioButton("Reversse String");
+		rd4 = new JRadioButton("Reverse String");
 		rd6 = new JRadioButton("Remove Special Character");
 		rd7 = new JRadioButton("Remove Charater(s)");
 		rd8 = new JRadioButton("Replace String");
 		rd2 = new JRadioButton("Epoch MilliSecond to Date ");
 		rd3 = new JRadioButton("Date to Epoch MilliSecond");
 		rd9 = new JRadioButton("Split String by Length");
+		rd10 = new JRadioButton("Keep only Letters");
+		rd11 = new JRadioButton("Keep only Numbers");
+		rd12 = new JRadioButton("Keep Alpha Numberic And ");
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(rd1);bg.add(rd2);bg.add(rd3);bg.add(rd4);bg.add(rd5);bg.add(rd6);bg.add(rd7);bg.add(rd8);
-		bg.add(rd9);
+		bg.add(rd9);bg.add(rd10);bg.add(rd11);bg.add(rd12);
 		rd9.setSelected(true);
 
 		jp.add(createSelectionPanel(),BorderLayout.NORTH);
 		
-		JPanel header = new JPanel(new GridLayout(9,1));
+		JPanel header = new JPanel(new GridLayout(12,1));
+		header.setPreferredSize(new Dimension(700, 500));
+		JScrollPane scrollPane = new JScrollPane(header);
+		
 		header.add(createSplitPanelWidth());
 		header.add(createSplitPanel());
 		header.add(createSubSplitPanel());
@@ -97,9 +104,12 @@ public class UtilFunctionPanel implements ActionListener, ItemListener {
 		header.add(createMetadataPanel());
 		header.add(createCharacterPanel());
 		header.add(createStringPanel());
+		header.add(createLetterPanel());
+		header.add(createDigitPanel());
+		header.add(createAplhaNumericPanel());
 		header.add(createDateToSecondPanel() );
 		header.add(createSecondToDatePanel());
-		jp.add(header,BorderLayout.CENTER);
+		jp.add(scrollPane,BorderLayout.CENTER);
 
 		JPanel bp = new JPanel();
 		JButton ok = new JButton("OK");
@@ -121,8 +131,8 @@ public class UtilFunctionPanel implements ActionListener, ItemListener {
 		d_f = new JDialog();
 		d_f.setModal(true);
 		d_f.setTitle("Utility Function Dialog");
-		d_f.setLocation(300, 250);
-		d_f.setPreferredSize(new Dimension(820,450)); // some column names may be long
+		d_f.setLocation(300, 150);
+		d_f.setPreferredSize(new Dimension(820,550)); // some column names may be long
 		d_f.getContentPane().add(jp);
 		d_f.pack();
 		d_f.setVisible(true);
@@ -243,6 +253,36 @@ public class UtilFunctionPanel implements ActionListener, ItemListener {
 		
 		splitjp.add(firstrd);splitjp.add(allrd);
 		
+		return splitjp;
+	}
+	
+	private JPanel createLetterPanel() {
+		
+		JPanel splitjp = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		splitjp.add(rd10);
+		splitjp.setBorder(line_b);
+		return splitjp;
+	}
+	private JPanel createDigitPanel() {
+		
+		JPanel splitjp = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		splitjp.add(rd11);
+		splitjp.setBorder(line_b);
+		return splitjp;
+	}
+	private JPanel createAplhaNumericPanel() {
+		
+		JPanel splitjp = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		splitjp.add(rd12);
+		
+		JLabel jl = new JLabel(" Character(s):");
+		splitjp.add(jl);
+		keepchars = new JTextField();
+		keepchars.setText("");
+		keepchars.setColumns(10);
+		splitjp.add(keepchars);
+		
+		splitjp.setBorder(line_b);
 		return splitjp;
 	}
 	private JPanel createRowNumPanel() {
@@ -543,6 +583,50 @@ public class UtilFunctionPanel implements ActionListener, ItemListener {
 				d_f.dispose(); // in case it is not disposed yet if all the filed null condition
 				return;
 			} // end of Character removal
+			
+			if (rd10.isSelected() == true) {
+				int selColIndex = colSel.getSelectedIndex(); // Take value from  col on which grouping will be done
+				 
+				for (int i = (beginIndex -1) ; i < ( endIndex -1 ); i++) {
+					Object colObject = _rt.getModel().getValueAt(i, selColIndex);
+					 if (colObject == null) continue;
+					 String oldString = colObject.toString();
+					 String newString="";
+					 newString = StringCaseFormatUtil.letterString(oldString);
+					 _rt.getModel().setValueAt(newString, i, _colIndex);
+				}
+				d_f.dispose(); // in case it is not disposed yet if all the filed null condition
+				return;
+			} // end of Character removal to keep Letters only
+			
+			if (rd11.isSelected() == true) {
+				int selColIndex = colSel.getSelectedIndex(); // Take value from  col on which grouping will be done
+				 
+				for (int i = (beginIndex -1) ; i < ( endIndex -1 ); i++) {
+					Object colObject = _rt.getModel().getValueAt(i, selColIndex);
+					 if (colObject == null) continue;
+					 String oldString = colObject.toString();
+					 String newString="";
+					 newString = StringCaseFormatUtil.digitString(oldString);
+					 _rt.getModel().setValueAt(newString, i, _colIndex);
+				}
+				d_f.dispose(); // in case it is not disposed yet if all the filed null condition
+				return;
+			} // end of Character removal to keep Letters only
+			if (rd12.isSelected() == true) {
+				int selColIndex = colSel.getSelectedIndex(); // Take value from  col on which grouping will be done
+				String keepString=keepchars.getText();
+				for (int i = (beginIndex -1) ; i < ( endIndex -1 ); i++) {
+					Object colObject = _rt.getModel().getValueAt(i, selColIndex);
+					 if (colObject == null) continue;
+					 String oldString = colObject.toString();
+					 String newString=""; 
+					 newString = StringCaseFormatUtil.alphanuemricString(oldString,keepString);
+					 _rt.getModel().setValueAt(newString, i, _colIndex);
+				}
+				d_f.dispose(); // in case it is not disposed yet if all the filed null condition
+				return;
+			} // end of Character removal to keep Letters only
 			
 			if (rd8.isSelected() == true) {
 				int selColIndex = colSel.getSelectedIndex(); // Take value from  col on which grouping will be done

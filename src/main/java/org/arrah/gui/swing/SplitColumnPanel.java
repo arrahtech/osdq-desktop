@@ -228,24 +228,24 @@ public class SplitColumnPanel implements ActionListener {
 						 if (firstCV[1] == null) firstCV[1]=""; // if no split empty string
 						 
 						 if (rd1.isSelected() == true) //ignore first substring
-							 _rt.table.setValueAt(firstCV[1],i, _colIndex);
+							 _rt.getModel().setValueAt(firstCV[1],i, _colIndex);
 						 else // append both
-							 _rt.table.setValueAt(firstCV[0]+appStr+firstCV[1],i, _colIndex);
+							 _rt.getModel().setValueAt(firstCV[0]+appStr+firstCV[1],i, _colIndex);
 					}
 					else
-						_rt.table.setValueAt(newv[0],i, _colIndex);
+						_rt.getModel().setValueAt(newv[0],i, _colIndex);
 					
 					
 					for (int j=1; j < noSplit; j++) { // add rows for split
 						_rt.addRows(i+1, 1);
 						for (int k=0; k < col_c; k++) {
 							if (k != _colIndex)
-								_rt.table.setValueAt(_rt.table.getValueAt(i,k),i+1, k);
+								_rt.getModel().setValueAt(_rt.table.getValueAt(i,k),i+1, k);
 							else
 								if(rd2.isSelected() == true)
-									_rt.table.setValueAt(firstCV[0]+appStr+newv[j],i+1, k);
+									_rt.getModel().setValueAt(firstCV[0]+appStr+newv[j],i+1, k);
 								else
-									_rt.table.setValueAt(newv[j],i+1, k);
+									_rt.getModel().setValueAt(newv[j],i+1, k);
 						}
 						i++; _rowC++; // increase the table Index
 					}

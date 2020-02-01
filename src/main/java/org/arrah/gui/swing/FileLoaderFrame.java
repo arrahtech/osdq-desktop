@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.util.LicenseManager;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -46,7 +47,7 @@ public class FileLoaderFrame {
 	public FileLoaderFrame() {
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		jframe = new JFrame(
-				"Aggregate Profiler : Provided by Arrah Technology");
+				"osDQ : Provided by Arrah Technology");
 		jframe.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		jframe.setContentPane(createTopPanel());
 		addMenuItem();
@@ -70,7 +71,7 @@ public class FileLoaderFrame {
 		});
 		
 		jframe.setLocation(50,50);
-		jframe.setPreferredSize(new Dimension(500,400));
+		jframe.setPreferredSize(new Dimension(700,700));
 		jframe.pack();
 		jframe.setVisible(true);
 
@@ -78,9 +79,9 @@ public class FileLoaderFrame {
 	
 	private JPanel createTopPanel() {
 		JPanel jpanel = new JPanel();
-		// String s = null;
+		String s = null;
 		
-		/* Under LGPL or Apache
+		/*** If you have enterprise license 
 		LicenseManager licensemanager = new LicenseManager();
 		if (licensemanager.isValid()) {
 			if (licensemanager.isEval) {
@@ -88,17 +89,22 @@ public class FileLoaderFrame {
 				s = s + "<BR> Trial Days remaining - "
 						+ licensemanager.days_remaining;
 			} else {
-				s = "Licensed to: " + licensemanager.c_name;
+				s = "Licensed to: " + licensemanager.c_name +"<BR>";
+				s = s+"Approved User: " + licensemanager.user_name +"<BR>";
 			}
 		} else {
-			s = "Does not have Enterprise  License...<BR>";
-			s = "Community License (LGPL) used. ";
+			JOptionPane.showMessageDialog(null, "Do not have valid License. Contact Admininstrator");
+			System.exit(-1);
 		}
-		*/
 		
-		String s = " Community License (LGPL). ";
-		s = "<html> <B> <I> <U> &copy; 2006-2017  Arrah Technology </U> <BR>"
+		/********/
+		// Community License
+		
+		if (s == null || "".equals(s)) 
+		s = " Community License (GPL3.0). ";
+		s = "<html> <B> <I> <U> &copy; 2006-2020  Arrah Technology </U> <BR>"
 				+ s + "</I></B> </html>";
+
 		
 		jpanel.setLayout(new GridLayout(12, 1));
 		JLabel jlabel = new JLabel();
@@ -106,8 +112,17 @@ public class FileLoaderFrame {
 				"Welcome to Open Source Data Quality Project", 0);
 		jlabel1.setFont(new Font("Helvetica", 1, 16));
 		JLabel jlabel2 = new JLabel(
-				"http://www.arrahtec.com", 0);
-		JLabel jlabel3 = new JLabel("support@arrahtec.com", 0);
+				"http://www.arrahtech.com", 0);
+		JLabel jlabel3 = new JLabel("Commercial Support: support@arrahtech.com", 0);
+		
+		/**** For Compegence only  
+		jlabel1.setText("Compegence  Data Quality");
+		jlabel2.setText("http://www.compegence.com");
+		jlabel3.setText("Support Email:osdq@compegence.com");
+		
+		 /**** For Compegence only ****/
+		
+		
 		
 		JLabel jlabel4 = new JLabel(s, 0);
 		jpanel.add(jlabel);
@@ -126,6 +141,10 @@ public class FileLoaderFrame {
 		JMenu jmenu6 = new JMenu("File Loader");
 		
 		JMenu impFile = new JMenu("Open File");
+		
+		JMenuItem newFile = new JMenuItem("New File");
+		impFile.add(newFile);
+		newFile.addActionListener(new ToolListener(jmenubar));
 		
 		JMenuItem jmenuitem21 = new JMenuItem("Text Format");
 		impFile.add(jmenuitem21);
@@ -172,10 +191,15 @@ public class FileLoaderFrame {
 		jmenu6.add(copyFile);
 		jmenu6.addSeparator(); // end of import file
 		
-		JMenuItem diffFile = new JMenuItem("Diff File");
+		JMenuItem diffFile = new JMenuItem("Compare File");
 		diffFile.addActionListener(new ToolListener(jmenubar));
 		jmenu6.add(diffFile);
 		jmenu6.addSeparator(); // end of diff file
+		
+		JMenuItem diffReport = new JMenuItem("Compare Report");
+		diffReport.addActionListener(new ToolListener(jmenubar));
+		jmenu6.add(diffReport);
+		jmenu6.addSeparator(); // end of diff report
 		
 		
 		JMenuItem jmenuitem22 = new JMenuItem("Create Format");
@@ -220,6 +244,15 @@ public class FileLoaderFrame {
 		recordMergeMulti.addActionListener(new ToolListener(jmenubar));
 		recordMerge.add(recordMergeMulti);
 		jmenu6.add(recordMerge);
+		jmenu6.addSeparator();
+		JMenuItem recordReplace = new JMenuItem("Auto Standardization");
+		recordReplace.addActionListener(new ToolListener(jmenubar));
+		jmenu6.add(recordReplace);
+		jmenu6.addSeparator();
+		JMenuItem interReplace = new JMenuItem("Interactive Standardization");
+		interReplace.addActionListener(new ToolListener(jmenubar));
+		jmenu6.add(interReplace);
+	
 		
 		jmenubar.add(jmenu6);
 		

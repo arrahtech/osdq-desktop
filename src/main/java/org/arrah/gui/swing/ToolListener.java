@@ -54,11 +54,12 @@ public class ToolListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() instanceof JMenuItem) {
 			try {
-				if (_parentC != null)
-					_parentC.getTopLevelAncestor()
-							.setCursor(
-									java.awt.Cursor
+				if (_parentC != null) {
+					_parentC.getTopLevelAncestor().setCursor(java.awt.Cursor
 											.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
+					
+					//System.out.println("Cursor Set");
+				}
 
 				String source = ((JMenuItem) (e.getSource())).getText();
 				if (source.equals("SQL Interface")) {
@@ -77,11 +78,20 @@ public class ToolListener implements ActionListener {
 					new ImportFilePanel(true,1 ); // 1 for OpenCSV
 					return;
 				}
+				if (source.equals("New File")) {
+					// open empty table
+					String[] colname= new String[]{"first"};
+					ReportTable rt = new ReportTable(colname,true,true);
+					DisplayFileAsTable dft = new DisplayFileAsTable(rt);
+					dft.showGUI();
+					return;
+				}
 				
 				if (source.equals("Single File Match") || source.equals("Multiple File Match") ||
 					source.equals("1:1 Record Linkage") ||	source.equals("1:N Record Linkage") ||
 					source.equals("Single File Merge") || source.equals("Multiple File Merge") ||
-					source.equals("Diff File") ) {
+					source.equals("Compare File") || source.equals("Compare Report") || 
+					source.equals("Auto Standardization")  || source.equals("Interactive Standardization") ) {
 					
 					ReportTable firstRT = null, secondRT= null;
 					JOptionPane.showMessageDialog(null, "Select the First File");
@@ -95,8 +105,8 @@ public class ToolListener implements ActionListener {
 					}
 	
 					if ( source.equals("1:1 Record Linkage") || source.equals("1:N Record Linkage") || 
-							source.equals("Multiple File Match") || source.equals("Multiple File Merge")
-							|| source.equals("Diff File") ) {
+							source.equals("Multiple File Match") || source.equals("Multiple File Merge") || source.equals("Auto Standardization")
+							|| source.equals("Compare File") || source.equals("Compare Report")|| source.equals("Interactive Standardization")) {
 						JOptionPane.showMessageDialog(null, "Select the Second File");
 						ImportFilePanel secondFile = new ImportFilePanel(false);
 						if (secondFile != null ) 
@@ -107,8 +117,12 @@ public class ToolListener implements ActionListener {
 							return;
 						}
 					}
-					if (source.equals("Diff File")) {
+					if (source.equals("Compare File")) {
 						new CompareFileFrame(firstRT.getRTMModel(), secondRT.getRTMModel());
+						return;
+					}
+					if (source.equals("Compare Report")) {
+						new CompareReportFrame(firstRT.getRTMModel(), secondRT.getRTMModel());
 						return;
 					}
 					CompareRecordDialog crd=null;
@@ -120,8 +134,13 @@ public class ToolListener implements ActionListener {
 						crd = new CompareRecordDialog(firstRT, secondRT, 4); // 4 for Inner Join
 					else if ( source.equals("Single File Merge") || source.equals("Multiple File Merge") )
 						crd = new CompareRecordDialog(firstRT, secondRT, 2); // 2 for Merge
+					else if ( source.equals("Auto Standardization") )
+						crd = new CompareRecordDialog(firstRT, secondRT, 3); // 3 for Auto Standard
+					// 5 for interctive replacement
+					else if ( source.equals("Interactive Standardization"))
+						crd = new CompareRecordDialog(firstRT, secondRT, 5); // 5 for Interactive Standard
 					
-					crd.createMapDialog();
+					crd.createMapDialog(true);
 						
 					return;
 				}
@@ -196,11 +215,13 @@ public class ToolListener implements ActionListener {
 					return;
 				}
 			} finally {
-				if (_parentC != null)
+				if (_parentC != null) {
 					_parentC.getTopLevelAncestor()
 							.setCursor(
 									java.awt.Cursor
 											.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+				//System.out.println("Cursor UnSet");
+				}
 			}
 		}// End of Menu Item
 		else {

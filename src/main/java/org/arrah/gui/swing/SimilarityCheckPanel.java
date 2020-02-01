@@ -28,8 +28,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -77,6 +79,7 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
     private JDBCRowset _rows;
     private SimilarityCheckLucene _simcheck;
     private String queryForRowset="";
+    private Vector<Object[]> holdmatchData;
 
     // For ReportTable Input
     public SimilarityCheckPanel(ReportTable rt, boolean isdelete) {
@@ -199,7 +202,14 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
 
         // Iterate over row
         int grpid = 1; // groupID for matching groups
+        
         for (int i = 0; i < rowC; i++) {
+            
+            if (i % 1000 == 0 )  { // For progress report
+				System.out.println(i + " of " + rowC + " Rows Processed for Search at:"+System.currentTimeMillis());
+				ConsoleFrame.addText("\n Processing "+ i + " of " + rowC + " Rows Processed for Search at:"+System.currentTimeMillis());
+            }
+        	
             if (isRowSet == false && skipVC.contains(i) == true)
                 continue;
             if (isRowSet == true && skipVC.contains(i + 1) == true)
@@ -269,6 +279,137 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
         jp_p.add(outputRT, BorderLayout.CENTER);
         if (isDelete == true)
             jp_p.add(deletePanel(), BorderLayout.PAGE_END); // delete menu
+        else
+            jp_p.add(replacePanel(), BorderLayout.PAGE_END); // replacing menu
+
+        // Show the table now
+        dg = new JFrame("Similar Records Frame");
+        dg.setLocation(250, 100);
+        dg.getContentPane().add(jp_p);
+        dg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        dg.pack();
+        QualityListener.bringToFront(dg);
+    }
+    
+    /* This is optimized thread read version where data is from 
+     * file. RDBMS rowset may not be suited for traversal so droping
+     * it. Only file data is considered.
+     * We have to make it threadsafe
+     */
+    private void searchTableIndex_onlyFile() {
+    	
+    	// this function is thread-safe
+        if (_simcheck.openIndex() == false)
+            return;
+        // Add a boolean column for delete
+        String[] newColN = new String[colName.length + 3];
+        newColN[0] = "Delete Editable"; // CheckBox selection
+        newColN[1] = "Group ID"; // Group ID
+        newColN[2] = "Row Number"; // Row number
+
+        for (int i = 0; i < colName.length; i++)
+            newColN[i + 3] = colName[i];
+        
+        // Give memory to global value
+        holdmatchData = new Vector<Object[]>();
+       
+        // Make it multi threaded for faster output
+		final int THREADCOUNT = 10;
+		Thread[] tid = new Thread[THREADCOUNT];
+		final int rowthread = rowC / THREADCOUNT; // rowcount / thread
+		List<Integer>[] skippedIndex = new ArrayList[THREADCOUNT]; // for each thread
+		
+		for (int i = 0; i < THREADCOUNT; i++) {
+			final int tindex = i;
+			
+			tid[tindex] = new Thread(new Runnable() {
+				public void run() {
+					skippedIndex[tindex] = new ArrayList<Integer>();
+					int rowIndex =0;
+					int grpid=1;
+					
+                    if (tindex < THREADCOUNT - 1) {
+                        for (int j = tindex * rowthread; j < tindex
+                                * rowthread + rowthread; j++)
+                            try {
+                            	if (rowIndex % 1000 == 0 ) // For progress report
+            						System.out.println(rowIndex + " of " + rowthread + " Rows Processed for Index Writing for ThreadId: "+tindex
+            								+ " at:"+System.currentTimeMillis() );
+                            	rowIndex++;
+                            	
+                            	if (skippedIndex[tindex].contains(j) == true) continue;
+                            	String queryString = getQString(j);
+                                if (queryString == null || queryString.equals("") == true)
+                                    continue;
+                            	List<Integer> matchedInded = processMatchedDoc(queryString,tindex+"-"+grpid);
+                            	if (matchedInded.size() < 1) continue;
+                            	else{
+                            		grpid++;
+                            		skippedIndex[tindex].addAll(matchedInded);
+                            		System.out.println("matched: "+matchedInded.size() + " rows");
+                            	}
+                                
+                                
+                            } catch (Exception e) {
+                                System.out.println(" Lucene Exception:"+e.getMessage());
+                            }
+                    } else {
+                        for (int j = tindex * rowthread; j < rowC; j++)
+                            try {
+                            	if (rowIndex % 1000 == 0 ) // For progress report
+            						System.out.println(rowIndex +  " Rows Processed for Index Writing for Last ThreadId: "+tindex
+            								+ " at:"+System.currentTimeMillis() );
+                            	rowIndex++;
+                            	
+                            	if (skippedIndex[tindex].contains(j) == true) continue;
+                            	String queryString = getQString(j);
+                                if (queryString == null || queryString.equals("") == true)
+                                    continue;
+                            	List<Integer> matchedInded = processMatchedDoc(queryString,tindex+"-"+grpid);
+                            	if (matchedInded.size() < 1) continue;
+                            	else{
+                            		grpid++;
+                            		skippedIndex[tindex].addAll(matchedInded);
+                            	}
+                                
+                                
+                            } catch (Exception e) {
+                                System.out.println("Lucene Exception:"+e.getMessage());
+                            }
+                    }
+				}});
+			tid[i].start();
+		}
+		
+		// Join the thread
+		for (int i = 0; i < THREADCOUNT; i++) {
+			try {
+				tid[i].join();
+			} catch (Exception e) {
+				System.out.println(" Thread Exception:"+e.getMessage());
+			}
+		}
+		
+        _simcheck.closeSeachIndex();
+        
+        // Now build the UI
+        if (isDelete == true)
+            outputRT = new ReportTable(newColN, false, true);
+        else
+            outputRT = new ReportTable(newColN, true, false); // Editable for replace with class awareness
+        
+        for (Object[] newRow: holdmatchData )
+        outputRT.addFillRow(newRow);
+
+        // Now we have find out how to fill values
+        JPanel jp_p = new JPanel(new BorderLayout());
+        jp_p.add(outputRT, BorderLayout.CENTER);
+        if (isDelete == true) {
+            jp_p.add(deletePanel(), BorderLayout.PAGE_END); // delete menu
+            // Disable parent delete if threaded
+	       	 chk.setSelected(false);
+	         chk.setEnabled(false);
+        }
         else
             jp_p.add(replacePanel(), BorderLayout.PAGE_END); // replacing menu
 
@@ -395,7 +536,11 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
                 d_m.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 if (validateInput() == false ) return;
                 _simcheck.makeIndex();
-                searchTableIndex();
+                if (rowC < 5000 || isRowSet == true) // only for small set or rowset that can not scroll both ways
+                	searchTableIndex();
+                else {
+                	searchTableIndex_onlyFile(); // for threaded one
+                }
             } finally {
                 d_m.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 d_m.dispose();
@@ -431,8 +576,10 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
             int [] rowI = outputRT.table.getSelectedRows();
             if ( colI < 0 || rowI.length == 0)
                 return;
+            
+            // Delete Editable is hidden -- the first column
             for (int i=0; i  < rowI.length; i++)
-                outputRT.table.setValueAt(replace, rowI[i], colI);
+                outputRT.getModel().setValueAt(replace, rowI[i], colI+1);
 
             return;
         }
@@ -923,5 +1070,43 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
             }
         }
         return true;
+    }
+    
+    private List<Integer>  processMatchedDoc(String queryString, String grpid) {
+    	List<Integer> matchedIndex = new ArrayList<Integer>();
+    	Query qry = _simcheck.parseQuery(queryString);
+        Hits hit = _simcheck.searchIndex(qry);
+        if (hit == null || hit.length() <= 1)
+            return matchedIndex; // It will match self
+        // Iterate over the Documents in the Hits object
+
+        for (int j = 0; j < hit.length(); j++) {
+            try {
+                Document doc = hit.doc(j);
+                String rowid = doc.get("at__rowid__");
+//                parentMap.put(outputRT.table.getRowCount(),
+//                        Integer.parseInt(rowid));
+                Object[] row = null;
+                row = _rt.getRow(Integer.parseInt(rowid));
+
+                Object[] newRow = new Object[row.length + 3];
+                boolean del = false;
+                newRow[0] = del;
+                newRow[1] = "Group: "+grpid;
+                newRow[2] = "Index: "+rowid;
+
+                for (int k = 0; k < row.length; k++)
+                    newRow[k + 3] = row[k];
+                
+                holdmatchData.add(newRow);
+                //outputRT.addFillRow(newRow);
+                matchedIndex.add(Integer.parseInt(rowid));
+            } catch (Exception e) {
+            	System.out.println("Search exception:" + e.getLocalizedMessage());
+                ConsoleFrame.addText("\n " + e.getMessage());
+                ConsoleFrame.addText("\n Error: Can not open Document");
+            }
+        }
+        return matchedIndex;
     }
 } // End of Similarity Check panel

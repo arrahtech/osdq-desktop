@@ -52,6 +52,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EventObject;
+import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -88,9 +89,14 @@ import org.arrah.framework.ndtable.TableSorter;
 import org.arrah.framework.rdbms.DataDictionaryPDF;
 import org.arrah.framework.rdbms.Rdbms_conn;
 import org.arrah.framework.xls.XlsReader;
+import org.arrah.framework.xls.XlsxReader;
 import org.arrah.framework.xml.DTDGenerator;
 import org.arrah.framework.xml.XmlWriter;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.itextpdf.text.DocumentException;
 import com.opencsv.CSVWriter;
 
@@ -107,13 +113,14 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 	private boolean _isEditable = false;
 	private JScrollPane scrollPane;
 	private Vector<Integer> prerender = new Vector<Integer>();
+	private ReportTable _clone;
 
 
 	public ReportTable(ReportTableModel reportTableModel) {
 		rpt_tabModel = reportTableModel;
 		if (rpt_tabModel == null)
 			return;
-		createTable(rpt_tabModel.isRTEditable());
+		createTable(rpt_tabModel.isRTMEditable());
 		ToolTipManager.sharedInstance().registerComponent(this);
 
 	}
@@ -458,6 +465,16 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 		printButton.setMnemonic('P');
 		printButton.addActionListener(this);
 		printButton.addKeyListener(new KeyBoardListener());
+		
+		JButton persistButton = new JButton("SavePoint");
+		persistButton.addActionListener(this);
+		persistButton.addKeyListener(new KeyBoardListener());
+		persistButton.setToolTipText("It will save the table into memory as savepoint");
+		
+		JButton unpersistButton = new JButton("Undo");
+		unpersistButton.addActionListener(this);
+		unpersistButton.addKeyListener(new KeyBoardListener());
+		unpersistButton.setToolTipText("Undo data changes till last SavePoint");
 
 		menu = new JButton("Menu", TableSorter.getDownArrow());
 		menu.setMnemonic('M');
@@ -473,6 +490,8 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 		page_s.add(menu);
 		page_s.add(t_sc);
 		page_s.add(printButton);
+		page_s.add(persistButton);
+		page_s.add(unpersistButton);
 		page_s.add(g_ch);
 		page_s.add(csv_b);
 
@@ -562,8 +581,41 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 
 	public void setAutoResizeMode(int a) {
 
-		if (a == 1)
+		if (a == 1) {
 			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			int colCount = table.getColumnCount();
+			int rowCount = table.getRowCount();
+			
+			// Get some random values for data for each column and take the max of header value and data value 
+			for (int i=0; i < colCount; i++ ) {
+				javax.swing.table.TableColumn colN = table.getColumnModel().getColumn(i);
+				int len = colN.getHeaderValue().toString().length();
+				
+				// in case rowcount is 0
+				if (rowCount < 1) {
+					len = len* 12 + 20;
+					colN.setPreferredWidth(len);
+					return;
+				}
+				
+				int datalen =0;
+				Random rd = new java.util.Random();
+				
+				for (int j=0; j < 5 ; j++) {
+					int randomint = 1; // in case rowcount is 0
+					if (rowCount > 1)
+						randomint = rd.nextInt(rowCount);
+					Object o = table.getValueAt(randomint, i);
+					if (o != null) {
+					 datalen = o.toString().length();
+					 if (len < datalen)
+						 len = datalen;
+					}
+				}
+				len = len* 12 + 20;
+				colN.setPreferredWidth(len);
+			}
+		}
 		else
 			table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
 	}
@@ -670,6 +722,11 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 			popup.add(menu5);
 			popup.addSeparator();
 			
+			JMenuItem strlenrender = new JMenuItem("String Length Rendering");
+			strlenrender.addActionListener(new TableMenuListener(table));
+			popup.add(strlenrender);
+			popup.addSeparator();
+			
 			JMenuItem menu6 = new JMenuItem("WhiteSpace Rendering");
 			menu6.addActionListener(new TableMenuListener(table));
 			popup.add(menu6);
@@ -710,10 +767,68 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 				ConsoleFrame.addText("\n Print error: "
 						+ PrintException.getMessage());
 			}
-		} else if (but_c.compareTo("Save as..") == 0) {
-			Object[] saveTypes = { "XML", "XLS", "CSV", "PDF","Screen Render as TextFile","Screen Render as OpenCSV"};
+		} else if (but_c.compareTo("SavePoint") == 0) {
+			try {
+				this.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
+				 _clone = ReportTable.copyTable(this, isRTEditable(), isRTShowClass());
+				//_clone.displayTableOutput();
+			} catch (Exception e1) {
+				ConsoleFrame.addText("\n SavePoint failed:" + e1.getLocalizedMessage());
+				e1.printStackTrace();
+			} finally {
+				this.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+			}
+		} else if (but_c.compareTo("Undo") == 0) {
+			if (_clone == null) {
+				ConsoleFrame.addText("\n Nothing saved for SavePoint");
+				return;
+			}
+				
+			try {
+				this.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
+				ReportTableModel newtabModel = (ReportTableModel) _clone.rpt_tabModel.clone();
+				int rowc = newtabModel.getModel().getRowCount();
+				int colc = newtabModel.getModel().getColumnCount();
+				
+				int newrowc = table.getRowCount();
+				int newcolc = table.getColumnCount();
+				
+				//the structure of column might have changed now move back to savepoint
+				// for column we will give warning and rows and data will take care
+				if (newcolc != colc) {
+					JOptionPane.showMessageDialog(this, "Column Count of Present table and Last SavePoint not Matching \n"
+							+ "use SavePoint after Adding/Hiding columns");
+					this.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+					return;
+				}
+				if (newrowc > rowc) { // present table has more rows
+					while (newrowc != rowc)
+						((DefaultTableModel)tabModel).removeRow(--newrowc); // row Index
+				}
+				if (newrowc < rowc) { // present table has less rows
+					Object[] newrow = new Object[colc];
+					while (newrowc != rowc) {
+						((DefaultTableModel)tabModel).addRow(newrow);
+						newrowc++;
+					}
+				}
+				for (int i=0; i < rowc; i++)
+					for (int j=0; j< colc; j++)
+						table.setValueAt(newtabModel.getModel().getValueAt(i, j), i, j);
+			} catch (CloneNotSupportedException e1) {
+				ConsoleFrame.addText("\n Undo Error:" + e1.getLocalizedMessage());
+				e1.printStackTrace();
+			} finally {
+				this.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+			}
+
+			ConsoleFrame.addText("\n Undone to last saving point");
+			//_clone.displayTableOutput();
+		}
+		else if (but_c.compareTo("Save as..") == 0) {
+			Object[] saveTypes = { "XML", "XLS", "XLSX","CSV", "PDF","JSON","Screen Render as TextFile","Screen Render as OpenCSV"};
 			String saveFormat = (String) JOptionPane
-					.showInputDialog(null, "Save as XML,XLS, CSV or PDF",
+					.showInputDialog(null, "Save as XML,XLS, JSON, CSV or PDF",
 							"Save Format", JOptionPane.QUESTION_MESSAGE, null,
 							saveTypes, saveTypes[0]);
 			if (saveFormat == null) {
@@ -722,12 +837,16 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 				saveAsXml();
 			} else if (saveFormat.equals("XLS")) {
 				saveAsXls();
+			} else if (saveFormat.equals("XLSX")) {
+				saveAsXlsX();
 			} else if (saveFormat.equals("PDF")) {
 				saveAsPdf();
 			} else if (saveFormat.equals("Screen Render as TextFile")) {
 				saveAsCsv(1);
 			} else if (saveFormat.equals("CSV")){
 				saveAsCsv(0);
+			}  else if (saveFormat.equals("JSON")){
+				saveAsJSON();
 			} else { // openCSV
 				saveAsOpenCsv();
 			}
@@ -976,6 +1095,10 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 	public boolean isRTEditable() {
 		return _isEditable;
 	}
+	
+	public boolean isRTShowClass() {
+		return this.getRTMModel().isRTMShowClass();
+	}
 
 	public Component getRowHeader() {
 		return scrollPane.getRowHeader().getView();
@@ -1025,6 +1148,24 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 		XlsReader xlsreader = new XlsReader();
 		xlsreader.write(this.getRTMModel(), xlsFile);
 	}
+	
+	/**
+	 * save the table as XLSX
+	 */
+	private void saveAsXlsX() {
+		File xlsFile = FileSelectionUtil.promptForFilename("");
+		if (xlsFile == null) {
+			return;
+		}
+		if (xlsFile.getName().toLowerCase().endsWith(".xlsx") == false) {
+			File renameF = new File(xlsFile.getAbsolutePath() + ".xlsx");
+			xlsFile = renameF;
+		}
+
+		XlsxReader xlsreader = new XlsxReader();
+		xlsreader.saveXlsxFile(this.getRTMModel(), xlsFile);
+	}
+
 
 	/**
 	 * save the table as XML
@@ -1054,6 +1195,7 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 		} catch (TransformerException exp) {
 			ConsoleFrame
 					.addText("\n Error saving DTD file:" + exp.getMessage());
+			exp.printStackTrace();
 		} catch (FileNotFoundException exp) {
 			ConsoleFrame
 					.addText("\n Error saving DTD file:" + exp.getMessage());
@@ -1065,7 +1207,7 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 	 */
 	private void saveAsCsv(int type) {
 		Object[] possible = { "Comma(,)", "Tab(\\t)", "Colon(:)",
-				"Semi Colon(;)", "Space( )" };
+				"Semi Colon(;)", "Space( )","Custom"};
 		String des_input = (String) JOptionPane.showInputDialog(null,
 				"Choose the Field Separator", "Field Separation Dialog",
 				JOptionPane.QUESTION_MESSAGE, null, possible, possible[0]);
@@ -1083,6 +1225,11 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 		}
 		if (des_input.compareTo((String) possible[4]) == 0) {
 			setFieldSep(" ");
+		}
+		if (des_input.compareTo((String) possible[5]) == 0) {
+			String sep = JOptionPane.showInputDialog(null,"Enter your field separator");
+			if (sep != null || "".equals(sep) ==false)
+			setFieldSep(sep);
 		}
 		File file = FileSelectionUtil.promptForFilename("");
 		if (file == null) {
@@ -1161,18 +1308,64 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 			
 			for (int j = 0; j < columnCount; j++) 
 				colD[j] = table.getColumnName(j);
-			writer.writeNext(colD);
+			writer.writeNext(colD,true);
 			
 			// Get Column data
 			for (int i = 0; i < rowCount; i++) {
 				for (int j = 0; j < columnCount; j++) {
 					colD[j] = getTextValueAt(i, j);
 				}
-				writer.writeNext(colD);
+				writer.writeNext(colD,true);
 			}
 			writer.close();
 		} catch (IOException exp) {
 			ConsoleFrame.addText("\n SAVE FILE ERROR:" + exp.getMessage());
+
+		}
+	}
+	
+	/**
+	 * save the table as JSON format 
+	 */
+	private void saveAsJSON() {
+		
+		File file = FileSelectionUtil.promptForFilename("");
+		if (file == null) {
+			return;
+		}
+		if (file.getName().toLowerCase().endsWith(".json") == false) {
+			File renameF = new File(file.getAbsolutePath() + ".json");
+			file = renameF;
+		}
+		// Get Row and Column count
+		int rowCount = table.getRowCount();
+		int columnCount = table.getColumnCount();
+		String[] colD = new String[columnCount];
+
+		try {
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			
+			// Get Column header
+			for (int j = 0; j < columnCount; j++) 
+				colD[j] = table.getColumnName(j);
+			
+			JsonArray rowA = new JsonArray(rowCount);
+			// Get Column data
+			for (int i = 0; i < rowCount; i++) {
+				JsonObject writer = new JsonObject();
+				for (int j = 0; j < columnCount; j++) {
+					//writer.add(colD[j], writer.get(getTextValueAt(i, j)));
+					writer.addProperty(colD[j], getTextValueAt(i, j));
+					
+				}
+				rowA.add(writer);
+			}
+			FileWriter fw = new FileWriter(file);
+			fw.write(gson.toJson(rowA));
+			fw.close();
+		
+		} catch (IOException exp) {
+			ConsoleFrame.addText("\n JSON  SAVE FILE ERROR:" + exp.getMessage());
 
 		}
 	}
@@ -1241,8 +1434,11 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 		ReportTable newRT = new ReportTable(colName, editable, showClass);
 		for (int i = 0; i < rowC; i++) {
 			newRT.addRow();
-			for (int j = 0; j < colC; j++)
-				newRT.table.setValueAt(rpt.table.getValueAt(i, j), i, j);
+			for (int j = 0; j < colC; j++) {
+				//System.out.print(rpt.table.getValueAt(i, j));
+				newRT.getModel().setValueAt(rpt.table.getValueAt(i, j), i, j);
+			}
+			//System.out.println("--Copy--");
 		}
 		return newRT;
 
@@ -1313,5 +1509,20 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 	// This function will allow to setTime for a particular column
 	public void setPrerenderCol(int index) {
 		prerender.add(index);
+	}
+	
+	public void displayTableOutput() {
+		int rowc = this.getModel().getRowCount();
+		int colc = this.getModel().getColumnCount();
+		
+		System.out.println("Row Count:"+rowc + " Column Count:"+colc);
+		
+		for (int i=0; i < rowc; i++) {
+			for (int j=0; j < colc; j++) {
+				System.out.print(this.getValueAt(i,j) + " :");
+			}
+			System.out.println();
+		}
+		
 	}
 } // End of ReportTable class

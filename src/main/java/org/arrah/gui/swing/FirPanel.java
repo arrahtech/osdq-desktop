@@ -47,6 +47,7 @@ import org.arrah.framework.profile.FirstInformation;
 import org.arrah.framework.profile.TableMetaInfo;
 import org.arrah.framework.rdbms.QueryBuilder;
 import org.arrah.framework.rdbms.Rdbms_conn;
+import org.arrah.framework.util.LicenseManager;
 
 public class FirPanel extends JPanel {
 	/**
@@ -504,9 +505,9 @@ public class FirPanel extends JPanel {
 
 	private JPanel createTopPanel() {
 		JPanel jpanel = new JPanel();
-		// String s = null;
+		String s = null;
 		
-		/* Under LGPL or Apache
+		/***** If you have enterprise license 
 		LicenseManager licensemanager = new LicenseManager();
 		if (licensemanager.isValid()) {
 			if (licensemanager.isEval) {
@@ -514,16 +515,21 @@ public class FirPanel extends JPanel {
 				s = s + "<BR> Trial Days remaining - "
 						+ licensemanager.days_remaining;
 			} else {
-				s = "Licensed to: " + licensemanager.c_name;
+				s = "Licensed to: " + licensemanager.c_name +"<BR>";
+				s = s+"Approved User: " + licensemanager.user_name +"<BR>";
 			}
 		} else {
-			s = "Does not have Enterprise  License...<BR>";
-			s = "Community License (LGPL) used. ";
+			JOptionPane.showMessageDialog(null, "Do not have valid License. Contact Admininstrator");
+			System.exit(-1);
 		}
-		*/
 		
-		String s = " Community License (LGPL). ";
-		s = "<html> <B> <I> <U> &copy; 2006-2017  Arrah Technology </U> <BR>"
+		/********/
+		//
+		// Community License
+		
+		if (s == null || "".equals(s)) 
+		s = " Community License (LGPL). ";
+		s = "<html> <B> <I> <U> &copy; 2006-2020  Arrah Technology </U> <BR>"
 				+ s + "</I></B> </html>";
 		
 		jpanel.setLayout(new GridLayout(12, 1));
@@ -532,8 +538,16 @@ public class FirPanel extends JPanel {
 				"Welcome to Open Source Data Quality Project", 0);
 		jlabel1.setFont(new Font("Helvetica", 1, 16));
 		JLabel jlabel2 = new JLabel(
-				"http://www.arrahtec.com/", 0);
-		JLabel jlabel3 = new JLabel("support@arrahtec.com", 0);
+				"http://www.arrahtech.com/", 0);
+		JLabel jlabel3 = new JLabel("Commercial Support: support@arrahtech.com", 0);
+		
+		/**** For Compegence only 
+		jlabel1.setText("Compegence  Data Quality");
+		jlabel2.setText("http://www.compegence.com");
+		jlabel3.setText("Support Email:osdq@compegence.com");
+		
+		
+		/**** For Compegence only ****/
 		
 		JLabel jlabel4 = new JLabel(s, 0);
 		jpanel.add(jlabel);

@@ -59,7 +59,7 @@ public class JobScheduler extends javax.swing.JFrame {
     private DateFormat ddf;
     private int temp = 0;
     private XmlReader xmlReader;
-    public static Hashtable<String, String> hashValues, hashRule, hashTable;
+    public static Hashtable<String, String> hashTable, hashRule;
     String query = "", dbName = "", time = "", ctime[], startDate, endDate;
     int tempT = 0;
     String[] splitDate;
@@ -127,7 +127,16 @@ public class JobScheduler extends javax.swing.JFrame {
 
                         hashTable = new Hashtable<String, String>();
                         hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
-                        hashRule.put("Database_Type", hashTable.get("Database_Type"));
+                     // This file may not have passwd stored so if it is not stored ask for it
+        				String passwd = (String) hashTable.get("Database_Passwd");
+        				String dsn = (String) hashTable.get("Database_DSN");
+        				
+        				if ((dsn != null && ("".equals(dsn) == false)) && (passwd == null || "".equals(passwd) || passwd.matches("\\*.*") == true)) {
+        					passwd = JOptionPane.showInputDialog("Enter Password to Connect DB:"+ dsn);
+        					hashTable.put("Database_Passwd",passwd);
+        				}
+                        
+//                        hashRule.put("Database_Type", hashTable.get("Database_Type"));
                         query = hashRule.get("query_Text");
                     }
                 }
@@ -636,10 +645,13 @@ public class JobScheduler extends javax.swing.JFrame {
            	    //Get only the enddayofmonth to schedule on a monthly basis because Quartz takes the day as the input.
         	    enddayofMonth=Integer.parseInt(endDate.substring(Math.max(endDate.length() - 2, 0)));
            	    }
-                hashValues = new Hashtable<String, String>();
-                hashValues = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", dbName);
-                Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashValues);
+           	    
+//                hashValues = new Hashtable<String, String>();
+//                hashValues = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", dbName);
 
+                // Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashValues);
+           	    Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashTable);
+                
                 dbmsConn.openConn();
                 String[] splitTime = time.split(":");
 
@@ -656,7 +668,7 @@ public class JobScheduler extends javax.swing.JFrame {
                         jcbFrequency.getSelectedItem().toString(), 
                         jdcEdate.getDate(), 
                         startdayofMonth,
-                        hashValues,
+                        hashTable,
                         jcbRules.getSelectedItem().toString());
                 } catch (SchedulerException   e) {
                     e.printStackTrace();

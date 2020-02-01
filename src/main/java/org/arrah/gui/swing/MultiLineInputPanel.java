@@ -50,7 +50,7 @@ public class MultiLineInputPanel implements ActionListener {
 	
 	public MultiLineInputPanel() {
 		try {
-			f = FileSelectionUtil.chooseFile("ATD Open File");
+			f = FileSelectionUtil.chooseFile("Arrah Technologies Open File");
 			if (f == null)
 				return;
 			 else 
@@ -223,7 +223,7 @@ public class MultiLineInputPanel implements ActionListener {
 			ReportTableModel rtm = AsciiParser.loadRecord(f,rcdInput,fldInput, colCountInput,true);
 			_rt = new ReportTable(rtm);
 			_dg.dispose();
-			DisplayFileTable dft = new DisplayFileTable(_rt, f.toString());
+			DisplayFileAsTable dft = new DisplayFileAsTable(_rt, f.toString());
 			dft.showGUI();
 			return;
 		}
