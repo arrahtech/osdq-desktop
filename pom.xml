@@ -399,7 +399,7 @@
           <systemPath>${project.basedir}/lib/rowset.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>org.arrahtech</groupId>
+            <groupId>org.arrahtec</groupId>
             <artifactId>osdq-core</artifactId>
             <version>6.2.9</version>
         </dependency>
