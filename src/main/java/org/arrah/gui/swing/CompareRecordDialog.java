@@ -59,7 +59,9 @@ import org.arrah.framework.wrappertoutil.StringUtil;
 public class CompareRecordDialog implements ActionListener {
 	private ReportTable _lTab, _rTab, _rt;
 	private Vector<String> _lCols, _rCols;
-	private JComboBox<String>[] _rColC, _algoC , _dataActionC = null;
+	private JComboBox[] _rColC;
+	private JComboBox<String>[] _algoC;
+	private JComboBox<String>[] _dataActionC = null;
 	private JCheckBox[] _checkB;
 	private JFormattedTextField[] _simIndex;
 	private JDialog d_m = null, d_recHead, d_nonMap ,d_r;
@@ -69,10 +71,10 @@ public class CompareRecordDialog implements ActionListener {
 	private Integer[] _actionType;
 	private JButton refreshB,pushgoldenB;
 	private JCheckBox _nonmatchedRec = null;
-	private HashMap<String,Boolean> uniqLKey, uniqRKey;
+	private HashMap<String,Boolean> uniqLKey;
 	private HashMap<String,ArrayList<Integer>> uniqLIndex;
-	
-	private JRadioButton rd1, rd2;
+
+	private JRadioButton rd2;
 	private Boolean _noMatch=null,_rightSelection=null;
 	
 	/* leftTable is must . rightTable only in multiple file or linkage option */
@@ -124,6 +126,7 @@ public class CompareRecordDialog implements ActionListener {
 		BoxLayout boxl = new BoxLayout(tp, BoxLayout.X_AXIS);
 
         tp.add(_lTab);
+
         tp.setLayout(boxl);
 
 		if (_singleFile == false) {
@@ -142,10 +145,10 @@ public class CompareRecordDialog implements ActionListener {
 
 		ButtonGroup bg = new ButtonGroup();
 
-		rd1 = new JRadioButton("Left Tab");
+		JRadioButton rd1 = new JRadioButton("Left Tab");
 		rd2 = new JRadioButton("Right Tab");
 
-		if(_rightSelection == null || _rightSelection == true) {
+		if(_rightSelection == null || _rightSelection) {
 			rd2.setSelected(true);
 		}
 		else {
@@ -157,7 +160,7 @@ public class CompareRecordDialog implements ActionListener {
 		
 		_nonmatchedRec = new JCheckBox("Show Non-Matched Records");
 
-		if(_noMatch == null || _noMatch == true){
+		if(_noMatch == null || _noMatch){
 			_nonmatchedRec.setSelected(false);
 		}
 		else {
@@ -260,7 +263,7 @@ public class CompareRecordDialog implements ActionListener {
 			jp.add(_algoC[i]);
 
 			_simIndex[i] = new JFormattedTextField();
-			_simIndex[i].setValue(new Float(1.000f));
+			_simIndex[i].setValue(1.000f);
 			_simIndex[i].setColumns(10);
 			_simIndex[i].setToolTipText("<html> <body> Enter a value between 0.00 and 1.00 <BR>" +
 					"0.00 for No Match 1.00 for Exact match </body></html>");
@@ -374,7 +377,7 @@ public class CompareRecordDialog implements ActionListener {
 			for ( int i = rowcount-1 ; i >= 0; i--) {
 				String val = _rt.getTextValueAt(i, 0);
 
-				if (val.equalsIgnoreCase("Golden Merge") == false) {
+				if (!val.equalsIgnoreCase("Golden Merge")) {
 					_rt.removeRows(i, 1);
 				}
 			}
@@ -404,7 +407,7 @@ public class CompareRecordDialog implements ActionListener {
 			int colMatI = -1;
 			
 			for (int i = 0 ; i < colName.length; i++) {
-				if (option.equals(colName[i].toString()) == true) {
+				if (option.equals(colName[i].toString())) {
 					colMatI = i;
 
 					break;
@@ -432,9 +435,9 @@ public class CompareRecordDialog implements ActionListener {
 			for ( int i = 0; i < rowcount; i++) {
 				String val = _rt.getTextValueAt(i, 0);
 
-				if (val.equalsIgnoreCase("Golden Merge") == true) {
+				if (val.equalsIgnoreCase("Golden Merge")) {
 					obj = _rt.getModel().getValueAt(i, colMatI);
-				} else if (val.equalsIgnoreCase("") == true) {
+				} else if (val.equalsIgnoreCase("")) {
 					continue;
 				} else {
 					//_rt.setTableValueAt(obj, i, colMatI);
@@ -498,14 +501,14 @@ public class CompareRecordDialog implements ActionListener {
 				d_m.dispose();
 			}
 			
-			if (rd2.isSelected() == true ) {
+			if (rd2.isSelected()) {
 				_rightSelection = true;
 			}
 			else {
 				_rightSelection = false;
 			}
 
-			if (_nonmatchedRec.isSelected() == false) {
+			if (!_nonmatchedRec.isSelected()) {
 				_noMatch = true;
 			}
 			else {
@@ -520,7 +523,7 @@ public class CompareRecordDialog implements ActionListener {
 //			System.out.println("_rightSelection:"+_rightSelection);
 //			System.out.println("_noMatch"+_noMatch);
 			
-			if ( _rightSelection == true) {
+			if (_rightSelection) {
 				crd = new CompareRecordDialog(_rt,_rTab,5,_noMatch,_rightSelection);
 			}
 			else {
@@ -543,13 +546,13 @@ public class CompareRecordDialog implements ActionListener {
 			List<RecordMatch.ColData> diffCols = new ArrayList<>();
 			
 			for (int i =0; i < _lTab.getModel().getColumnCount(); i++) {
-				if (_checkB[i].isSelected() == false ) {
+				if (!_checkB[i].isSelected()) {
 					continue;
 				}
 
 				int rightIndex =  _rColC[i].getSelectedIndex();
 
-				if (_rightMap.contains(rightIndex) == true) {
+				if (_rightMap.contains(rightIndex)) {
 					JOptionPane.showMessageDialog(null, "Duplicate Mapping at Row:"+i,
 							"Record HeaderMap Dialog",JOptionPane.INFORMATION_MESSAGE);
 
@@ -598,7 +601,7 @@ public class CompareRecordDialog implements ActionListener {
 				List<List<String>> rRecordList = new ArrayList<>();
 				
 				uniqLKey = new HashMap<>();
-				uniqRKey = new HashMap<>();
+				HashMap<String, Boolean> uniqRKey = new HashMap<>();
 				uniqLIndex = new HashMap<>();
 				
 				for (int i=0; i < _lTab.getModel().getRowCount(); i++) {
@@ -689,7 +692,7 @@ public class CompareRecordDialog implements ActionListener {
 			} finally {
 				d_recHead.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-				 if (_mapCancel == true) {
+				 if (_mapCancel) {
 					 return; // cancel from Merge Map
 				 }
 
@@ -734,7 +737,7 @@ public class CompareRecordDialog implements ActionListener {
 			showNonmatched = _nonmatchedRec.isSelected();
 		}
 
-		if (showNonmatched == true) { //if true same table _lTab will be displayed with records not matching any records
+		if (showNonmatched) { //if true same table _lTab will be displayed with records not matching any records
 			_rt = new ReportTable(_lTab.getAllColNameAsString(), true, true);
 
 			Hashtable<Integer,Boolean> htNonMatched = new Hashtable<Integer,Boolean>();
@@ -745,7 +748,7 @@ public class CompareRecordDialog implements ActionListener {
 			for (int i=0; i < rowCount ; i++) {
 				RecordMatch.Result  res = resultSet.get(i);
 
-				if (res.isMatch() == false) {
+				if (!res.isMatch()) {
 					continue; // Only displaying matched one
 				}
 
@@ -770,7 +773,7 @@ public class CompareRecordDialog implements ActionListener {
 		if (type == 0) { // type 0 - match
 			String[] newColName;
 
-			if (_singleFile == true) {
+			if (_singleFile) {
 				newColName = new String[_lCols.size() + 1]; // 1 for Matched Indexed
 			}
 			else {
@@ -783,7 +786,7 @@ public class CompareRecordDialog implements ActionListener {
 				newColName[i+1] =_lCols.get(i);
 			}
 
-			if (_singleFile == false) {
+			if (!_singleFile) {
 				for (int i=0; i <_rCols.size(); i++ ) {
 					newColName[_lCols.size()+1+i] =_rCols.get(i);
 				}
@@ -798,7 +801,7 @@ public class CompareRecordDialog implements ActionListener {
 			for (int i=0; i < rowCount ; i++) {
 				RecordMatch.Result  res = resultSet.get(i);
 
-				if (res.isMatch() == false) {
+				if (!res.isMatch()) {
 					continue; // Only displaying matched one
 				}
 
@@ -806,7 +809,7 @@ public class CompareRecordDialog implements ActionListener {
 
 				int rightI = res.getRightMatchIndex();
 
-				if (_singleFile == true && rightI == leftI) {
+				if (_singleFile && rightI == leftI) {
 					continue; // single file same index means same record
 				}
 
@@ -823,7 +826,7 @@ public class CompareRecordDialog implements ActionListener {
 						newRow[j] = "";
 					}
 
-					if (_singleFile == false) {
+					if (!_singleFile) {
 						newRow[0] = "Left File Index:" + leftI;
 					}
 					else {
@@ -847,7 +850,7 @@ public class CompareRecordDialog implements ActionListener {
 					newRow[j] = "";
 				}
 
-				if (_singleFile == false) {
+				if (!_singleFile) {
 					newRow[0] = "Right File Index:" + rightI;
 				}
 				else {
@@ -871,7 +874,8 @@ public class CompareRecordDialog implements ActionListener {
 			HashMap<List<String>, List<String>> mappedRow;
 
 			mappedRow = StringMergeUtil.innerJoinResult(resultSet);
-			if (mappedRow.isEmpty() == true) {
+
+			if (mappedRow.isEmpty()) {
 				System.out.println("1:1 Record Linkage set is empty");
 			} else {
 				for (Iterator<List<String>> a = mappedRow.keySet().iterator() ; a.hasNext(); ) {
@@ -885,7 +889,7 @@ public class CompareRecordDialog implements ActionListener {
 					List<String> leftrow = a.next();
 
 					for (int j =0; j < leftrow.size(); j++) {
-						if (_leftMap.contains(j) == true) {// it is linked column
+						if (_leftMap.contains(j)) {// it is linked column
 							newRow[_lCols.size() -_leftMap.size() + (linkedColInd++) ] = leftrow.get(j);
 						}
 						else { // unlinked
@@ -902,7 +906,7 @@ public class CompareRecordDialog implements ActionListener {
 					List<String> rightrow = mappedRow.get(leftrow);
 					
 					for (int j =0; j < rightrow.size(); j++) {
-						if (_rightMap.contains(j) == true)  { // it is linked column [leftValue-RightValue]
+						if (_rightMap.contains(j))  { // it is linked column [leftValue-RightValue]
 							newRow[_lCols.size() -_leftMap.size() + linkedColInd ] = 
 									newRow[_lCols.size() -_leftMap.size() + linkedColInd ]+"-"+rightrow.get(j);
 
@@ -930,7 +934,7 @@ public class CompareRecordDialog implements ActionListener {
 
 			for (int i=0; i < rowCount ; i++) {
 				RecordMatch.Result  res = resultSet.get(i);
-				if (res.isMatch() == false) {
+				if (!res.isMatch()) {
 					continue; // Only displaying matched one
 				}
 
@@ -944,7 +948,7 @@ public class CompareRecordDialog implements ActionListener {
 				List<String> row = res.getLeftMatchedRow();
 
 				for (int j =0; j < row.size(); j++) {
-					if (_leftMap.contains(j) == true) {// it is linked column
+					if (_leftMap.contains(j)) {// it is linked column
 						newRow[_lCols.size() - _leftMap.size() + (linkedColInd++)] = row.get(j);
 					}
 					else { // unlinked
@@ -958,7 +962,7 @@ public class CompareRecordDialog implements ActionListener {
 				row = res.getRightMatchedRow();
 				
 				for (int j =0; j < row.size(); j++) {
-					if (_rightMap.contains(j) == true)  { // it is linked column [leftValue-RightValue]
+					if (_rightMap.contains(j))  { // it is linked column [leftValue-RightValue]
 						newRow[_lCols.size() -_leftMap.size() + linkedColInd ] = 
 								newRow[_lCols.size() -_leftMap.size() + linkedColInd ]+"-"+row.get(j);
 
@@ -975,7 +979,7 @@ public class CompareRecordDialog implements ActionListener {
 		else if (type == 2) { // Merge type == 2
 			int nonMapCount = 0;
 
-			if (_singleFile == true) {
+			if (_singleFile) {
 				nonMapCount = _lCols.size() - _leftMap.size(); // diff will be not mapped for merge
 			}
 			else {
@@ -985,7 +989,7 @@ public class CompareRecordDialog implements ActionListener {
 			if (nonMapCount > 0) {
 				showNonMappedDialog();
 				
-				if ( _mapCancel == true ) {
+				if (_mapCancel) {
 					return null;
 				}
 			}
@@ -1017,7 +1021,7 @@ public class CompareRecordDialog implements ActionListener {
 			for (int i=0; i < rowCount ; i++) {
 				RecordMatch.Result  res = resultSet.get(i);
 
-				if (res.isMatch() == false) {
+				if (!res.isMatch()) {
 					continue; // Only displaying matched one
 				}
 				
@@ -1031,7 +1035,7 @@ public class CompareRecordDialog implements ActionListener {
 
 					Object o2 = _rt.getModel().getValueAt(lmatchedI, _leftMap.get(j));
 
-					if ( o == null || o2 == null || o.toString().equals(o2.toString()) == false) {
+					if ( o == null || o2 == null || !o.toString().equals(o2.toString())) {
 						_rt.getModel().setValueAt(o, lmatchedI, _leftMap.get(j));
 
 						ConsoleFrame.addText("\n At Row:"+lmatchedI+" Column:"+_leftMap.get(j)+" '"+o+"' Replaced by '"+o2 +"'" );
@@ -1072,7 +1076,7 @@ public class CompareRecordDialog implements ActionListener {
 						toploop = false;
 					}
 				}
-			if ( toploop == true)
+			if (toploop)
 				continue;
 			
 				break;
@@ -1100,7 +1104,7 @@ public class CompareRecordDialog implements ActionListener {
 			for (int i=0; i < rowCount ; i++) {
 				RecordMatch.Result  res = resultSet.get(i);
 
-				if (res.isMatch() == false) {
+				if (!res.isMatch()) {
 					continue; // Only displaying matched one
 				}
 				
@@ -1138,8 +1142,8 @@ public class CompareRecordDialog implements ActionListener {
 
 				float cosineF = org.arrah.framework.wrappertoutil.StringUtil.cosineDistance(lrow[mapSize -1].toString(), rrow[mapSize -1].toString());
 
-				newmatchRow[mapSize+1] = new Float(matchValue*100);
-				newmatchRow[mapSize+2] = new Float(cosineF*100);
+				newmatchRow[mapSize+1] = matchValue * 100;
+				newmatchRow[mapSize+2] = cosineF * 100;
 				
 				if (prev_lmatchedI == lmatchedI ) {// new right value so add rows
 					//_rt.addRow();
@@ -1187,7 +1191,7 @@ public class CompareRecordDialog implements ActionListener {
 			// If last value is same then put it back using previous list
 			// loop the list of rowIndexes it matches
 			// if previous value is not writen write into table
-			if (newRow.isEmpty() ==false) {
+			if (!newRow.isEmpty()) {
 				for (int j=0; j < prev_indexmatch.size(); j++) {
 					Object[] prevV = _lTab.getRow(prev_indexmatch.get(j));
 					for (int k =0 ; k < newRow.size(); k++) {
@@ -1199,10 +1203,10 @@ public class CompareRecordDialog implements ActionListener {
 			}
 			
 			// Now add the non matching columns if required
-			if (uniqLKey.containsValue(false) == true) {
+			if (uniqLKey.containsValue(false)) {
 				Set<String> keySet = uniqLKey.keySet();
 				for (String key:keySet) {
-					if (uniqLKey.get(key) == false) {
+					if (!uniqLKey.get(key)) {
 						ArrayList<Integer> indexmatch = uniqLIndex.get(key);
 
 						for (int j=0; j < indexmatch.size(); j++) {
@@ -1253,26 +1257,26 @@ public class CompareRecordDialog implements ActionListener {
 		for (int i=0; i < rowCount ; i++) {
 			RecordMatch.Result  res = resultSet.get(i);
 
-			if (res.isMatch() == false) {
+			if (!res.isMatch()) {
 				continue; // Only displaying matched one
 			}
 			
 			int leftI = res.getLeftMatchIndex();
 			int rightI = res.getRightMatchIndex();
 
-			if (_singleFile == true && rightI == leftI) {
+			if (_singleFile && rightI == leftI) {
 				continue; // single file same index means same record
 			}
 
 			// Create a record as per header and give for merge
 			List<String> rightrow = res.getRightMatchedRow();
 			
-			if (prev_index == leftI && i != rowCount) { // last set should show mergeData
+			if (prev_index == leftI) { // last set should show mergeData
 				if (option != 0 ) {// One record One cluster
 					oneMatchSet.add(rightrow);
 				}
 				else {
-					if (oneRecord.contains(rightI) == true ) { // already there
+					if (oneRecord.contains(rightI)) { // already there
 						continue;
 					}
 
@@ -1335,7 +1339,7 @@ public class CompareRecordDialog implements ActionListener {
 		String[] newRow = new String[newColLen];
 
 		for (int j =0; j < leftrow.size(); j++) {
-			if (_leftMap.contains(j) == true) {// it is linked column
+			if (_leftMap.contains(j)) {// it is linked column
 				newRow[_lCols.size() - _leftMap.size() + (linkedColInd++)] = leftrow.get(j);
 			}
 			else {// unlinked
@@ -1354,14 +1358,14 @@ public class CompareRecordDialog implements ActionListener {
 			linkedColInd =0; unlinkedColInd =0;
 
 			for (int j =0; j < rightrow.size(); j++) {
-				if (_rightMap.contains(j) == true)  { // it is linked column [leftValue-RightValue]
+				if (_rightMap.contains(j))  { // it is linked column [leftValue-RightValue]
 
 					newRow[_lCols.size() -_leftMap.size() + linkedColInd ] = rightrow.get(j);
 
 					linkedColInd++;
 				}
 				else  { // unlinked
-					if (_singleFile == true) {
+					if (_singleFile) {
 						newRow[unlinkedColInd++] = rightrow.get(j);
 					}
 					else {
@@ -1390,7 +1394,7 @@ public class CompareRecordDialog implements ActionListener {
 		int linkedColInd =0,unlinkedColInd =0; // keep index of columns
 
 		int colLen = 0;
-		if (_singleFile == true) {
+		if (_singleFile) {
 			colLen = _lCols.size();
 		}
 		else {
@@ -1403,7 +1407,7 @@ public class CompareRecordDialog implements ActionListener {
 		
 		// Create col for left table
 		for (int i=0 ; i < _lCols.size(); i++ )  { // fill left column fist
-			if (_leftMap.contains(i) == true)  { // it is linked column
+			if (_leftMap.contains(i))  { // it is linked column
 				newColName[_lCols.size() -_leftMap.size() + linkedColInd ] = _lCols.get(i);
 
 				_actionType[_lCols.size() -_leftMap.size() + linkedColInd ] = 100; //100 for merged type
@@ -1421,14 +1425,14 @@ public class CompareRecordDialog implements ActionListener {
 			}
 		}
 		
-		if (_singleFile == false) {
+		if (!_singleFile) {
 		// Create column for right table
 		int totalIndex = unlinkedColInd;
 
 		linkedColInd =0; unlinkedColInd =0;
 		
 		for (int i=0 ; i < _rCols.size(); i++ )  { // fill right  column name
-			if (_rightMap.contains(i) == true)  { // it is linked column name should [lefttable-righttable]
+			if (_rightMap.contains(i))  { // it is linked column name should [lefttable-righttable]
 				newColName[_lCols.size() -_leftMap.size() + linkedColInd ] = 
 						newColName[_lCols.size() -_leftMap.size() + linkedColInd ]+"-"+_rCols.get(i);
 
@@ -1457,7 +1461,7 @@ public class CompareRecordDialog implements ActionListener {
 
 		int nonMapCount = 0;
 
-		if (_singleFile == true) {
+		if (_singleFile) {
 			nonMapCount = _lCols.size() - _leftMap.size(); // diff will be not mapped for merge
 		}
 		else {
@@ -1471,7 +1475,7 @@ public class CompareRecordDialog implements ActionListener {
 		int index = 0; // keep the counter
 		
 		for (int i=0; i < _lCols.size(); i++) {
-			if (_leftMap.contains(i) == true) {
+			if (_leftMap.contains(i)) {
 				continue; // It is mapped
 			}
 
@@ -1487,7 +1491,7 @@ public class CompareRecordDialog implements ActionListener {
 
 			_dataActionC[index] = new JComboBox<String>(dataAction);
 
-			if (_singleFile == false) {
+			if (!_singleFile) {
 				_dataActionC[index].setSelectedItem("Take Any");
 			}
 			else {
@@ -1499,9 +1503,9 @@ public class CompareRecordDialog implements ActionListener {
 			index++;
 		}
 		
-		if (_singleFile == false) {
+		if (!_singleFile) {
 			for (int i = 0; i < _rCols.size(); i++) {
-				if (_rightMap.contains(i) == true) {
+				if (_rightMap.contains(i)) {
 					continue; // It is mapped
 				}
 
@@ -1594,14 +1598,14 @@ public class CompareRecordDialog implements ActionListener {
 		ArrayList<String[]> oneMatchSet = new ArrayList<String[]>();
 		
 		for (int i=0; i < rowC; i++) {
-			if (_rt.getTextValueAt(i, 0).equals("Golden Merge") == true) {
+			if (_rt.getTextValueAt(i, 0).equals("Golden Merge")) {
 				isClusterStart = true;
 
 				continue;
 			}
 			
 			if (_rt.getTextValueAt(i, 0) == null ||
-				_rt.getTextValueAt(i, 0).equals("") == true || i == (rowC -1)) {  // empty row or last row
+					_rt.getTextValueAt(i, 0).equals("") || i == (rowC -1)) {  // empty row or last row
 
 				isClusterStart = false;
 			}
@@ -1691,6 +1695,7 @@ public class CompareRecordDialog implements ActionListener {
 		
 		return jp;
 	}
+
 	private JPanel iterPanel() {
 		JPanel jp = new JPanel ( new BorderLayout() );
 
@@ -1730,7 +1735,7 @@ public class CompareRecordDialog implements ActionListener {
 		return jp;
 	}
 	
-	private class MyCellRenderer extends DefaultTableCellRenderer {
+	private static class MyCellRenderer extends DefaultTableCellRenderer {
 		/**
 		 * 
 		 */
