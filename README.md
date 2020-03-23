@@ -58,11 +58,14 @@ If you are a developer or you want to build the project yourself, you first need
 4. cd ..
 5. git clone https://github.com/arrahtech/osdq-desktop
 6. cd osdq-desktop
-7. mvn package
+7. mvn exec:java
 
-This will build the final zip under target folder of osdq-desktop project.
+Intellij Setup
+-----------------
 
-
+1. Add a maven run configuration
+2. Accept the defaults and set the "Command line" parameter as exec:java
+3. Run and Debug should be available from Intellij
 
 Disclaimer by one of author (arun-y): I am providing code in the repository to you under an open source license. Because this is my personal repository, the license you receive to my code is from me and not my employer (Facebook)
 
