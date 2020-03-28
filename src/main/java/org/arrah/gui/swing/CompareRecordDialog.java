@@ -66,7 +66,7 @@ public class CompareRecordDialog implements ActionListener {
     private JFormattedTextField[] _simIndex;
     private JDialog d_m = null, recordHeadJDialogue, d_nonMap, d_r;
     private int _type;
-    private Vector<Integer> _leftMap, _rightMap, _dataActionNonMap = null;
+    private Vector<Integer> _leftVector, _rightVector, _dataActionNonMap = null;
     private boolean _singleFile = false, _mapCancel = false;
     private Integer[] _actionType;
     private JButton refreshB, pushgoldenB;
@@ -545,8 +545,8 @@ public class CompareRecordDialog implements ActionListener {
     } // End of action performed
 
     private void standardizeInteractively() {
-        _leftMap = new Vector<>();
-        _rightMap = new Vector<>();
+        _leftVector = new Vector<>();
+        _rightVector = new Vector<>();
 
         RecordMatch diffRecordMatch = new RecordMatch();
 
@@ -572,9 +572,9 @@ public class CompareRecordDialog implements ActionListener {
                 return;
             }
 
-            _rightMap.add(rightIndex);
+            _rightVector.add(rightIndex);
 
-            _leftMap.add(leftReportTableColumnIndex);
+            _leftVector.add(leftReportTableColumnIndex);
 
             String selectedAlgorithm =
                     _algorithmJComboxBoxArray[leftReportTableColumnIndex]
@@ -589,7 +589,7 @@ public class CompareRecordDialog implements ActionListener {
             diffColDataList.add(colData);
         }
 
-        if (_rightMap.size() == 0) { //
+        if (_rightVector.size() == 0) { //
             JOptionPane.showMessageDialog(null, "Select atleast one Column Mapping",
                 "Record HeaderMap Dialog", JOptionPane.INFORMATION_MESSAGE);
             return;
@@ -634,8 +634,8 @@ public class CompareRecordDialog implements ActionListener {
 
                 String leftKey = "";
 
-                for (int j = 0; j < _leftMap.size(); j++) {
-                    leftKey = leftKey + row.get(_leftMap.get(j)) + ",";// Separator
+                for (int j = 0; j < _leftVector.size(); j++) {
+                    leftKey = leftKey + row.get(_leftVector.get(j)) + ",";// Separator
                 }
 
                 if (_type == 5) {// demo for Standardization
@@ -678,7 +678,7 @@ public class CompareRecordDialog implements ActionListener {
 
                 String leftKey = "";
 
-                for (Integer integer : _rightMap) {
+                for (Integer integer : _rightVector) {
                     leftKey = leftKey + row.get(integer);
                 }
 
@@ -896,8 +896,8 @@ public class CompareRecordDialog implements ActionListener {
                     List<String> leftrow = a.next();
 
                     for (int j = 0; j < leftrow.size(); j++) {
-                        if (_leftMap.contains(j)) {// it is linked column
-                            newRow[_lCols.size() - _leftMap.size() + (linkedColInd++)] = leftrow.get(j);
+                        if (_leftVector.contains(j)) {// it is linked column
+                            newRow[_lCols.size() - _leftVector.size() + (linkedColInd++)] = leftrow.get(j);
                         } else { // unlinked
                             newRow[unlinkedColInd++] = leftrow.get(j);
 
@@ -912,9 +912,9 @@ public class CompareRecordDialog implements ActionListener {
                     List<String> rightrow = mappedRow.get(leftrow);
 
                     for (int j = 0; j < rightrow.size(); j++) {
-                        if (_rightMap.contains(j)) { // it is linked column [leftValue-RightValue]
-                            newRow[_lCols.size() - _leftMap.size() + linkedColInd] =
-                                    newRow[_lCols.size() - _leftMap.size() + linkedColInd] + "-" + rightrow.get(j);
+                        if (_rightVector.contains(j)) { // it is linked column [leftValue-RightValue]
+                            newRow[_lCols.size() - _leftVector.size() + linkedColInd] =
+                                    newRow[_lCols.size() - _leftVector.size() + linkedColInd] + "-" + rightrow.get(j);
 
                             linkedColInd++;
                         } else {// unlinked
@@ -952,8 +952,8 @@ public class CompareRecordDialog implements ActionListener {
                 List<String> row = res.getLeftMatchedRow();
 
                 for (int j = 0; j < row.size(); j++) {
-                    if (_leftMap.contains(j)) {// it is linked column
-                        newRow[_lCols.size() - _leftMap.size() + (linkedColInd++)] = row.get(j);
+                    if (_leftVector.contains(j)) {// it is linked column
+                        newRow[_lCols.size() - _leftVector.size() + (linkedColInd++)] = row.get(j);
                     } else { // unlinked
                         newRow[unlinkedColInd++] = row.get(j);
                     }
@@ -966,9 +966,9 @@ public class CompareRecordDialog implements ActionListener {
                 row = res.getRightMatchedRow();
 
                 for (int j = 0; j < row.size(); j++) {
-                    if (_rightMap.contains(j)) { // it is linked column [leftValue-RightValue]
-                        newRow[_lCols.size() - _leftMap.size() + linkedColInd] =
-                                newRow[_lCols.size() - _leftMap.size() + linkedColInd] + "-" + row.get(j);
+                    if (_rightVector.contains(j)) { // it is linked column [leftValue-RightValue]
+                        newRow[_lCols.size() - _leftVector.size() + linkedColInd] =
+                                newRow[_lCols.size() - _leftVector.size() + linkedColInd] + "-" + row.get(j);
 
                         linkedColInd++;
                     } else {// unlinked
@@ -983,9 +983,9 @@ public class CompareRecordDialog implements ActionListener {
             int nonMapCount = 0;
 
             if (_singleFile) {
-                nonMapCount = _lCols.size() - _leftMap.size(); // diff will be not mapped for merge
+                nonMapCount = _lCols.size() - _leftVector.size(); // diff will be not mapped for merge
             } else {
-                nonMapCount = _lCols.size() - _leftMap.size() + _rCols.size() - _rightMap.size();
+                nonMapCount = _lCols.size() - _leftVector.size() + _rCols.size() - _rightVector.size();
             }
 
             if (nonMapCount > 0) {
@@ -1031,21 +1031,21 @@ public class CompareRecordDialog implements ActionListener {
 
                 int lmatchedI = res.getLeftMatchIndex();
 
-                for (int j = 0; j < _leftMap.size(); j++) {
-                    Object o = rowR.get(_rightMap.get(j));
+                for (int j = 0; j < _leftVector.size(); j++) {
+                    Object o = rowR.get(_rightVector.get(j));
 
-                    Object o2 = _rt.getModel().getValueAt(lmatchedI, _leftMap.get(j));
+                    Object o2 = _rt.getModel().getValueAt(lmatchedI, _leftVector.get(j));
 
                     if (o == null || o2 == null || !o.toString().equals(o2.toString())) {
-                        _rt.getModel().setValueAt(o, lmatchedI, _leftMap.get(j));
+                        _rt.getModel().setValueAt(o, lmatchedI, _leftVector.get(j));
 
-                        ConsoleFrame.addText("\n At Row:" + lmatchedI + " Column:" + _leftMap.get(j) + " '" + o + "' Replaced by '" + o2 + "'");
+                        ConsoleFrame.addText("\n At Row:" + lmatchedI + " Column:" + _leftVector.get(j) + " '" + o + "' Replaced by '" + o2 + "'");
                     }
                 }
             }
         } // End of Standardization - Auto
         else if (type == 5) { // Record Standardization - Interactive
-            int mapSize = _leftMap.size();
+            int mapSize = _leftVector.size();
 
             String[] oldColName = _leftReportTable.getAllColNameAsString();
 
@@ -1082,7 +1082,7 @@ public class CompareRecordDialog implements ActionListener {
             }
 
             for (int i = 0; i < mapSize; i++) {
-                _rt.getRTMModel().addColumn("MATCHED_" + oldColName[_leftMap.get(i)] + addString);
+                _rt.getRTMModel().addColumn("MATCHED_" + oldColName[_leftVector.get(i)] + addString);
             }
 
             _rt.getRTMModel().addColumn("Accept" + addString);
@@ -1122,8 +1122,8 @@ public class CompareRecordDialog implements ActionListener {
                 String mapSearch = "";
 
                 for (int j = 0; j < mapSize; j++) { // First Fill the values
-                    rrow[j] = rowR.get(_rightMap.get(j));
-                    lrow[j] = rowL.get(_leftMap.get(j));
+                    rrow[j] = rowR.get(_rightVector.get(j));
+                    lrow[j] = rowL.get(_leftVector.get(j));
 
                     mapSearch = mapSearch + lrow[j].toString() + ",";
                 }
@@ -1338,8 +1338,8 @@ public class CompareRecordDialog implements ActionListener {
         String[] newRow = new String[newColLen];
 
         for (int j = 0; j < leftrow.size(); j++) {
-            if (_leftMap.contains(j)) {// it is linked column
-                newRow[_lCols.size() - _leftMap.size() + (linkedColInd++)] = leftrow.get(j);
+            if (_leftVector.contains(j)) {// it is linked column
+                newRow[_lCols.size() - _leftVector.size() + (linkedColInd++)] = leftrow.get(j);
             } else {// unlinked
                 newRow[unlinkedColInd++] = leftrow.get(j);
             }
@@ -1357,9 +1357,9 @@ public class CompareRecordDialog implements ActionListener {
             unlinkedColInd = 0;
 
             for (int j = 0; j < rightrow.size(); j++) {
-                if (_rightMap.contains(j)) { // it is linked column [leftValue-RightValue]
+                if (_rightVector.contains(j)) { // it is linked column [leftValue-RightValue]
 
-                    newRow[_lCols.size() - _leftMap.size() + linkedColInd] = rightrow.get(j);
+                    newRow[_lCols.size() - _leftVector.size() + linkedColInd] = rightrow.get(j);
 
                     linkedColInd++;
                 } else { // unlinked
@@ -1382,11 +1382,11 @@ public class CompareRecordDialog implements ActionListener {
      */
     private String[] mergeColName() {
 
-        if (_leftMap.size() != _rightMap.size()) {
+        if (_leftVector.size() != _rightVector.size()) {
             ConsoleFrame.addText("\n WARNING:Mapping for Record Merge is not correct.");
         }
 
-        int linkedColCount = _leftMap.size(); // linked column count
+        int linkedColCount = _leftVector.size(); // linked column count
 
         int linkedColInd = 0, unlinkedColInd = 0; // keep index of columns
 
@@ -1403,10 +1403,10 @@ public class CompareRecordDialog implements ActionListener {
 
         // Create col for left table
         for (int i = 0; i < _lCols.size(); i++) { // fill left column fist
-            if (_leftMap.contains(i)) { // it is linked column
-                newColName[_lCols.size() - _leftMap.size() + linkedColInd] = _lCols.get(i);
+            if (_leftVector.contains(i)) { // it is linked column
+                newColName[_lCols.size() - _leftVector.size() + linkedColInd] = _lCols.get(i);
 
-                _actionType[_lCols.size() - _leftMap.size() + linkedColInd] = 100; //100 for merged type
+                _actionType[_lCols.size() - _leftVector.size() + linkedColInd] = 100; //100 for merged type
 
                 linkedColInd++;
             } else { // unlinked
@@ -1428,9 +1428,9 @@ public class CompareRecordDialog implements ActionListener {
             unlinkedColInd = 0;
 
             for (int i = 0; i < _rCols.size(); i++) { // fill right  column name
-                if (_rightMap.contains(i)) { // it is linked column name should [lefttable-righttable]
-                    newColName[_lCols.size() - _leftMap.size() + linkedColInd] =
-                            newColName[_lCols.size() - _leftMap.size() + linkedColInd] + "-" + _rCols.get(i);
+                if (_rightVector.contains(i)) { // it is linked column name should [lefttable-righttable]
+                    newColName[_lCols.size() - _leftVector.size() + linkedColInd] =
+                            newColName[_lCols.size() - _leftVector.size() + linkedColInd] + "-" + _rCols.get(i);
 
                     linkedColInd++;
                 } else { // unlinked
@@ -1457,9 +1457,9 @@ public class CompareRecordDialog implements ActionListener {
         int nonMapCount = 0;
 
         if (_singleFile) {
-            nonMapCount = _lCols.size() - _leftMap.size(); // diff will be not mapped for merge
+            nonMapCount = _lCols.size() - _leftVector.size(); // diff will be not mapped for merge
         } else {
-            nonMapCount = _lCols.size() - _leftMap.size() + _rCols.size() - _rightMap.size();
+            nonMapCount = _lCols.size() - _leftVector.size() + _rCols.size() - _rightVector.size();
         }
 
         String[] dataAction = new String[]{"Ignore", "Take Any", "Most Common", "Sum", "Count", "Min", "Max", "Average"};
@@ -1469,7 +1469,7 @@ public class CompareRecordDialog implements ActionListener {
         int index = 0; // keep the counter
 
         for (int i = 0; i < _lCols.size(); i++) {
-            if (_leftMap.contains(i)) {
+            if (_leftVector.contains(i)) {
                 continue; // It is mapped
             }
 
@@ -1498,7 +1498,7 @@ public class CompareRecordDialog implements ActionListener {
 
         if (!_singleFile) {
             for (int i = 0; i < _rCols.size(); i++) {
-                if (_rightMap.contains(i)) {
+                if (_rightVector.contains(i)) {
                     continue; // It is mapped
                 }
 
