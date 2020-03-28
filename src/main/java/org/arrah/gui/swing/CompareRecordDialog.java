@@ -478,6 +478,7 @@ public class CompareRecordDialog implements ActionListener {
                 ConsoleFrame.addText("\n WARNING: empty dialog ");
             }
         }
+
         if ("analysispanel".equals(e.getActionCommand())) {
             DisplayFileAsTable dt = new DisplayFileAsTable(_rt);
 
@@ -490,6 +491,7 @@ public class CompareRecordDialog implements ActionListener {
 
             return;
         }
+
         if ("standardization".equals(e.getActionCommand())) {
             if (d_r != null) {
                 d_r.dispose();
@@ -553,40 +555,32 @@ public class CompareRecordDialog implements ActionListener {
 
                 int rightIndex = _rightColumnComboBoxArray[leftReportTableColumnIndex].getSelectedIndex();
 
-                if (_rightMap.contains(rightIndex)) {
+                // Create ColData and MultiCol data here to feed to RecordMatch class
+                float similarityIndex = (Float) _simIndex[leftReportTableColumnIndex].getValue();
+
+                if (similarityIndex < 0.00f || similarityIndex > 1.00f) {
                     JOptionPane.showMessageDialog(
-                        null, "Duplicate Mapping at Row:" + leftReportTableColumnIndex,
-                        "Record HeaderMap Dialog", JOptionPane.INFORMATION_MESSAGE);
-
-                    return;
-                } else {
-                    // Create ColData and MultiCol data here to feed to RecordMatch class
-                    float similarityIndex = (Float) _simIndex[leftReportTableColumnIndex].getValue();
-
-                    if (similarityIndex < 0.00f || similarityIndex > 1.00f) {
-                        JOptionPane.showMessageDialog(
                             null, "Similarity Index must be between 0.00 and 1.00 at Row:" +
                                     leftReportTableColumnIndex,
                             "Record HeaderMap Dialog", JOptionPane.INFORMATION_MESSAGE);
-                        return;
-                    }
-
-                    _rightMap.add(rightIndex);
-
-                    _leftMap.add(leftReportTableColumnIndex);
-
-                    String selectedAlgorithm =
-                        _algorithmJComboxBoxArray[leftReportTableColumnIndex]
-                            .getSelectedItem().toString().toUpperCase();
-
-                    int selectedIndex = _rightColumnComboBoxArray[leftReportTableColumnIndex].getSelectedIndex();
-
-                    RecordMatch.ColData colData =
-                        diffRecordMatch.new ColData(
-                            leftReportTableColumnIndex, selectedIndex, similarityIndex, selectedAlgorithm);
-
-                    diffColDataList.add(colData);
+                    return;
                 }
+
+                _rightMap.add(rightIndex);
+
+                _leftMap.add(leftReportTableColumnIndex);
+
+                String selectedAlgorithm =
+                        _algorithmJComboxBoxArray[leftReportTableColumnIndex]
+                                .getSelectedItem().toString().toUpperCase();
+
+                int selectedIndex = _rightColumnComboBoxArray[leftReportTableColumnIndex].getSelectedIndex();
+
+                RecordMatch.ColData colData =
+                        diffRecordMatch.new ColData(
+                                leftReportTableColumnIndex, selectedIndex, similarityIndex, selectedAlgorithm);
+
+                diffColDataList.add(colData);
             }
 
             if (_rightMap.size() == 0) { //
