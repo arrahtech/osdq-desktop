@@ -559,7 +559,9 @@ public class CompareRecordDialog implements ActionListener {
                 continue;
             }
 
-            int rightIndex = _rightColumnComboBoxArray[leftReportTableColumnIndex].getSelectedIndex();
+            _rightVector.add(_rightColumnComboBoxArray[leftReportTableColumnIndex].getSelectedIndex());
+
+            _leftVector.add(leftReportTableColumnIndex);
 
             // Create ColData and MultiCol data here to feed to RecordMatch class
             float similarityIndex = (Float) _simIndex[leftReportTableColumnIndex].getValue();
@@ -569,18 +571,15 @@ public class CompareRecordDialog implements ActionListener {
                         null, "Similarity Index must be between 0.00 and 1.00 at Row:" +
                                 leftReportTableColumnIndex,
                         "Record HeaderMap Dialog", JOptionPane.INFORMATION_MESSAGE);
+
                 return;
             }
 
-            _rightVector.add(rightIndex);
-
-            _leftVector.add(leftReportTableColumnIndex);
+            int selectedIndex = _rightColumnComboBoxArray[leftReportTableColumnIndex].getSelectedIndex();
 
             String selectedAlgorithm =
                     _algorithmJComboxBoxArray[leftReportTableColumnIndex]
                             .getSelectedItem().toString().toUpperCase();
-
-            int selectedIndex = _rightColumnComboBoxArray[leftReportTableColumnIndex].getSelectedIndex();
 
             RecordMatch.ColData colData =
                     diffRecordMatch.new ColData(
@@ -618,9 +617,9 @@ public class CompareRecordDialog implements ActionListener {
             leftIndexMap = new HashMap<>();
 
             for (int i = 0; i < _leftReportTable.getModel().getRowCount(); i++) {
-                Object[] rowObjectArray = _leftReportTable.getRow(i);
-
                 List<String> row = new ArrayList<>();
+
+                Object[] rowObjectArray = _leftReportTable.getRow(i);
 
                 for (Object item : rowObjectArray) {
                     if (item != null) {
@@ -662,9 +661,9 @@ public class CompareRecordDialog implements ActionListener {
             }
 
             for (int i = 0; i < _rightReportTable.getModel().getRowCount(); i++) {
-                Object[] rowObject = _rightReportTable.getRow(i);
-
                 List<String> row = new ArrayList<>();
+
+                Object[] rowObject = _rightReportTable.getRow(i);
 
                 for (Object a : rowObject) {
                     if (a != null) {
