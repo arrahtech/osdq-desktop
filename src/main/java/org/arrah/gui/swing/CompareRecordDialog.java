@@ -620,7 +620,7 @@ public class CompareRecordDialog implements ActionListener {
             for (int i = 0; i < _leftReportTable.getModel().getRowCount(); i++) {
                 Object[] rowObjectArray = _leftReportTable.getRow(i);
 
-                List<String> row = new ArrayList<String>();
+                List<String> row = new ArrayList<>();
 
                 for (Object item : rowObjectArray) {
                     if (item != null) {
@@ -664,7 +664,7 @@ public class CompareRecordDialog implements ActionListener {
             for (int i = 0; i < _rightReportTable.getModel().getRowCount(); i++) {
                 Object[] rowObject = _rightReportTable.getRow(i);
 
-                List<String> row = new ArrayList<String>();
+                List<String> row = new ArrayList<>();
 
                 for (Object a : rowObject) {
                     if (a != null) {
@@ -678,8 +678,8 @@ public class CompareRecordDialog implements ActionListener {
 
                 String leftKey = "";
 
-                for (int j = 0; j < _rightMap.size(); j++) {
-                    leftKey = leftKey + row.get(_rightMap.get(j));
+                for (Integer integer : _rightMap) {
+                    leftKey = leftKey + row.get(integer);
                 }
 
                 if (_type == 5) {// demo for Standardization
@@ -726,7 +726,7 @@ public class CompareRecordDialog implements ActionListener {
         d_r.setTitle("Record Match Dialog");
         d_r.setLocation(250, 100);
 
-        if (_type == 2 && _nonmatchedRec.isSelected() == false) { // Merge type
+        if (_type == 2 && !_nonmatchedRec.isSelected()) { // Merge type
             d_r.getContentPane().add(mergePanel());
         } else if (_type == 5) {
             d_r.getContentPane().add(iterPanel());
