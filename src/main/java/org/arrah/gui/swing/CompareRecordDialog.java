@@ -539,200 +539,204 @@ public class CompareRecordDialog implements ActionListener {
         }
 
         if ("compare".equals(e.getActionCommand())) {
-            _leftMap = new Vector<>();
-            _rightMap = new Vector<>();
-
-            RecordMatch diffRecordMatch = new RecordMatch();
-
-            List<RecordMatch.ColData> diffColDataList = new ArrayList<>();
-
-            int columnCount = _leftReportTable.getModel().getColumnCount();
-
-            for (int leftReportTableColumnIndex = 0; leftReportTableColumnIndex < columnCount; leftReportTableColumnIndex++) {
-                if (!_checkBoxArray[leftReportTableColumnIndex].isSelected()) {
-                    continue;
-                }
-
-                int rightIndex = _rightColumnComboBoxArray[leftReportTableColumnIndex].getSelectedIndex();
-
-                // Create ColData and MultiCol data here to feed to RecordMatch class
-                float similarityIndex = (Float) _simIndex[leftReportTableColumnIndex].getValue();
-
-                if (similarityIndex < 0.00f || similarityIndex > 1.00f) {
-                    JOptionPane.showMessageDialog(
-                            null, "Similarity Index must be between 0.00 and 1.00 at Row:" +
-                                    leftReportTableColumnIndex,
-                            "Record HeaderMap Dialog", JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-                _rightMap.add(rightIndex);
-
-                _leftMap.add(leftReportTableColumnIndex);
-
-                String selectedAlgorithm =
-                        _algorithmJComboxBoxArray[leftReportTableColumnIndex]
-                                .getSelectedItem().toString().toUpperCase();
-
-                int selectedIndex = _rightColumnComboBoxArray[leftReportTableColumnIndex].getSelectedIndex();
-
-                RecordMatch.ColData colData =
-                        diffRecordMatch.new ColData(
-                                leftReportTableColumnIndex, selectedIndex, similarityIndex, selectedAlgorithm);
-
-                diffColDataList.add(colData);
-            }
-
-            if (_rightMap.size() == 0) { //
-                JOptionPane.showMessageDialog(null, "Select atleast one Column Mapping",
-                    "Record HeaderMap Dialog", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
-            // Send Information to record  comparison
-            try {
-                recordHeadJDialogue.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
-
-                MultiColData multiColData = diffRecordMatch.new MultiColData();
-
-                multiColData.setA(diffColDataList);
-                // m1.setAlgoName("LEVENSHTEIN"); not rquired at MultiCol level
-
-                RecordMatch.operator doDiff = diffRecordMatch.new operator();
-
-                // Now I have to load tables into memory and do Match/Linkage
-
-                List<List<String>> leftRecordList = new ArrayList<>();
-                List<List<String>> rRecordList = new ArrayList<>();
-
-                leftKeyMap = new HashMap<>();
-
-                HashMap<String, Boolean> rightKeyMap = new HashMap<>();
-
-                leftIndexMap = new HashMap<>();
-
-                for (int i = 0; i < _leftReportTable.getModel().getRowCount(); i++) {
-                    Object[] rowObjectArray = _leftReportTable.getRow(i);
-
-                    List<String> row = new ArrayList<String>();
-
-                    for (Object item : rowObjectArray) {
-                        if (item != null) {
-                            String cell = item.toString();
-
-                            row.add(cell);
-                        } else {
-                            row.add(""); // for null objects
-                        }
-                    }
-
-                    String leftKey = "";
-
-                    for (int j = 0; j < _leftMap.size(); j++) {
-                        leftKey = leftKey + row.get(_leftMap.get(j)) + ",";// Separator
-                    }
-
-                    if (_type == 5) {// demo for Standardization
-                        if (leftKeyMap.get(leftKey) == null) {
-                            leftKeyMap.put(leftKey, false);
-
-                            ArrayList<Integer> leftIndexList = new ArrayList<>();
-
-                            leftIndexList.add(i);
-
-                            leftIndexMap.put(leftKey, leftIndexList);
-                        } else {
-                            ArrayList<Integer> leftIndex = leftIndexMap.get(leftKey);
-
-                            leftIndex.add(i);
-
-                            leftIndexMap.put(leftKey, leftIndex);
-
-                            continue; // no need to put duplicate value
-                        }
-                    }
-
-                    leftRecordList.add(row);
-                }
-
-                for (int i = 0; i < _rightReportTable.getModel().getRowCount(); i++) {
-                    Object[] rowObject = _rightReportTable.getRow(i);
-
-                    List<String> row = new ArrayList<String>();
-
-                    for (Object a : rowObject) {
-                        if (a != null) {
-                            String cell = a.toString();
-
-                            row.add(cell);
-                        } else {
-                            row.add(""); // for null objects
-                        }
-                    }
-
-                    String leftKey = "";
-
-                    for (int j = 0; j < _rightMap.size(); j++) {
-                        leftKey = leftKey + row.get(_rightMap.get(j));
-                    }
-
-                    if (_type == 5) {// demo for Standardization
-                        if (rightKeyMap.get(leftKey) == null) {
-                            rightKeyMap.put(leftKey, false);
-                        } else {
-                            continue; // no need to put duplicate value
-                        }
-                    }
-
-                    rRecordList.add(row);
-                }
-
-                _mapCancel = false; //reset
-
-                List<RecordMatch.Result> resultSet = doDiff.compare(leftRecordList, rRecordList, multiColData, multiColData);
-
-                _rt = displayRecord(resultSet, _type); // 0 for match
-            } catch (Exception ee) {
-                System.out.println("Exception:" + ee.getMessage());
-
-                ee.printStackTrace();
-            } finally {
-                recordHeadJDialogue.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
-
-                if (_mapCancel) {
-                    return; // cancel from Merge Map
-                }
-
-                recordHeadJDialogue.dispose();
-            }
-
-            if (d_m != null) {
-                if (_type == 5) {
-                    d_m.setVisible(false);
-                } else {
-                    d_m.dispose();
-                }
-            }
-
-            // Now pass the results for display
-            d_r = new JDialog();
-
-            d_r.setTitle("Record Match Dialog");
-            d_r.setLocation(250, 100);
-
-            if (_type == 2 && _nonmatchedRec.isSelected() == false) { // Merge type
-                d_r.getContentPane().add(mergePanel());
-            } else if (_type == 5) {
-                d_r.getContentPane().add(iterPanel());
-            } else {
-                d_r.getContentPane().add(_rt);
-            }
-
-            d_r.pack();
-            d_r.setVisible(true);
+            standardizeInteractively();
         } // end of compare
 
     } // End of action performed
+
+    private void standardizeInteractively() {
+        _leftMap = new Vector<>();
+        _rightMap = new Vector<>();
+
+        RecordMatch diffRecordMatch = new RecordMatch();
+
+        List<RecordMatch.ColData> diffColDataList = new ArrayList<>();
+
+        int columnCount = _leftReportTable.getModel().getColumnCount();
+
+        for (int leftReportTableColumnIndex = 0; leftReportTableColumnIndex < columnCount; leftReportTableColumnIndex++) {
+            if (!_checkBoxArray[leftReportTableColumnIndex].isSelected()) {
+                continue;
+            }
+
+            int rightIndex = _rightColumnComboBoxArray[leftReportTableColumnIndex].getSelectedIndex();
+
+            // Create ColData and MultiCol data here to feed to RecordMatch class
+            float similarityIndex = (Float) _simIndex[leftReportTableColumnIndex].getValue();
+
+            if (similarityIndex < 0.00f || similarityIndex > 1.00f) {
+                JOptionPane.showMessageDialog(
+                        null, "Similarity Index must be between 0.00 and 1.00 at Row:" +
+                                leftReportTableColumnIndex,
+                        "Record HeaderMap Dialog", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            _rightMap.add(rightIndex);
+
+            _leftMap.add(leftReportTableColumnIndex);
+
+            String selectedAlgorithm =
+                    _algorithmJComboxBoxArray[leftReportTableColumnIndex]
+                            .getSelectedItem().toString().toUpperCase();
+
+            int selectedIndex = _rightColumnComboBoxArray[leftReportTableColumnIndex].getSelectedIndex();
+
+            RecordMatch.ColData colData =
+                    diffRecordMatch.new ColData(
+                            leftReportTableColumnIndex, selectedIndex, similarityIndex, selectedAlgorithm);
+
+            diffColDataList.add(colData);
+        }
+
+        if (_rightMap.size() == 0) { //
+            JOptionPane.showMessageDialog(null, "Select atleast one Column Mapping",
+                "Record HeaderMap Dialog", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Send Information to record  comparison
+        try {
+            recordHeadJDialogue.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
+
+            MultiColData multiColData = diffRecordMatch.new MultiColData();
+
+            multiColData.setA(diffColDataList);
+            // m1.setAlgoName("LEVENSHTEIN"); not rquired at MultiCol level
+
+            RecordMatch.operator doDiff = diffRecordMatch.new operator();
+
+            // Now I have to load tables into memory and do Match/Linkage
+
+            List<List<String>> leftRecordList = new ArrayList<>();
+            List<List<String>> rightRecordList = new ArrayList<>();
+
+            leftKeyMap = new HashMap<>();
+
+            HashMap<String, Boolean> rightKeyMap = new HashMap<>();
+
+            leftIndexMap = new HashMap<>();
+
+            for (int i = 0; i < _leftReportTable.getModel().getRowCount(); i++) {
+                Object[] rowObjectArray = _leftReportTable.getRow(i);
+
+                List<String> row = new ArrayList<String>();
+
+                for (Object item : rowObjectArray) {
+                    if (item != null) {
+                        String cell = item.toString();
+
+                        row.add(cell);
+                    } else {
+                        row.add(""); // for null objects
+                    }
+                }
+
+                String leftKey = "";
+
+                for (int j = 0; j < _leftMap.size(); j++) {
+                    leftKey = leftKey + row.get(_leftMap.get(j)) + ",";// Separator
+                }
+
+                if (_type == 5) {// demo for Standardization
+                    if (leftKeyMap.get(leftKey) == null) {
+                        leftKeyMap.put(leftKey, false);
+
+                        ArrayList<Integer> leftIndexList = new ArrayList<>();
+
+                        leftIndexList.add(i);
+
+                        leftIndexMap.put(leftKey, leftIndexList);
+                    } else {
+                        ArrayList<Integer> leftIndex = leftIndexMap.get(leftKey);
+
+                        leftIndex.add(i);
+
+                        leftIndexMap.put(leftKey, leftIndex);
+
+                        continue; // no need to put duplicate value
+                    }
+                }
+
+                leftRecordList.add(row);
+            }
+
+            for (int i = 0; i < _rightReportTable.getModel().getRowCount(); i++) {
+                Object[] rowObject = _rightReportTable.getRow(i);
+
+                List<String> row = new ArrayList<String>();
+
+                for (Object a : rowObject) {
+                    if (a != null) {
+                        String cell = a.toString();
+
+                        row.add(cell);
+                    } else {
+                        row.add(""); // for null objects
+                    }
+                }
+
+                String leftKey = "";
+
+                for (int j = 0; j < _rightMap.size(); j++) {
+                    leftKey = leftKey + row.get(_rightMap.get(j));
+                }
+
+                if (_type == 5) {// demo for Standardization
+                    if (rightKeyMap.get(leftKey) == null) {
+                        rightKeyMap.put(leftKey, false);
+                    } else {
+                        continue; // no need to put duplicate value
+                    }
+                }
+
+                rightRecordList.add(row);
+            }
+
+            _mapCancel = false; //reset
+
+            List<RecordMatch.Result> resultSet = doDiff.compare(leftRecordList, rightRecordList, multiColData, multiColData);
+
+            _rt = displayRecord(resultSet, _type); // 0 for match
+        } catch (Exception ee) {
+            System.out.println("Exception:" + ee.getMessage());
+
+            ee.printStackTrace();
+        } finally {
+            recordHeadJDialogue.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+            if (_mapCancel) {
+                return; // cancel from Merge Map
+            }
+
+            recordHeadJDialogue.dispose();
+        }
+
+        if (d_m != null) {
+            if (_type == 5) {
+                d_m.setVisible(false);
+            } else {
+                d_m.dispose();
+            }
+        }
+
+        // Now pass the results for display
+        d_r = new JDialog();
+
+        d_r.setTitle("Record Match Dialog");
+        d_r.setLocation(250, 100);
+
+        if (_type == 2 && _nonmatchedRec.isSelected() == false) { // Merge type
+            d_r.getContentPane().add(mergePanel());
+        } else if (_type == 5) {
+            d_r.getContentPane().add(iterPanel());
+        } else {
+            d_r.getContentPane().add(_rt);
+        }
+
+        d_r.pack();
+        d_r.setVisible(true);
+    }
 
     // This function will be used to display matched records in ReportTable
     private ReportTable displayRecord(List<RecordMatch.Result> resultSet, int type) {
