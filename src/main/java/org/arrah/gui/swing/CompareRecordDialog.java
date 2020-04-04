@@ -201,7 +201,7 @@ public class CompareRecordDialog implements ActionListener {
             d_m.pack();
             d_m.setVisible(true);
         } else {
-            _nonmatchedRec.setSelected(true);
+            ok.doClick();
         }
 
         ok.doClick();
