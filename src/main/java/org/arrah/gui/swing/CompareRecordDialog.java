@@ -204,8 +204,6 @@ public class CompareRecordDialog implements ActionListener {
             ok.doClick();
         }
 
-        ok.doClick();
-
         return d_m;
     }
 
