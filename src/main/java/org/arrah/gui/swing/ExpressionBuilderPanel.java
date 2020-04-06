@@ -385,4 +385,4 @@ public class ExpressionBuilderPanel implements ActionListener {
 		return tabPanel;
 	}
 	
-} // End of Expression Builder
+} // End of ExpressionBuilderPanel

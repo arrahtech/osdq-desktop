@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Vector;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -95,7 +94,6 @@ import org.arrah.framework.dataquality.BusinessPIIFormatCheck;
 import org.arrah.framework.dataquality.FillCheck;
 import org.arrah.framework.dataquality.FormatCheck;
 import org.arrah.framework.dataquality.AutoFormatCheck;
-import org.arrah.framework.dataquality.SimilarityCheckLucene;
 import org.arrah.framework.dataquality.SimmetricsUtil;
 import org.arrah.framework.hadooputil.HiveQueryBuilder;
 import org.arrah.framework.ndtable.DisplayFileAsTableCore;

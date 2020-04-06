@@ -34,7 +34,6 @@ import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
 
 import org.arrah.framework.datagen.RandomColGen;
-import org.arrah.framework.util.DiscreetRange;
 import org.arrah.framework.util.StringCaseFormatUtil;
 
 
@@ -193,4 +192,4 @@ public class DataExplosionPanel implements ActionListener {
 		rownnumjp.add(jrn_high);
 		return rownnumjp;
 	}
-} // End of Expression Builder
+} // End of DataExplosionPanel

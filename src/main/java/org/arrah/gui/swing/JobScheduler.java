@@ -37,7 +37,7 @@ public class JobScheduler extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     public static javax.swing.JComboBox<String> jcbFrequency;
     public static javax.swing.JComboBox<String> jcbRules;
-    public static javax.swing.JComboBox<String> jcbSfrequency;
+    public static javax.swing.JComboBox<String> jcbSfrequency; // combobox to get which days to schedule
     public static com.toedter.calendar.JDateChooser jdcEdate;
     public static com.toedter.calendar.JDateChooser jdcSdate;
     private javax.swing.JLabel labHdec;

@@ -230,4 +230,4 @@ public class MultiLineInputPanel implements ActionListener {
 
 	}
 
-} // End of Expression Builder
+} // End of MultiLineInputPanel
