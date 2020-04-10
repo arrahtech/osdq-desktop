@@ -556,7 +556,7 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 
 	}
 
-	public void addFillRow(Vector<?> rowset) {
+	public void addFillRow(Vector<Object> rowset) {
 		rpt_tabModel.addFillRow(rowset);
 		table.addNotify();
 
