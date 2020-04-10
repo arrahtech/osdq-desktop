@@ -1390,7 +1390,7 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				int row_c = _rt.table.getRowCount();
 
 				String[] popOption = new String[] { "Auto Incremental",
-						"Expression Builder", "Random Generation", "Data Explosion","Grouping - Number & Date",
+						"Expression Builder","User Defined Function","Random Generation", "Data Explosion","Grouping - Number & Date",
 						"Utility Functions"};
 				String input = (String) JOptionPane.showInputDialog(null,
 						"Choose population Type", "Select population Type",
@@ -1419,6 +1419,9 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 					}
 				} else if ("Expression Builder".equals(input)) {
 					new ExpressionBuilderPanel(_rt,index);
+					
+				} else if ("User Defined Function".equals(input)) {
+					new UDFPanel(_rt,index);
 					
 				} else if ("Data Explosion".equals(input)) {
 					 new DataExplosionPanel(_rt,index);
