@@ -40,6 +40,7 @@ import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -1762,7 +1763,7 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				String[] colHeader = new String[]{"Value","Count"};
 				ReportTable rt = new ReportTable(colHeader);
 				Vector<Object> colV = _rt.getRTMModel().getColDataV(index);
-				Hashtable<Object,Integer> htable = DiscreetRange.getUniqueInclusive(colV);
+				Hashtable<Object,Integer> htable = DiscreetRange.getUniqueNullInclusive(colV);
 				Hashtable<Object,Integer> htableP = new FileProfile().showPattern(htable);
 				int rowI = 0;
 				
@@ -1933,9 +1934,13 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				return;
 			}
 			if (command.equals("profile")) {
-				MultiInputDialog mid = new MultiInputDialog(_rt.getAllColNameAsString(),true,true);
+				
+				MultiInputDialog mid = new MultiInputDialog(_rt.getAllColNameAsString(),_rt.getAllColumnsClassAsString(),true,true);
+				
 				List<String >selectedcol = mid.getSelected();
+				
 				List<String >selectedtype = mid.getSelectedType();
+				
 				if (selectedcol == null || selectedtype == null || selectedcol.isEmpty() == true) {
 					ConsoleFrame.addText("\n No column to profile");
 					return;
@@ -1960,7 +1965,7 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 					String type = selectedtype.get(i);
 					
 					Vector<Object> colV = _rt.getRTMModel().getColDataV(colI);
-					Hashtable<Object,Integer> htable = DiscreetRange.getUniqueInclusive(colV);
+					Hashtable<Object,Integer> htable = DiscreetRange.getUniqueNullInclusive(colV);
 					FileProfile fp = new FileProfile();
 					Integer[] val = fp.getProfiledValue(htable);
 					rt.getModel().setValueAt(selectedcol.get(i).toString(), i, 0); // First Col Name
@@ -2002,6 +2007,10 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 					if (type.equalsIgnoreCase("Number")) {
 						Double[] numprofile = fp.getNumberProfiledValue(colV.toArray());
 						for (int j=10; j < 15; j++) // attribute counts
+							
+							if (numprofile[j - 10] == null)
+								rt.getModel().setValueAt(null, i, j);
+							else
 							rt.getModel().setValueAt(numprofile[j - 10].toString(), i, j);
 					}
 					if (type.equalsIgnoreCase("String")) {
@@ -2010,6 +2019,8 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 							rt.getModel().setValueAt(numprofile[j - 10].toString(), i, j);
 					}
 				} // end of For loop
+				
+				
 				JDialog jd = new JDialog();
 				jd.setTitle("Profile Info");
 				jd.setLocation(150, 150);

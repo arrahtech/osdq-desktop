@@ -33,6 +33,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 
+import org.arrah.framework.rdbms.SqlType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,7 @@ public class MultiInputDialog implements ActionListener {
 	private List<String> selectedtype= null;
 	private JComboBox<String> tpyeSelection [];
 	private String[] typeStr = new String[] {"String","Number","Aadhar","PAN","GST","Creditcard","Mobile","Email"};
+	private String[] columnClass;
 	
 	public MultiInputDialog (String[] selectOption, boolean isSelect) {
 		multiselectDialog(selectOption, isSelect, false);
@@ -55,11 +58,15 @@ public class MultiInputDialog implements ActionListener {
 		multiselectDialog(selectOption.toArray(stra), isSelect, false);
 	}
 	
-	public MultiInputDialog (String[] selectOption, boolean isSelect, boolean showType) {
+	public MultiInputDialog (String[] selectOption, String[] selectOptionClass,boolean isSelect, boolean showType) {
+		
+		columnClass = selectOptionClass;
+		
 		multiselectDialog(selectOption, isSelect, showType);
+		
 	}
 	
-	
+
 	
 	private void multiselectDialog(String[] selectOption, boolean isSelect, boolean showType) {
 		JPanel dp = new JPanel();
@@ -75,6 +82,10 @@ public class MultiInputDialog implements ActionListener {
 		if (showType == true)
 			tpyeSelection = new JComboBox[numPairs];
 		
+		boolean useColumClass = true;
+		if (columnClass == null || columnClass.length == 0 || columnClass.length != numPairs )
+			useColumClass = false;
+			
 		for (int i = 0; i < numPairs; i++) {
 			lvalue[i] = new JLabel(selectOption[i],JLabel.LEADING);
 			selBox[i] = new JCheckBox();
@@ -83,7 +94,14 @@ public class MultiInputDialog implements ActionListener {
 			p.add(lvalue[i]);
 			
 			if (showType == true) {
+				
 				tpyeSelection[i] = new JComboBox<String>(typeStr);
+				
+				// System.out.println(columnClass[i]);
+				
+				if ( useColumClass && SqlType.getMetaClassType(columnClass[i]).compareToIgnoreCase("Number") ==0 ) 
+					tpyeSelection[i].setSelectedIndex(1); // Number
+				
 				p.add(tpyeSelection[i]);
  			}
 		}

@@ -191,7 +191,7 @@ public class UDFPanel implements ActionListener {
 		layout.putConstraint(SpringLayout.WEST, cancel, 5, SpringLayout.EAST,ok);
 
 		_dg = new JDialog();
-		_dg.setTitle("Expression Builder Dialog");
+		_dg.setTitle("UDF Selection Dialog");
 		_dg.setLocation(175, 50);
 		_dg.getContentPane().add(panel);
 

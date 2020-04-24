@@ -1525,4 +1525,15 @@ public class ReportTable extends JPanel implements ItemListener, Serializable,
 		}
 		
 	}
+	
+	public String[] getAllColumnsClassAsString() {
+		
+		int columnCount = table.getColumnCount();
+		String[] colClass= new String[table.getColumnCount()];
+		
+		for (int i=0; i < columnCount ; i++)
+			colClass[i] = table.getColumnClass(i).toString();
+		
+		return colClass;
+	}
 } // End of ReportTable class
