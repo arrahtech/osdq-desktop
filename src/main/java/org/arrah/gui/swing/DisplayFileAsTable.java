@@ -249,6 +249,11 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 		addrcompletion_m.setActionCommand("addrcompletion");
 		enrich_m.add(addrcompletion_m);
 		
+		JMenuItem addrstandard_m = new JMenuItem("Address Standardization");
+		addrstandard_m.addActionListener(this);
+		addrstandard_m.setActionCommand("addrstandard");
+		enrich_m.add(addrstandard_m);
+		
 		JMenu nullrep_m = new JMenu("Null Replace");
 		enrich_m.add(nullrep_m);
 		
@@ -2321,6 +2326,18 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 
 				Hashtable<Object, Object> hlookup = RTMUtil.lookupIndex(rtable.getRTMModel(),rightI[0]);
 				AddressUtil.completeRTMCOls(_rt.getRTMModel(), leftI, leftI[0], hlookup, rtable.getRTMModel(), rightI);
+				
+				return;
+			}
+			if (command.equals("addrstandard")) {
+				
+				_rt.cancelSorting(); // Make sure it is not in sorting order
+				
+				int lindex = selectedColIndex(_rt,"Select the USA address column ( 2 line )");
+				if (lindex < 0)
+					return;
+				
+				AddressUtil.addrStandardRTM(_rt.getRTMModel(), lindex,"/Users/vsingh007c/Documents/workspace/namestandard/USA_street_Suffice_kayvalpair");
 				
 				return;
 			}
