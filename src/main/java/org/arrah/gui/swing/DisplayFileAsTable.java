@@ -2337,7 +2337,7 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				if (lindex < 0)
 					return;
 				
-				AddressUtil.addrStandardRTM(_rt.getRTMModel(), lindex,"/Users/vsingh007c/Documents/workspace/namestandard/USA_street_Suffice_kayvalpair");
+				AddressUtil.addrStandardRTM(_rt.getRTMModel(), lindex,"resource/USA_Street_Suffix.txt");
 				
 				return;
 			}
