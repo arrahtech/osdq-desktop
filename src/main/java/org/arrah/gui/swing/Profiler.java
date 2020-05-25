@@ -908,7 +908,8 @@ public class Profiler extends JPanel implements TreeSelectionListener {
 				String dsn = (String) _fileParse.get("Database_DSN");
 				
 				if ((dsn != null && ("".equals(dsn) == false)) && (passwd == null || "".equals(passwd) || passwd.matches("\\*.*") == true)) {
-					passwd = JOptionPane.showInputDialog("Enter Password to Connect DB:"+ dsn);
+					// passwd = JOptionPane.showInputDialog("Enter Password to Connect DB:"+ dsn);
+					passwd = UIUtilities.getMaskedString("Enter Password to Connect DB:"+ dsn);
 					 _fileParse.put("Database_Passwd",passwd);
 				}
 			

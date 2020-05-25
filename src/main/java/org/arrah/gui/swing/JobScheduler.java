@@ -132,7 +132,8 @@ public class JobScheduler extends javax.swing.JFrame {
         				String dsn = (String) hashTable.get("Database_DSN");
         				
         				if ((dsn != null && ("".equals(dsn) == false)) && (passwd == null || "".equals(passwd) || passwd.matches("\\*.*") == true)) {
-        					passwd = JOptionPane.showInputDialog("Enter Password to Connect DB:"+ dsn);
+        					//passwd = JOptionPane.showInputDialog("Enter Password to Connect DB:"+ dsn);
+        					passwd = UIUtilities.getMaskedString("Enter Password to Connect DB:"+ dsn);
         					hashTable.put("Database_Passwd",passwd);
         				}
                         
