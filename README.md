@@ -1,4 +1,4 @@
-OSDQ Desktop V6.3.0
+OSDQ Desktop V6.3.1
 
 [![Build Status](https://drone.io/github.com/arrahtech/profiler/status.png)](https://drone.io/github.com/arrahtech/profiler/latest)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dm/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dw/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)
 
@@ -13,11 +13,12 @@ It also had Hadoop ( Big data ) support to move files to/from Hadoop Grid, Creat
 
 **Changes**
 
-6.3.0 Changes:
+6.3.1 Changes:
 
-a.) UDF for populate column
-b.) Address Standardization ( Beta)
-c.) Unspecified bug fixes
+a.) Address Standardization Improvement
+b.) Name Standardization ( Beta)
+c.) Masking of Database password input
+d.) Unspecified bug fixes
 
 
 **Features**

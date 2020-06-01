@@ -1,7 +1,5 @@
 package org.arrah.gui.swing;
 
-import java.awt.Dimension;
-
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;

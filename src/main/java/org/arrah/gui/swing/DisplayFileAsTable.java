@@ -95,6 +95,7 @@ import org.arrah.framework.dataquality.BusinessPIIFormatCheck;
 import org.arrah.framework.dataquality.FillCheck;
 import org.arrah.framework.dataquality.FormatCheck;
 import org.arrah.framework.dataquality.AutoFormatCheck;
+import org.arrah.framework.dataquality.NameStandardizationUtil;
 import org.arrah.framework.dataquality.SimmetricsUtil;
 import org.arrah.framework.hadooputil.HiveQueryBuilder;
 import org.arrah.framework.ndtable.DisplayFileAsTableCore;
@@ -253,6 +254,11 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 		addrstandard_m.addActionListener(this);
 		addrstandard_m.setActionCommand("addrstandard");
 		enrich_m.add(addrstandard_m);
+		
+		JMenuItem namestandard_m = new JMenuItem("Name Standardization");
+		namestandard_m.addActionListener(this);
+		namestandard_m.setActionCommand("namestandard");
+		enrich_m.add(namestandard_m);
 		
 		JMenu nullrep_m = new JMenu("Null Replace");
 		enrich_m.add(nullrep_m);
@@ -2341,6 +2347,20 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				
 				return;
 			}
+			
+			if (command.equals("namestandard")) {
+				
+				_rt.cancelSorting(); // Make sure it is not in sorting order
+				
+				int lindex = selectedColIndex(_rt,"Select the Full Name Column");
+				if (lindex < 0)
+					return;
+				
+				NameStandardizationUtil.nameStandardRTM(_rt.getRTMModel(), lindex,"resource/Name_Prefix.txt","resource/Name_Postfix.txt");
+				
+				return;
+			}
+			
 			if (command.equals("subsettable")) {
 				NewTableDialog ntd=  new NewTableDialog(_rt.getRTMModel());
 				ntd.displayGUI();
