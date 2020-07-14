@@ -187,6 +187,10 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 		column_m.setMnemonic('C');
 		menubar.add(column_m);
 		
+		JMenu dataquality_m = new JMenu("Data Quality");
+		dataquality_m.setMnemonic('D');
+		menubar.add(dataquality_m);
+		
 		// Data Preparation Menu
 		JMenu preparation_m = new JMenu("Preparation");
 		preparation_m.setMnemonic('P');
@@ -821,71 +825,6 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 		option_m.add(formatC_m);
 		option_m.addSeparator();
 		
-		JMenuItem fillInfo_m = new JMenuItem("Table Completeness Info");
-		fillInfo_m.addActionListener(this);
-		fillInfo_m.setActionCommand("fillInfo");
-		option_m.add(fillInfo_m);
-
-		JMenuItem profile_m = new JMenuItem("Profile");
-		profile_m.addActionListener(this);
-		profile_m.setActionCommand("profile");
-		option_m.add(profile_m);
-		
-		JMenuItem analyseC_m = new JMenuItem("Analyse");
-		analyseC_m.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
-				InputEvent.ALT_MASK));
-		analyseC_m.addActionListener(this);
-		analyseC_m.setActionCommand("analyse");
-		option_m.add(analyseC_m);
-
-		JMenuItem analyseS_m = new JMenuItem("Analyse Selected");
-		analyseS_m.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
-				InputEvent.ALT_MASK));
-		analyseS_m.addActionListener(this);
-		analyseS_m.setActionCommand("analyseselected");
-		option_m.add(analyseS_m);
-		option_m.addSeparator();
-
-		JMenuItem createC_m = new JMenuItem("Create Condition");
-		createC_m.addActionListener(this);
-		createC_m.setActionCommand("createcond");
-		option_m.add(createC_m);
-
-		JMenuItem undoC_m = new JMenuItem("Undo Condition");
-		undoC_m.addActionListener(this);
-		undoC_m.setActionCommand("undocond");
-		option_m.add(undoC_m);
-		option_m.addSeparator();
-		
-		JMenuItem filter_m = new JMenuItem("Filter");
-		filter_m.addActionListener(this);
-		filter_m.setActionCommand("filtercond");
-		option_m.add(filter_m);
-		
-		JMenuItem unfilter_m = new JMenuItem("Remove Filter");
-		unfilter_m.addActionListener(this);
-		unfilter_m.setActionCommand("unfilter");
-		option_m.add(unfilter_m);
-		
-		option_m.addSeparator();
-		
-		JMenuItem dedupC_m = new JMenuItem("DeDup");
-		dedupC_m.addActionListener(this);
-		dedupC_m.setActionCommand("dedup");
-		option_m.add(dedupC_m);
-
-		JMenu dedup = new JMenu("Fuzzy DeDup");
-		JMenuItem similarC_m = new JMenuItem("Delete");
-		similarC_m.addActionListener(this);
-		similarC_m.setActionCommand("simcheck");
-		dedup.add(similarC_m);
-		
-		JMenuItem replaceSimC_m = new JMenuItem("Replace");
-		replaceSimC_m.addActionListener(this);
-		replaceSimC_m.setActionCommand("simreplace");
-		dedup.add(replaceSimC_m);
-		option_m.add(dedup);
-		option_m.addSeparator();
 		
 		JMenuItem crossCol_m = new JMenuItem("Cross Column Search");
 		crossCol_m.addActionListener(this);
@@ -926,6 +865,82 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 		standIn_m.addActionListener(this);
 		standIn_m.setActionCommand("interactivestd");
 		option_m.add(standIn_m);
+		
+		
+		// DataQuality Options
+		JMenuItem fillInfo_m = new JMenuItem("Table Completeness Info");
+		fillInfo_m.addActionListener(this);
+		fillInfo_m.setActionCommand("fillInfo");
+		dataquality_m.add(fillInfo_m);
+
+		JMenuItem profile_m = new JMenuItem("Profile");
+		profile_m.addActionListener(this);
+		profile_m.setActionCommand("profile");
+		dataquality_m.add(profile_m);
+		
+		dataquality_m.addSeparator();
+		
+		JMenuItem analyseC_m = new JMenuItem("Analyse");
+		analyseC_m.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
+				InputEvent.ALT_MASK));
+		analyseC_m.addActionListener(this);
+		analyseC_m.setActionCommand("analyse");
+		dataquality_m.add(analyseC_m);
+
+		JMenuItem analyseS_m = new JMenuItem("Analyse Selected");
+		analyseS_m.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
+				InputEvent.ALT_MASK));
+		analyseS_m.addActionListener(this);
+		analyseS_m.setActionCommand("analyseselected");
+		dataquality_m.add(analyseS_m);
+		dataquality_m.addSeparator();
+
+		JMenuItem createC_m = new JMenuItem("Create Condition");
+		createC_m.addActionListener(this);
+		createC_m.setActionCommand("createcond");
+		dataquality_m.add(createC_m);
+
+		JMenuItem undoC_m = new JMenuItem("Undo Condition");
+		undoC_m.addActionListener(this);
+		undoC_m.setActionCommand("undocond");
+		dataquality_m.add(undoC_m);
+		dataquality_m.addSeparator();
+		
+		JMenuItem filter_m = new JMenuItem("Filter");
+		filter_m.addActionListener(this);
+		filter_m.setActionCommand("filtercond");
+		dataquality_m.add(filter_m);
+		
+		JMenuItem unfilter_m = new JMenuItem("Remove Filter");
+		unfilter_m.addActionListener(this);
+		unfilter_m.setActionCommand("unfilter");
+		dataquality_m.add(unfilter_m);
+		
+		dataquality_m.addSeparator();
+		
+		JMenuItem dedupC_m = new JMenuItem("DeDup");
+		dedupC_m.addActionListener(this);
+		dedupC_m.setActionCommand("dedup");
+		dataquality_m.add(dedupC_m);
+
+		JMenu dedup = new JMenu("Fuzzy DeDup");
+		JMenuItem similarC_m = new JMenuItem("Delete");
+		similarC_m.addActionListener(this);
+		similarC_m.setActionCommand("simcheck");
+		dedup.add(similarC_m);
+		
+		JMenuItem replaceSimC_m = new JMenuItem("Replace");
+		replaceSimC_m.addActionListener(this);
+		replaceSimC_m.setActionCommand("simreplace");
+		dedup.add(replaceSimC_m);
+		dataquality_m.add(dedup);
+		
+		dataquality_m.addSeparator();
+		
+		JMenuItem udfmetric_m = new JMenuItem("UDF Business Rule");
+		udfmetric_m.addActionListener(this);
+		udfmetric_m.setActionCommand("udfmetric");
+		dataquality_m.add(udfmetric_m);
 
 		frame.pack();
 		frame.setVisible(true);
@@ -968,6 +983,7 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				 new FileAnalyticsListener(_rt, 7);
 				return;
 			}
+			
 			// Outlier
 			if (command.equals("bynumber")) {
 				 new FileAnalyticsListener(_rt, 8);
@@ -985,6 +1001,7 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				 new FileAnalyticsListener(_rt, 11);
 				return;
 			}
+			
 			// End outlier
 			if (command.equals("kmean")) {
 				 new FileAnalyticsListener(_rt, 12);
@@ -2494,6 +2511,7 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				}
 				return;
 			}
+			
 			// Data Preparation 
 			if (command.equals("testdata")) {
 				new TestdataDialog(_rt.getRTMModel());
@@ -2781,6 +2799,7 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				
 				return;
 			}
+			
 			if (command.equals("prereplace")) {
 				_rt.cancelSorting(); // No sorting 
 				int index = selectedColIndex(_rt);
@@ -2817,6 +2836,7 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				
 				return;
 			}
+			
 			if (command.equals("interactivestd")) {
 				ReportTable secondRT = getMatchRT();
 				int option=-1;
@@ -2840,6 +2860,12 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				if (option == JOptionPane.NO_OPTION)
 					frame.dispose();
 				crd.createMapDialog(true);
+				
+				return;
+			}
+			
+			if (command.equals("udfmetric")) {
+				new UDFPanel(_rt);
 				
 				return;
 			}

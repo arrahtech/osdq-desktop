@@ -28,9 +28,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
@@ -49,6 +53,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 
+import org.arrah.framework.ndtable.ReportTableModel;
 import org.arrah.framework.udf.UDFEvaluator;
 import org.arrah.framework.udf.UDFInterfaceToRTM;
 
@@ -62,6 +67,8 @@ public class UDFPanel implements ActionListener {
 	private JLabel udfparameterInfoLabel;
 	private String selectedUDF=null;
 	
+	private int udftype = 0; // O for mapudf
+	
 
 	public UDFPanel(ReportTable rt, int selColIndex) {
 		_rt = rt;
@@ -74,6 +81,7 @@ public class UDFPanel implements ActionListener {
 	public UDFPanel(ReportTable rt) {
 		_rt = rt;
 		
+		udftype = 1; // 1 for metricudf
 		createGUI();
 	}
 
@@ -129,7 +137,14 @@ public class UDFPanel implements ActionListener {
 
 		JLabel clickinfoLabel = new JLabel("Double Click to Insert",JLabel.TRAILING);
 		
-		ConcurrentHashMap<String, Method> funcName = UDFEvaluator.getMapUdf();
+		
+		ConcurrentHashMap<String, Method> funcName = null;
+		
+		if (udftype == 1)
+			funcName = UDFEvaluator.getMetricUdf();
+		else
+			funcName = UDFEvaluator.getMapUdf();
+		
 		Enumeration<String> funckey =  funcName.keys();
 		
 		JComboBox<String >functiondropList = new JComboBox<String>();
@@ -248,7 +263,10 @@ public class UDFPanel implements ActionListener {
 			
 			if (selectedUDF == null || selectedUDF.isEmpty() == true || "Please select the UDF".equalsIgnoreCase(selectedUDF)) {
 				
-				JOptionPane.showMessageDialog(null, "Please select the UDF to apply on Populated column");
+				if (udftype == 1)
+					JOptionPane.showMessageDialog(null, "Please select the Busines UDF to apply on columns");
+				else
+					JOptionPane.showMessageDialog(null, "Please select the UDF to apply on Populated column");
 				
 				return;
 				
@@ -257,6 +275,21 @@ public class UDFPanel implements ActionListener {
 			try {
 				
 				_dg.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
+				
+				if (udftype == 1) {
+					
+					UDFInterfaceToRTM.evalUDF(selectedUDF, _rt.getRTMModel(), Arrays.asList(exp.split(",")) );
+					ReportTableModel rtmmodel = UDFInterfaceToRTM.metricrtm;
+					
+					JDialog jd = new JDialog();
+					jd.setTitle("UDF Metric Display Dialog");
+					jd.setLocation(75, 75);
+					jd.getContentPane().add(new ReportTable(rtmmodel));
+					jd.pack();
+					jd.setVisible(true);
+					
+					return;
+				}
 				
 				int rowC = _rt.getModel().getRowCount();
 				
@@ -269,7 +302,7 @@ public class UDFPanel implements ActionListener {
 				if (endIndex <= 0 || endIndex > (rowC+1) || endIndex < beginIndex )
 					endIndex = rowC+1;
 				
-				UDFInterfaceToRTM.evalUDF(selectedUDF, _rt.getRTMModel(), _selColIndex,beginIndex,endIndex,Arrays.asList(exp.split(",")));
+					UDFInterfaceToRTM.evalUDF(selectedUDF, _rt.getRTMModel(), _selColIndex,beginIndex,endIndex,Arrays.asList(exp.split(",")));
 				
 				return;
 		} finally {
