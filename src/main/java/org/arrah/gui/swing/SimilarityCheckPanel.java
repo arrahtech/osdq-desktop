@@ -203,11 +203,16 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
         // Iterate over row
         int grpid = 1; // groupID for matching groups
         
+        // It will store the grpid if it is marked for delete
+        // Only one row of the matched grp will be unmarked rest by default will be marked
+        Vector<Integer> markForDeleteVec = new Vector<Integer>();
+       
+        
         for (int i = 0; i < rowC; i++) {
             
             if (i % 1000 == 0 )  { // For progress report
-				System.out.println(i + " of " + rowC + " Rows Processed for Search at:"+System.currentTimeMillis());
-				ConsoleFrame.addText("\n Processing "+ i + " of " + rowC + " Rows Processed for Search at:"+System.currentTimeMillis());
+				System.out.println(i + " of " + rowC + " Rows Processed for Search at Time:"+System.currentTimeMillis());
+				ConsoleFrame.addText("\n Processing "+ i + " of " + rowC + " Rows Processed for Search at Time:"+System.currentTimeMillis());
             }
         	
             if (isRowSet == false && skipVC.contains(i) == true)
@@ -248,7 +253,7 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
                     }
 
                     Object[] newRow = new Object[row.length + 3];
-                    boolean del = false;
+                    boolean del = true;
                     newRow[0] = del;
                     newRow[1] = "Group: "+grpid;
 
@@ -256,6 +261,12 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
                         newRow[2] = "Index: "+rowid;
                     else
                         newRow[2] = "Row: "+rowid;
+                    
+                    if ( markForDeleteVec.indexOf(grpid) == -1 ) {
+                    	newRow[0] = false;
+                    	markForDeleteVec.add(grpid);
+                    }
+                    	
 
                     for (int k = 0; k < row.length; k++)
                         newRow[k + 3] = row[k];
@@ -341,7 +352,7 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
                             	String queryString = getQString(j);
                                 if (queryString == null || queryString.equals("") == true)
                                     continue;
-                            	List<Integer> matchedInded = processMatchedDoc(queryString,tindex+"-"+grpid);
+                            	List<Integer> matchedInded = processMatchedDoc(queryString,"Thread:"+tindex+"-"+grpid);
                             	if (matchedInded.size() < 1) continue;
                             	else{
                             		grpid++;
@@ -365,7 +376,7 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
                             	String queryString = getQString(j);
                                 if (queryString == null || queryString.equals("") == true)
                                     continue;
-                            	List<Integer> matchedInded = processMatchedDoc(queryString,tindex+"-"+grpid);
+                            	List<Integer> matchedInded = processMatchedDoc(queryString,"Thread:"+tindex+"-"+grpid);
                             	if (matchedInded.size() < 1) continue;
                             	else{
                             		grpid++;
@@ -1078,7 +1089,12 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
         Hits hit = _simcheck.searchIndex(qry);
         if (hit == null || hit.length() <= 1)
             return matchedIndex; // It will match self
+        
+        
         // Iterate over the Documents in the Hits object
+        // It will store the grpid if it is marked for delete
+        // Only one row of the matched grp will be unmarked rest by default will be marked
+        Vector<String> markForDeleteGrpID = new Vector<String>();
 
         for (int j = 0; j < hit.length(); j++) {
             try {
@@ -1090,13 +1106,19 @@ public class SimilarityCheckPanel implements ActionListener, TableModelListener,
                 row = _rt.getRow(Integer.parseInt(rowid));
 
                 Object[] newRow = new Object[row.length + 3];
-                boolean del = false;
+                boolean del = true;
                 newRow[0] = del;
                 newRow[1] = "Group: "+grpid;
                 newRow[2] = "Index: "+rowid;
 
                 for (int k = 0; k < row.length; k++)
                     newRow[k + 3] = row[k];
+                
+                if (markForDeleteGrpID.indexOf(grpid) == -1 ) {
+                	del = false;
+                	newRow[0] = del;
+                	markForDeleteGrpID.add(grpid);
+                }
                 
                 holdmatchData.add(newRow);
                 //outputRT.addFillRow(newRow);
