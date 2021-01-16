@@ -32,7 +32,7 @@ public class BusinesRuleListener implements ActionListener {
                 return;
             }
             if (source.equals("Schedule Rule")) {
-                new JobScheduler().setVisible(true);
+                new JobSchedulerFrame().setVisible(true);
                 return;
             }
        }

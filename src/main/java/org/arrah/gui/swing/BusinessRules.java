@@ -503,7 +503,7 @@ public class BusinessRules extends javax.swing.JFrame {
             hashRule = new Hashtable<>();
             hashRule.put("rule_Name", txtRule.getText().trim());
             hashRule.put("database_ConnectionName", jcbConnection.getSelectedItem().toString());
-            hashRule.put("rule_Type", "JOIN");
+            hashRule.put("rule_Type", "JOIN"); // Default
             hashRule.put("table_Names", txtTables.getText().trim());
             hashRule.put("column_Names", "");
             hashRule.put("condition_Names", "");

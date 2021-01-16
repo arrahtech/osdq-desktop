@@ -28,13 +28,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+
 import java.lang.reflect.Method;
-import java.sql.SQLException;
+
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;

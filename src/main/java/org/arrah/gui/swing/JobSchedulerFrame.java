@@ -23,7 +23,7 @@ import org.arrah.framework.xml.XmlReader;
 import org.quartz.SchedulerException;
 
 
-public class JobScheduler extends javax.swing.JFrame {
+public class JobSchedulerFrame extends javax.swing.JFrame {
 	
 	
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -55,7 +55,8 @@ public class JobScheduler extends javax.swing.JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String freq[] = {"One Time","Daily", "Weekly", "Monthly"}, days[] = {"SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"};
+	private String freq[] = {"One Time","Daily", "Weekly", "Monthly"};
+	private String days[] = {"SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"};
     private DateFormat ddf;
     private int temp = 0;
     private XmlReader xmlReader;
@@ -65,10 +66,11 @@ public class JobScheduler extends javax.swing.JFrame {
     String[] splitDate;
     public static int startdayofMonth, enddayofMonth;
     SimpleDateFormat formattedDate;
+    
     /**
      * Creates new form JobScheduler
      */
-    public JobScheduler() {
+    public JobSchedulerFrame() {
         initComponents();
 
         loadGui();
@@ -669,7 +671,7 @@ public class JobScheduler extends javax.swing.JFrame {
                         jcbFrequency.getSelectedItem().toString(), 
                         jdcEdate.getDate(), 
                         startdayofMonth,
-                        hashTable,
+                        hashTable,hashRule,
                         jcbRules.getSelectedItem().toString());
                 } catch (SchedulerException   e) {
                     e.printStackTrace();
@@ -679,7 +681,7 @@ public class JobScheduler extends javax.swing.JFrame {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(JobScheduler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(JobSchedulerFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnScheduleActionPerformed
 
