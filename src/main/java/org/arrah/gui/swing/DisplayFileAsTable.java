@@ -40,7 +40,6 @@ import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -937,10 +936,20 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 		
 		dataquality_m.addSeparator();
 		
-		JMenuItem udfmetric_m = new JMenuItem("UDF Business Rule");
+		JMenuItem udfmetric_m = new JMenuItem("User Defined Functions");
 		udfmetric_m.addActionListener(this);
 		udfmetric_m.setActionCommand("udfmetric");
 		dataquality_m.add(udfmetric_m);
+		
+		JMenuItem udfrule_m = new JMenuItem("Create UDF Rule");
+		udfrule_m.addActionListener(this);
+		udfrule_m.setActionCommand("udfrule");
+		dataquality_m.add(udfrule_m);
+		
+		JMenuItem scheduleudfrule_m = new JMenuItem("Schedule UDF Rule");
+		scheduleudfrule_m.addActionListener(this);
+		scheduleudfrule_m.setActionCommand("scheduleudfrule");
+		dataquality_m.add(scheduleudfrule_m);
 
 		frame.pack();
 		frame.setVisible(true);
@@ -2870,6 +2879,21 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 				return;
 			}
 			
+			if (command.equals("udfrule")) {
+				
+				UDFRulesFrame udfRule = new UDFRulesFrame();
+				
+				udfRule.setVisible(true);
+				udfRule.loadBusinessRules();
+				
+                return;
+			}
+			
+			if (command.equals("scheduleudfrule")) {
+	            new JobSchedulerFrame("udfrule").setVisible(true);
+	            return;
+	        }
+			
 			
 		} catch (Exception e1) {
       ConsoleFrame.addText("\n Exception:" + e1.getLocalizedMessage());
@@ -3370,8 +3394,7 @@ public class DisplayFileAsTable extends JPanel implements ActionListener {
 							return;
 						final XmlReader xmlReader = new XmlReader();
 						ReportTable lmTable = new ReportTable(xmlReader.read(f));
-						if (lmTable == null)
-							return;
+
 						if (_fileN.equals(lmTable.getValueAt(0, 0)) == false) {
 							int n = JOptionPane
 									.showConfirmDialog(

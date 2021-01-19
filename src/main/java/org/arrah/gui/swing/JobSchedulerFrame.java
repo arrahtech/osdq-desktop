@@ -66,14 +66,18 @@ public class JobSchedulerFrame extends javax.swing.JFrame {
     String[] splitDate;
     public static int startdayofMonth, enddayofMonth;
     SimpleDateFormat formattedDate;
+    String ruleType ="";
     
     /**
      * Creates new form JobScheduler
      */
-    public JobSchedulerFrame() {
+    public JobSchedulerFrame(String businessRuleType) {
+    	
+    	ruleType = businessRuleType;
+    	
         initComponents();
-
         loadGui();
+        
         loadData();
         loadListeners();
     }
@@ -82,6 +86,7 @@ public class JobSchedulerFrame extends javax.swing.JFrame {
         ddf = new SimpleDateFormat("HH:mm:ss");
         setLocationRelativeTo(null);
         jcbSfrequency.setEnabled(false);
+        
         //One-time should be enables as soon as the UI is loaded. jdcSdate.setEnabled(false);
         jdcEdate.setEnabled(false);
     }
@@ -93,7 +98,14 @@ public class JobSchedulerFrame extends javax.swing.JFrame {
 
         jcbSfrequency.setEnabled(false);
 
-        String temp[] = xmlReader.getRulesName(new File(FilePaths.getFilePathRules()), "rule", "rule_Name");
+        String temp[] = null;
+        
+        if (ruleType == null || "".equals(ruleType) || ruleType.compareToIgnoreCase("sqlrule") == 0)
+        	temp = xmlReader.getRulesName(new File(FilePaths.getFilePathRules()), "rule", "rule_Name");
+    	else
+    		temp = xmlReader.getRulesName(new File(FilePaths.getFilePathUDFRules()), "rule", "rule_Name");
+
+        
         if (temp != null) {
             for (int i = 0; i < temp.length; i++) {
                 jcbRules.addItem(temp[i].trim());
@@ -118,29 +130,43 @@ public class JobSchedulerFrame extends javax.swing.JFrame {
     private void loadListeners() {
 
         jcbRules.addItemListener(new ItemListener() {
+        	
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
+                	
                     if (jcbRules.getSelectedIndex() != 0) {
-                        xmlReader = new XmlReader();
+                    	
+                    	xmlReader = new XmlReader();
                         hashRule = new Hashtable<String, String>();
-                        hashRule = xmlReader.getRuleDetails(new File(FilePaths.getFilePathRules()), "rule", jcbRules.getSelectedItem().toString());
-                        dbName = hashRule.get("database_ConnectionName");
-
                         hashTable = new Hashtable<String, String>();
-                        hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
-                     // This file may not have passwd stored so if it is not stored ask for it
-        				String passwd = (String) hashTable.get("Database_Passwd");
-        				String dsn = (String) hashTable.get("Database_DSN");
-        				
-        				if ((dsn != null && ("".equals(dsn) == false)) && (passwd == null || "".equals(passwd) || passwd.matches("\\*.*") == true)) {
-        					//passwd = JOptionPane.showInputDialog("Enter Password to Connect DB:"+ dsn);
-        					passwd = UIUtilities.getMaskedString("Enter Password to Connect DB:"+ dsn);
-        					hashTable.put("Database_Passwd",passwd);
-        				}
-                        
-//                        hashRule.put("Database_Type", hashTable.get("Database_Type"));
-                        query = hashRule.get("query_Text");
+                    	
+                    	if (ruleType == null || "".equals(ruleType) || ruleType.compareToIgnoreCase("sqlrule") == 0) {
+                    		
+	                        hashRule = xmlReader.getRuleDetails(new File(FilePaths.getFilePathRules()), "rule", jcbRules.getSelectedItem().toString());
+	                        dbName = hashRule.get("database_ConnectionName");
+	
+	                        
+	                        hashTable = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", hashRule.get("database_ConnectionName"));
+	                        
+	                        // This file may not have passwd stored so if it is not stored ask for it
+	        				String passwd = (String) hashTable.get("Database_Passwd");
+	        				String dsn = (String) hashTable.get("Database_DSN");
+	        				
+	        				if ((dsn != null && ("".equals(dsn) == false)) && (passwd == null || "".equals(passwd) || passwd.matches("\\*.*") == true)) {
+	        					//passwd = JOptionPane.showInputDialog("Enter Password to Connect DB:"+ dsn);
+	        					passwd = UIUtilities.getMaskedString("Enter Password to Connect DB:"+ dsn);
+	        					hashTable.put("Database_Passwd",passwd);
+	        				}
+	                        
+	        				// hashRule.put("Database_Type", hashTable.get("Database_Type"));
+	                        query = hashRule.get("query_Text");
+	                        
+                    	} else { //UDF business rule
+                    		
+                    		hashRule = xmlReader.getRuleDetails(new File(FilePaths.getFilePathUDFRules()), "rule", jcbRules.getSelectedItem().toString());
+                    		
+                    	}
                     }
                 }
             }
@@ -632,30 +658,37 @@ public class JobSchedulerFrame extends javax.swing.JFrame {
             }
                        
         else {
+        	
             	ddf = new SimpleDateFormat("dd");
             	time = txtHours.getText() + ":" + txtMinutes.getText() + ":" + txtSeconds.getText();
+            	
                 JOptionPane.showMessageDialog(null, "<html><center>Rule: " + jcbRules.getSelectedItem().toString() + "<br/>Period: " + jcbFrequency.getSelectedItem().toString() + ", " + jcbFrequency.getSelectedItem().toString() + "<br/>Date : " + jdcSdate.getDate() +"<br/> Time : "+ time + "</center></html>");
                 formattedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()); //2014-11-24
-           	    if(jdcSdate.getDate() != null){
-           	    startDate  = formattedDate .format(jdcSdate.getDate());
-           	    splitDate=startDate.split("-");
-           	    //Get only the startdayofmonth to schedule on a monthly basis because Quartz takes the day as the input.
+           	   
+                if(jdcSdate.getDate() != null){
+                	
+	           	    startDate  = formattedDate .format(jdcSdate.getDate());
+	           	    splitDate=startDate.split("-");
+	           	    
+	           	    //Get only the startdayofmonth to schedule on a monthly basis because Quartz takes the day as the input.
            	       	 startdayofMonth=Integer.parseInt(startDate.substring(Math.max(startDate.length() - 2, 0)));
            	       }
            	   
            	    if(jdcEdate.getDate() != null){
-           	    endDate  = formattedDate .format(jdcEdate.getDate());
-           	    //Get only the enddayofmonth to schedule on a monthly basis because Quartz takes the day as the input.
-        	    enddayofMonth=Integer.parseInt(endDate.substring(Math.max(endDate.length() - 2, 0)));
+           	    	
+	           	    endDate  = formattedDate .format(jdcEdate.getDate());
+	           	    
+	           	    //Get only the enddayofmonth to schedule on a monthly basis because Quartz takes the day as the input.
+	        	    enddayofMonth=Integer.parseInt(endDate.substring(Math.max(endDate.length() - 2, 0)));
            	    }
            	    
 //                hashValues = new Hashtable<String, String>();
 //                hashValues = xmlReader.getDatabaseDetails(new File(FilePaths.getFilePathDB()), "entry", dbName);
 
                 // Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashValues);
-           	    Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashTable);
+           	   // Rdbms_NewConn dbmsConn = new Rdbms_NewConn(hashTable);
                 
-                dbmsConn.openConn();
+               // dbmsConn.openConn();
                 String[] splitTime = time.split(":");
 
                 // split the time into hours, minutes, seconds so that these are passed as arguments to the scheduler
@@ -680,7 +713,7 @@ public class JobSchedulerFrame extends javax.swing.JFrame {
                 } 
             }
 
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(JobSchedulerFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnScheduleActionPerformed

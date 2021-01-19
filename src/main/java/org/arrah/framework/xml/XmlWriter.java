@@ -156,14 +156,19 @@ public class XmlWriter {
 		return document;
 	}
 	
-    public void writeXmlFile(Hashtable<String, String> hashRule) {
+    public void writeXmlFile(Hashtable<String, String> hashRule, String ruleType) {
     	Path absolutePath = Paths.get("./configuration/");
     	File brFile = new File(absolutePath.toUri());
 
     	if (!brFile.exists()) {
     	brFile.mkdir();
     	}
-    	brFile = new File(FilePaths.getFilePathRules());
+    	
+    	if (ruleType == null || "".equals(ruleType) || ruleType.compareToIgnoreCase("sqlrule") == 0)
+    		brFile = new File(FilePaths.getFilePathRules());
+    	else
+    		brFile = new File(FilePaths.getFilePathUDFRules());
+    		
     
         if (!brFile.exists()) {
             try {
@@ -309,8 +314,15 @@ public class XmlWriter {
         }
     }
 
-    public void deleteNode(String nodeName) {
-    	File brFile = new File(FilePaths.getFilePathRules());
+    public void deleteNode(String nodeName, String ruleType) {
+    	
+    	File brFile = null;
+    	
+    	if (ruleType == null || "".equals(ruleType) || ruleType.compareToIgnoreCase("sqlrule") == 0)
+    		 brFile = new File(FilePaths.getFilePathRules());
+    	else
+    		 brFile = new File(FilePaths.getFilePathUDFRules());
+    	
         if (brFile.exists() && brFile.length() > 0) {
         	Document document = null;
             try {
@@ -344,9 +356,16 @@ public class XmlWriter {
         }
     }
 
-    public void modifyRule( Hashtable<String, String> hashRule ) {
+    public void modifyRule( Hashtable<String, String> hashRule, String ruleType ) {
         try {
-            Document document = parseDocument(new File( FilePaths.getRuleFilePath() ));
+        	File brFile = null;
+        	
+        	if (ruleType == null || "".equals(ruleType) || ruleType.compareToIgnoreCase("sqlrule") == 0)
+        		 brFile = new File(FilePaths.getFilePathRules());
+        	else
+        		 brFile = new File(FilePaths.getFilePathUDFRules());
+        	
+            Document document = parseDocument(brFile);
             
             NodeList rList = document.getElementsByTagName("rule");
             
@@ -370,7 +389,7 @@ public class XmlWriter {
             }
             document.normalize();
             Source source = new DOMSource(document);
-            Result result = new StreamResult(FilePaths.getRuleFilePath());
+            Result result = new StreamResult(brFile);
             Transformer tFormer = TransformerFactory.newInstance().newTransformer();
             tFormer.transform(source, result);
         } catch (TransformerConfigurationException ex) {

@@ -19,7 +19,7 @@ public class BusinesRuleListener implements ActionListener {
                 return;
             }
             if (source.equals("Build Rule")) {
-               BusinessRules br = new BusinessRules();
+               BusinessRulesFrame br = new BusinessRulesFrame();
                 br.setVisible(true);
                 br.loadDatabaseConnections();
                 br.loadBusinessRules();
@@ -32,7 +32,7 @@ public class BusinesRuleListener implements ActionListener {
                 return;
             }
             if (source.equals("Schedule Rule")) {
-                new JobSchedulerFrame().setVisible(true);
+                new JobSchedulerFrame("sqlrule").setVisible(true);
                 return;
             }
        }

@@ -21,7 +21,7 @@ import org.arrah.framework.xml.XmlReader;
 import org.arrah.framework.xml.XmlWriter;
 
 
-public class BusinessRules extends javax.swing.JFrame {
+public class BusinessRulesFrame extends javax.swing.JFrame {
 
     /**
 	 * 
@@ -37,7 +37,7 @@ public class BusinessRules extends javax.swing.JFrame {
     /**
      * Creates new form BusinessRules
      */
-    public BusinessRules() {
+    public BusinessRulesFrame() {
         initComponents();
 
         loadGui();
@@ -522,7 +522,7 @@ public class BusinessRules extends javax.swing.JFrame {
             txtQuery.setText(txtQuery.getText().trim());
             
             xmlWriter = new XmlWriter();
-            xmlWriter.writeXmlFile(hashRule);
+            xmlWriter.writeXmlFile(hashRule,"sqlrule");
             JOptionPane.showMessageDialog(null, "Business Rule with name \"" + txtRule.getText() + "\" successfully created!!!");
             jcbRule.setSelectedIndex(0);
             clearData();
@@ -535,7 +535,7 @@ public class BusinessRules extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please select a rule name to delete!!!");
         } else {
             xmlWriter = new XmlWriter();
-            xmlWriter.deleteNode(txtRule.getText().trim());
+            xmlWriter.deleteNode(txtRule.getText().trim(),"sqlrule");
             JOptionPane.showMessageDialog(null, "Business Rule \"" + txtRule.getText() + "\" successfully deleted!!!");
             clearData();
             loadBusinessRules();
@@ -593,7 +593,7 @@ public class BusinessRules extends javax.swing.JFrame {
                 }
                 
                 xmlWriter = new XmlWriter();
-                xmlWriter.modifyRule(hashRule);
+                xmlWriter.modifyRule(hashRule,"sqlrule");
                 JOptionPane.showMessageDialog(null, "Business Rule \"" + txtRule.getText() + "\" successfully modified!!!");
                 clearData();
                 loadBusinessRules();
