@@ -5,7 +5,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,7 +15,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import org.arrah.framework.rdbms.Rdbms_NewConn;
 import org.arrah.framework.scheduler.QuartzScheduler;
 import org.arrah.framework.xml.FilePaths;
 import org.arrah.framework.xml.XmlReader;
