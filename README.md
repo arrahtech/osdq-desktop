@@ -1,4 +1,4 @@
-OSDQ Desktop V6.3.2
+OSDQ Desktop V6.3.3
 
 [![Build Status](https://drone.io/github.com/arrahtech/profiler/status.png)](https://drone.io/github.com/arrahtech/profiler/latest)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dm/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)   [![Download Open Source Data Quality and Profiling](https://img.shields.io/sourceforge/dw/dataquality.svg)](https://sourceforge.net/projects/dataquality/files/latest/download)
 
@@ -13,10 +13,10 @@ It also had Hadoop ( Big data ) support to move files to/from Hadoop Grid, Creat
 
 **Changes**
 
-6.3.2 Changes:
+6.3.3 Changes:
 
-a.) Metric UDF Added
-b.) UDF functions enhanced
+a.) Create Rule based on Metric UDF
+b.) Schedule Metric UDF based Rules
 c.) Unspecified bug fixes
 
 

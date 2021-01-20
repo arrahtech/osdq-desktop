@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.arrahtec</groupId>
     <artifactId>osdq-desktop</artifactId>
-    <version>6.3.2-SNAPSHOT</version>
+    <version>6.3.3-SNAPSHOT</version>
     <name>osdq-desktop</name>
     <url>http://www.arrahtech.com</url>
     <properties>
@@ -416,7 +416,7 @@
         <dependency>
             <groupId>org.arrahtec</groupId>
             <artifactId>osdq-core</artifactId>
-            <version>6.3.2</version>
+            <version>6.3.3</version>
         </dependency>
     </dependencies>
 	<profiles>
@@ -495,8 +495,8 @@
     </organization>
     <licenses>
         <license>
-            <name>APACHE LICENSE, VERSION 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.en.html</url>
         </license>
     </licenses>
 	<distributionManagement>
